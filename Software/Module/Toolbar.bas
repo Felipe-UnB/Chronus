@@ -266,9 +266,7 @@ Sub Button1_FullDataReduction()
      'You 'd put your real working code here to do whatever
      'it is that you want to do
 
-    Call ReductionSteps(True, True, True, True, True, True, True, True)
-    
-    Box7_FullReduction.Show
+    Call FullDataReduction
 
     Call UnloadAll: End
 
@@ -341,6 +339,8 @@ Sub Button_StartOptions()
     Box1_Start.Show
 
     Application.ScreenUpdating = True
+
+    Call UnloadAll: End
 
 End Sub
 
@@ -420,11 +420,11 @@ Sub Button_NextID()
                     Call Plot_PlotAnalysis(Plot_Sh, True, False, True, False, True, True, True)
                         Call LineUpMyCharts(Plot_Sh, 1)
 
-'                Else
-'                    Application.DisplayAlerts = False
-'                        Plot_Sh.Delete
-'                        Plot_ShHidden.Delete
-'                    Application.DisplayAlerts = True
+                Else
+                    Application.DisplayAlerts = False
+                        Plot_Sh.Delete
+                        Plot_ShHidden.Delete
+                    Application.DisplayAlerts = True
 
                 End If
 
@@ -464,14 +464,14 @@ Sub Button_PreviousID()
                     Call Plot_PlotAnalysis(Plot_Sh, True, False, True, False, True, True, True)
                         Call LineUpMyCharts(Plot_Sh, 1)
 
-'                Else
-'                    Application.DisplayAlerts = False
-'                        On Error Resume Next
-'                            Plot_Sh.Delete
-'                            Plot_ShHidden.Delete
-'                        On Error GoTo 0
-'                    Application.DisplayAlerts = True
-'
+                Else
+                    Application.DisplayAlerts = False
+                        On Error Resume Next
+                            Plot_Sh.Delete
+                            Plot_ShHidden.Delete
+                        On Error GoTo 0
+                    Application.DisplayAlerts = True
+
                 End If
 
     Else
@@ -505,9 +505,13 @@ End Sub
 
 Sub Button_FilterData()
 
-'    Box5_DataFilter.Show
-'
-'    Call UnloadAll: End
+    Application.ScreenUpdating = False
+    
+        Box5_DataFilter.Show
+    
+        Call UnloadAll
+        
+    Application.ScreenUpdating = True
 
 End Sub
 
@@ -525,7 +529,28 @@ Sub DeleteFromShortcut()
         For Each Bt In CommandBars(MyToolbar).Controls
             CommandBars(MyToolbar).Controls(Bt).Delete
         Next
-    CommandBars(MyToolbar).Delete
+        
+        CommandBars(MyToolbar).Delete
+        
+        If Err.Number <> 0 Then
+            MsgBox "It was not possible to remove Chronus toolbar."
+        End If
+        
+    On Error GoTo 0
+    
+End Sub
+
+Sub teste()
+
+    On Error Resume Next
+          
+        For Each Bt In CommandBars("Isoplot 3 Worksheet Tools").Controls
+            CommandBars("Isoplot 3 Worksheet Tools").Controls(Bt).Delete
+        Next
+        
+        CommandBars("Isoplot 3 Worksheet Tools").Delete
+
+    On Error GoTo 0
     
 End Sub
 

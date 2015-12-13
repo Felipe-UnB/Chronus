@@ -13,6 +13,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 Option Explicit
 
 Private Sub CommandButton1_Click()
@@ -105,15 +106,11 @@ Private Sub CommandButton1_Click()
     
 End Sub
 
-Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+Private Sub CommandButton2_Click()
     
-    If CloseMode = vbFormControlMenu Then
-        Call UnloadAll
-            End
-    End If
+    Call UnloadAll
     
 End Sub
-
 
 Private Sub Program0_Click()
     
@@ -229,6 +226,7 @@ Private Sub UserForm_Initialize()
             Ctl.Locked = True
         End If
     Next
+    Me.CommandButton2.Visible = False
     
     Me.Program0 = CheckBoxProgram0
     Me.Program1 = CheckBoxProgram1

@@ -1,14 +1,13 @@
 Attribute VB_Name = "ExportProject"
 Option Explicit
 
-Public Sub ExportVisualBasicCode()
-
 ' Excel macro to export all VBA source code in this project to text files for proper source control versioning
 ' Requires enabling the Excel setting in Options/Trust Center/Trust Center Settings/Macro Settings/Trust access to the VBA project object model
 'A little modification in the original code was made in order to export the different components to different folders.
 
-'From https://gist.github.com/steve-jansen/7589478 with modifications
+'https://gist.github.com/steve-jansen/7589478
 
+Public Sub ExportVisualBasicCode()
     Const Module = 1
     Const ClassModule = 2
     Const Form = 3
@@ -22,39 +21,39 @@ Public Sub ExportVisualBasicCode()
     Dim directory As String
     Dim DirectoryByType As String
     Dim extension As String
-    Dim fso As New FileSystemObject
+    Dim FSO As New FileSystemObject
     
     Set VBProj = Application.VBE.ActiveVBProject
     
-    directory = "D:\UnB\Chronus"
+    directory = "D:\UnB\Projetos Software\Chronus\Software" & "\"
     count = 0
 
-    If Not fso.folderexists(directory) Then
-        Call fso.createfolder(directory)
+    If Not FSO.folderexists(directory) Then
+        Call FSO.createfolder(directory)
         
-            Call fso.createfolder(directory & "\" & "ClassModule")
-                Call fso.createfolder(directory & "\" & "Form")
-                    Call fso.createfolder(directory & "\" & "Module")
-                        Call fso.createfolder(directory & "\" & "Other")
+            Call FSO.createfolder(directory & "ClassModule")
+                Call FSO.createfolder(directory & "Form")
+                    Call FSO.createfolder(directory & "Module")
+                        Call FSO.createfolder(directory & "Other")
     End If
     
-        If Not fso.folderexists(directory & "\" & "ClassModule") Then
-            Call fso.createfolder(directory & "\" & "ClassModule")
+        If Not FSO.folderexists(directory & "ClassModule") Then
+            Call FSO.createfolder(directory & "ClassModule")
         End If
     
-            If Not fso.folderexists(directory & "\" & "Form") Then
-                Call fso.createfolder(directory & "\" & "Form")
+            If Not FSO.folderexists(directory & "Form") Then
+                Call FSO.createfolder(directory & "Form")
             End If
     
-                If Not fso.folderexists(directory & "\" & "Module") Then
-                    Call fso.createfolder(directory & "\" & "Module")
+                If Not FSO.folderexists(directory & "Module") Then
+                    Call FSO.createfolder(directory & "Module")
                 End If
             
-                    If Not fso.folderexists(directory & "\" & "Other") Then
-                        Call fso.createfolder(directory & "\" & "Other")
+                    If Not FSO.folderexists(directory & "Other") Then
+                        Call FSO.createfolder(directory & "Other")
                     End If
     
-    Set fso = Nothing
+    Set FSO = Nothing
     
     Application.SendKeys ("^g")
     Debug.Print
@@ -79,7 +78,7 @@ Public Sub ExportVisualBasicCode()
         On Error Resume Next
         Err.Clear
         
-        path = directory & "\" & DirectoryByType & "\" & VBComponent.Name & extension
+        path = directory & DirectoryByType & "\" & VBComponent.Name & extension
             Call VBComponent.Export(path)
         
         If Err.Number <> 0 Then

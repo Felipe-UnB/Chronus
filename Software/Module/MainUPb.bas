@@ -11,6 +11,7 @@ Option Explicit
 
     'Known bugs:
     'Trendline labels dont update automatically after removing some cycles.
+    '.Getfolder does not list all the files in the indicated folder
     
     Public Const ProgramName = "CHRONUS"
     
@@ -84,6 +85,7 @@ Option Explicit
     Public ExtStdRepro_UPb As Range
     Public Isotope232analyzed As Range
     Public Isotope208analyzed As Range
+    Public SelectedBins_UPb As Range
     
     Public NewFolderPath As String
     Public OldFolderPath As String 'Variable used to save the actual addresses of raw data. Sub UpdateFileAddresses uses it to
@@ -162,6 +164,9 @@ Option Explicit
     Public TW_RatioMercury_UPb As Range
     Public TW_mVtoCPS_UPb As Range
     Public TW_RatioMercury1Std As Range
+    Public TW_SampleName As Range
+    Public TW_BlankName As Range
+    Public TW_PrimaryStandardName As Range
     
     Public RatioUranium_UPb As Range
     Public RatioMercury_UPb As Range
@@ -297,7 +302,7 @@ Option Explicit
     Public Const Column751Std As String = "D"
     Public Const Column68 As String = "E"
     Public Const Column681Std As String = "F"
-    Public Const ColumnWtdAvLabels As String = "F"
+        Public Const ColumnWtdAvLabels As String = "F"
     Public Const Column7568Rho As String = "G"
     Public Const Column68R As String = "H"
     Public Const Column68R2 As String = "I"
@@ -380,6 +385,7 @@ Option Explicit
     Public Const FR_ColumnAge208232 As String = "AB"
     Public Const FR_ColumnAge2082322StdAbs As String = "AC"
     Public Const FR_Column6876DiscPercent As String = "AD"
+    Public Const FR_LastColumn As String = "AD"
     
     'Constants used to set the right columns (and header row) for isotopes signals or ratios in Plot_Sh
     Public Const Plot_HeaderRow As Integer = 1
@@ -408,6 +414,10 @@ Option Explicit
 
     'Constants used to set the right columns (and header row) for isotopes signals or ratios in SlpStdCorr
     Public Const StdCorr_HeaderRow As Integer = 1
+    
+    Public Const StdCorr_FirstColumn As String = "A"
+    Public Const StdCorr_LastColumn As String = "AE"
+    
     Public Const StdCorr_ColumnID As String = "A"
     Public Const StdCorr_SlpName As String = "B"
     Public Const StdCorr_TetaFactor As String = "C"
@@ -440,6 +450,7 @@ Option Explicit
     Public Const StdCorr_Column76AgeMa1std As String = "AC"
     Public Const StdCorr_Column6876Conc As String = "AD"
     Public Const StdCorr_Column6875Conc As String = "AE"
+    
         
 '    'Constants used to set the right columns (and header row) for isotopes signals or ratios in SlpStdCorr
 '    Public Const Results_HeaderRow1 As Integer = 1
@@ -610,6 +621,7 @@ StartTime = Timer
 Application.ScreenUpdating = False
 Application.DisplayAlerts = False
     
+    'MsgBox "PublicVariables"
     Call PublicVariables
         EndTime1 = Timer
         If Timer - StartTime = 0 Then
@@ -618,10 +630,13 @@ Application.DisplayAlerts = False
             DeltaTime1 = Timer - StartTime
         End If
     
+    'MsgBox "Load_UPbStandardsTypeList"
     Call Load_UPbStandardsTypeList
+    '-----------------------------------------------
     
     Call AskToPreserveCycles
     
+    'MsgBox "unprotectsheets"
     Call unprotectsheets
         EndTime2 = Timer
         If Timer - EndTime1 = Timer Then
@@ -630,7 +645,9 @@ Application.DisplayAlerts = False
             DeltaTime2 = Timer - EndTime1
         End If
 
+    'Box1_Start.Show
 
+    'MsgBox "MacroFolderOffice2010"
     Call MacroFolderOffice2010
         EndTime3 = Timer
         If Timer - EndTime2 = Timer Then
@@ -815,396 +832,24 @@ MsgBox ("PublicVariables " & Round(DeltaTime1, 4) & " s " & Round(100 * DeltaTim
     "Number of analysis " & TotalAnalysis & vbNewLine & vbNewLine & _
     "Time per analysis (Slp, Std and Blk) " & Round(EndTime / TotalAnalysis, 2) & " s")
 
+'    Call OpenAnalysisToPlot_ByIDs(2, True)
+'        Call Plot_PlotAnalysis(Worksheets("002-GJ (2)_Plot"))
+'            Call LineUpMyCharts(Worksheets("002-GJ (2)_Plot"), 1)
+'
+'    Call OpenAnalysisToPlot_ByIDs(3, True)
+'        Call Plot_PlotAnalysis(Worksheets("003-91500 (3)_Plot"))
+'            Call LineUpMyCharts(Worksheets("003-91500 (3)_Plot"), 1)
+'
+'    Call OpenAnalysisToPlot_ByIDs(1, True)
+'        Call Plot_PlotAnalysis(Worksheets("001-BCO (1)_Plot"))
+'            Call LineUpMyCharts(Worksheets("001-BCO (1)_Plot"), 1)
+
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
 
     Call UnloadAll
 
 End Sub
-
-Sub FullDataReductionNew(Optional Program0 As Boolean = True, Optional Program1 As Boolean = True, _
-Optional Program2 As Boolean = True, Optional Program3 As Boolean = True, Optional Program4 As Boolean = True, _
-Optional Program5 As Boolean = True, Optional Program6 As Boolean = True, Optional Program7 As Boolean = True)
-
-    Dim StartTime As Double
-    Dim StartTimeSpecific As Double
-    Dim MainProgramsTime As Double 'Only the time used by the programas related to each of the delta variables (below)
-    
-    Dim EndTime As Double 'Time necessary to run all the code in this procedure
-    Dim EndTime0 As Double
-    Dim EndTime1 As Double
-    Dim EndTime2 As Double
-    Dim EndTime3 As Double
-    Dim EndTime4 As Double
-    Dim EndTime5 As Double
-    Dim EndTime6 As Double
-    Dim EndTime7 As Double
-    
-    Dim DeltaTime0 As Double
-    Dim DeltaTime1 As Double
-    Dim DeltaTime2 As Double
-    Dim DeltaTime3 As Double
-    Dim DeltaTime4 As Double
-    Dim DeltaTime5 As Double
-    Dim DeltaTime6 As Double
-    Dim DeltaTime7 As Double
-    
-    Dim TotalAnalyses As Long
-    
-    On Error GoTo 0
-    
-    StartTime = Timer
-        
-    Application.ScreenUpdating = False
-    Application.DisplayAlerts = False
-    
-    If IsUserFormLoaded(Box7_FullReduction.Name) = False Then
-        MsgBox "Box7_FullReduction not loaded."
-    End If
-    
-    Call PublicVariables
-    
-    Call Load_UPbStandardsTypeList
-    
-    Call AskToPreserveCycles
-    
-    If PreserveCycles = True Then
-        Call BackupCycles
-    End If
-    
-    Call unprotectsheets
-
-    Call FormatMainSh
-    
-    If Program0 = True Then
-        
-        StartTimeSpecific = Timer
-        
-        Call MacroFolderOffice2010
-            EndTime0 = Timer
-                DeltaTime0 = Timer - StartTimeSpecific
-                    MainProgramsTime = MainProgramsTime + DeltaTime0
-                        
-                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox0, DeltaTime0)
-                        
-        mwbk.Save
-
-    End If
-
-    If Program1 = True Then
-        
-        StartTimeSpecific = Timer
-        
-        Call CheckRawData
-            EndTime1 = Timer
-                DeltaTime1 = Timer - StartTimeSpecific
-                    MainProgramsTime = MainProgramsTime + DeltaTime1
-                    
-                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox1, DeltaTime1)
-    End If
-    
-    If Program2 = True Then
-        
-        StartTimeSpecific = Timer
-        
-        Call FirstCycleTime
-            EndTime2 = Timer
-                DeltaTime2 = Timer - StartTimeSpecific
-                    MainProgramsTime = MainProgramsTime + DeltaTime2
-                    
-                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox2, DeltaTime2)
-        
-        mwbk.Save
-    
-    End If
-    
-    Call IdentifyFileType
-
-    mwbk.Save
-
-    If Program3 = True Then
-    
-        StartTimeSpecific = Timer
-        
-        Call CreateStdListMap
-            EndTime3 = Timer
-                DeltaTime3 = Timer - StartTimeSpecific
-                    MainProgramsTime = MainProgramsTime + DeltaTime3
-    
-                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox3, DeltaTime3)
-                        
-        mwbk.Save
-
-    End If
-    
-    If Program4 = True Then
-        
-        StartTimeSpecific = Timer
-        
-        Call CreateSamListMap
-            EndTime4 = Timer
-                DeltaTime4 = Timer - StartTimeSpecific
-                    MainProgramsTime = MainProgramsTime + DeltaTime4
-    
-                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox4, DeltaTime4)
-    
-        mwbk.Save
-
-    End If
-    
-    If Program5 = True Then
-        
-        StartTimeSpecific = Timer
-        
-        Call CalcBlank
-            EndTime5 = Timer
-                DeltaTime5 = Timer - StartTimeSpecific
-                    MainProgramsTime = MainProgramsTime + DeltaTime5
-    
-                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox5, DeltaTime5)
-    
-        mwbk.Save
-    
-    End If
-        
-    If Program6 = True Then
-        
-        StartTimeSpecific = Timer
-    
-        Call CalcAllSlpStd_BlkCorr
-            EndTime6 = Timer
-                DeltaTime6 = Timer - StartTimeSpecific
-                    MainProgramsTime = MainProgramsTime + DeltaTime6
-                        
-                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox6, DeltaTime6)
-        
-        mwbk.Save
-
-    End If
-    
-    If Program7 = True Then
-        
-        StartTimeSpecific = Timer
-        
-        Call CalcAllSlp_StdCorr
-            EndTime7 = Timer
-                DeltaTime7 = Timer - StartTimeSpecific
-                    MainProgramsTime = MainProgramsTime + DeltaTime7
-        
-                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox7, DeltaTime7)
-        
-        mwbk.Save
-        
-    End If
-    
-    Call protectsheets
-    
-    If PreserveCycles = True Then
-        Call RestoreCycles
-    End If
-    
-    mwbk.Save
-    
-    EndTime = Timer - StartTime
-    
-    If AllSamplesPath Is Nothing Then
-        Set AllSamplesPath = SamList_Sh.Range("A" & SamList_FirstLine, SamList_Sh.Range("A" & SamList_FirstLine).End(xlDown))
-    End If
-    
-    TotalAnalyses = AllSamplesPath.count
-    
-    Call UpdateFullReductionForm2( _
-            EndTime, _
-            TotalAnalyses, _
-            MainProgramsTime, _
-            DeltaTime0, _
-            DeltaTime1, _
-            DeltaTime2, _
-            DeltaTime3, _
-            DeltaTime4, _
-            DeltaTime5, _
-            DeltaTime6, _
-            DeltaTime7)
-            
-    Call FormatMainSh
-    
-    DoEvents
-           
-    Application.ScreenUpdating = True
-    Application.DisplayAlerts = True
-
-
-End Sub
-
-Sub UpdateFullReductionForm1(ByRef TxtB As MSForms.TextBox, ByVal DeltaTime As Double)
-    
-'    If IsUserFormLoaded(Box7_FullReduction.Name) = True Then
-    Dim ScrUpdt As Boolean
-    
-    ScrUpdt = Application.ScreenUpdating
-    
-    Application.ScreenUpdating = True
-        With TxtB
-            .Text = Round(DeltaTime, 2)
-            .BackColor = vbGreen
-            .ForeColor = vbBlack
-        End With
-    DoEvents
-    Application.ScreenUpdating = ScrUpdt
-    
-'    End If
-
-End Sub
-
-Sub UpdateFullReductionForm2( _
-        ByVal EndTime As Double, _
-        ByVal TotalAnalyses As Long, _
-        ByVal MainProgramsTime As Double, _
-        ByVal DeltaTime0 As Double, _
-        ByVal DeltaTime1 As Double, _
-        ByVal DeltaTime2 As Double, _
-        ByVal DeltaTime3 As Double, _
-        ByVal DeltaTime4 As Double, _
-        ByVal DeltaTime5 As Double, _
-        ByVal DeltaTime6 As Double, _
-        ByVal DeltaTime7 As Double)
-        
-'        Dim Txt0 As MSForms.TextBox
-'        Dim Txt1 As MSForms.TextBox
-'        Dim Txt2 As MSForms.TextBox
-'        Dim Txt3 As MSForms.TextBox
-'        Dim Txt4 As MSForms.TextBox
-'        Dim Txt5 As MSForms.TextBox
-'        Dim Txt6 As MSForms.TextBox
-'        Dim Txt7 As MSForms.TextBox
-        Dim Txt8 As MSForms.TextBox
-        Dim Txt0p As MSForms.TextBox
-        Dim Txt1p As MSForms.TextBox
-        Dim Txt2p As MSForms.TextBox
-        Dim Txt3p As MSForms.TextBox
-        Dim Txt4p As MSForms.TextBox
-        Dim Txt5p As MSForms.TextBox
-        Dim Txt6p As MSForms.TextBox
-        Dim Txt7p As MSForms.TextBox
-        Dim Txt8p As MSForms.TextBox
-        
-        Dim Ctl As Control
-        
-'        Set Txt0 = Box7_FullReduction.TextBox0
-'        Set Txt1 = Box7_FullReduction.TextBox1
-'        Set Txt2 = Box7_FullReduction.TextBox2
-'        Set Txt3 = Box7_FullReduction.TextBox3
-'        Set Txt4 = Box7_FullReduction.TextBox4
-'        Set Txt5 = Box7_FullReduction.TextBox5
-'        Set Txt6 = Box7_FullReduction.TextBox6
-'        Set Txt7 = Box7_FullReduction.TextBox7
-        Set Txt8 = Box7_FullReduction.TextBox8
-            
-            Set Txt0p = Box7_FullReduction.TextBox0p
-            Set Txt1p = Box7_FullReduction.TextBox1p
-            Set Txt2p = Box7_FullReduction.TextBox2p
-            Set Txt3p = Box7_FullReduction.TextBox3p
-            Set Txt4p = Box7_FullReduction.TextBox4p
-            Set Txt5p = Box7_FullReduction.TextBox5p
-            Set Txt6p = Box7_FullReduction.TextBox6p
-            Set Txt7p = Box7_FullReduction.TextBox7p
-            Set Txt8p = Box7_FullReduction.TextBox8p
-
-
-'
-'    If Box7_FullReduction.Program0.Value = True Then
-'        Txt0.Text = Round(DeltaTime0, 2)
-'    End If
-'
-'    If Box7_FullReduction.Program1.Value = True Then
-'        Txt1.Text = Round(DeltaTime1, 2)
-'    End If
-'
-'    If Box7_FullReduction.Program2.Value = True Then
-'        Txt2.Text = Round(DeltaTime2, 2)
-'    End If
-'
-'    If Box7_FullReduction.Program3.Value = True Then
-'        Txt3.Text = Round(DeltaTime3, 2)
-'    End If
-'
-'    If Box7_FullReduction.Program4.Value = True Then
-'        Txt4.Text = Round(DeltaTime4, 2)
-'    End If
-'
-'    If Box7_FullReduction.Program5.Value = True Then
-'        Txt5.Text = Round(DeltaTime5, 2)
-'    End If
-'
-'    If Box7_FullReduction.Program6.Value = True Then
-'        Txt6.Text = Round(DeltaTime6, 2)
-'    End If
-'
-'    If Box7_FullReduction.Program7.Value = True Then
-'        Txt7.Text = Round(DeltaTime7, 2)
-'    End If
-    
-            If Box7_FullReduction.Program0.Value = True Then
-                Txt0p.Text = Round((DeltaTime0 / EndTime) * 100, 2)
-            End If
-        
-            If Box7_FullReduction.Program1.Value = True Then
-                Txt1p.Text = Round((DeltaTime1 / EndTime) * 100, 2)
-            End If
-            
-            If Box7_FullReduction.Program2.Value = True Then
-                Txt2p.Text = Round((DeltaTime2 / EndTime) * 100, 2)
-            End If
-            
-            If Box7_FullReduction.Program3.Value = True Then
-                Txt3p.Text = Round((DeltaTime3 / EndTime) * 100, 2)
-            End If
-            
-            If Box7_FullReduction.Program4.Value = True Then
-                Txt4p.Text = Round((DeltaTime4 / EndTime) * 100, 2)
-            End If
-            
-            If Box7_FullReduction.Program5.Value = True Then
-                Txt5p.Text = Round((DeltaTime5 / EndTime) * 100, 2)
-            End If
-            
-            If Box7_FullReduction.Program6.Value = True Then
-                Txt6p.Text = Round((DeltaTime6 / EndTime) * 100, 2)
-            End If
-            
-            If Box7_FullReduction.Program7.Value = True Then
-                Txt7p.Text = Round((DeltaTime7 / EndTime) * 100, 2)
-            End If
-            
-        Txt8.Text = Round(EndTime - MainProgramsTime, 2)
-        Txt8p.Text = Round(((EndTime - MainProgramsTime) / EndTime) * 100, 2)
-    
-    With Box7_FullReduction
-        
-        On Error Resume Next
-            .TextBox9.Text = Round(EndTime, 2)
-            .TextBox10.Text = TotalAnalyses
-            .TextBox11.Text = Round((EndTime / TotalAnalyses), 2)
-        On Error GoTo 0
-        
-    End With
-    
-    With Box7_FullReduction.CommandButton1
-        .Caption = "COMPLETE!"
-        .Locked = True
-        .Enabled = True
-        .ForeColor = vbBlack
-    End With
-
-    For Each Ctl In Box7_FullReduction.Controls
-        If TypeName(Ctl) = "TextBox" Then
-            Ctl.BackColor = vbGreen
-            Ctl.ForeColor = vbBlack
-        End If
-    Next
-
-End Sub
-
 
 Sub CreateWorkbook()
 
@@ -1448,7 +1093,8 @@ Public Sub PublicVariables()
     Set ErrExtStd_UPb = StartANDOptions_Sh.Range("E23") 'Cell that stores the option to propagate primary standard analyses uncertainties into samples
     Set ErrExtStdCert_UPb = StartANDOptions_Sh.Range("E24") 'Cell that stores the option to propagate primary standard certified uncertainties into samples
     Set ExtStdRepro_UPb = StartANDOptions_Sh.Range("E25") 'Cell that stores the option to propagate primary standard uncertainties into samples based on MSWD of the analyses
-        
+    Set SelectedBins_UPb = StartANDOptions_Sh.Range("B59")
+    
     'Code to set ranges in SlpStdBlkCorr_Sh
     With SlpStdBlkCorr_Sh
         Set ExtStd68ReproHeader = .Range(ColumnExtStd68 & ExtStdReproRow + 1)
@@ -1521,6 +1167,10 @@ Public Sub PublicVariables()
     Set TW_mVtoCPS_UPb = StartANDOptions_TW_Sh.Range("B24")
     Set TW_RatioMercury1Std = StartANDOptions_TW_Sh.Range("C23")
     
+    Set TW_BlankName = StartANDOptions_TW_Sh.Range("D3")
+    Set TW_SampleName = StartANDOptions_TW_Sh.Range("D4")
+    Set TW_PrimaryStandardName = StartANDOptions_TW_Sh.Range("D5")
+    
     Set RatioUranium_UPb = StartANDOptions_Sh.Range("B22")
     Set RatioMercury_UPb = StartANDOptions_Sh.Range("B23")
     Set mVtoCPS_UPb = StartANDOptions_Sh.Range("B24")
@@ -1528,12 +1178,12 @@ Public Sub PublicVariables()
 
     MissingFile1 = "File not found in "
     MissingFile2 = ". Please, check it and then retry."
-            
+        
 End Sub
 
 Sub Load_UPbStandardsTypeList()
     
-    Dim counter As Integer
+    Dim Counter As Integer
     Dim UPbNameRng As Range
     Dim CellRow As Integer
     
@@ -1549,34 +1199,34 @@ Sub Load_UPbStandardsTypeList()
             Set UPbStd_StandardsNames = StandardsUPb_TW_Sh.Range(UPbStd_StandardsNames, UPbStd_StandardsNames.End(xlDown))
         End If
     
-    counter = 1
+    Counter = 1
     ReDim UPbStd(1 To 1) As UPbStandards
         For Each UPbNameRng In UPbStd_StandardsNames
             
             CellRow = UPbNameRng.Row
             
             With StandardsUPb_TW_Sh
-                UPbStd(counter).StandardName = .Range(UPbStd_ColumnStandardName & CellRow)
-                UPbStd(counter).Mineral = .Range(UPbStd_ColumnMineral & CellRow)
-                UPbStd(counter).Description = .Range(UPbStd_ColumnDescription & CellRow)
-                UPbStd(counter).Ratio68 = Val(.Range(UPbStd_ColumnRatio68 & CellRow))
-                UPbStd(counter).Ratio68Error = Val(.Range(UPbStd_ColumnRatio68Error & CellRow))
-                UPbStd(counter).Ratio75 = Val(.Range(UPbStd_ColumnRatio75 & CellRow))
-                UPbStd(counter).Ratio75Error = Val(.Range(UPbStd_ColumnRatio75Error & CellRow))
-                UPbStd(counter).Ratio76 = Val(.Range(UPbStd_ColumnRatio76 & CellRow))
-                UPbStd(counter).Ratio76Error = Val(.Range(UPbStd_ColumnRatio76Error & CellRow))
-                UPbStd(counter).Ratio82 = Val(.Range(UPbStd_ColumnRatio82 & CellRow))
-                UPbStd(counter).Ratio82Error = Val(.Range(UPbStd_ColumnRatio82Error & CellRow))
-                UPbStd(counter).RatioErrors12s = .Range(UPbStd_ColumnRatioErrors12s & CellRow)
-                UPbStd(counter).RatioErrorsAbs = .Range(UPbStd_ColumnRatioErrorsAbs & CellRow)
-                UPbStd(counter).UraniumConc = Val(.Range(UPbStd_ColumnUraniumConc & CellRow))
-                UPbStd(counter).UraniumConcError = Val(.Range(UPbStd_ColumnUraniumConcError & CellRow))
-                UPbStd(counter).ThoriumConc = Val(.Range(UPbStd_ColumnThoriumConc & CellRow))
-                UPbStd(counter).ThoriumConcError = Val(.Range(UPbStd_ColumnThoriumConcError & CellRow))
-                UPbStd(counter).ConcErrors12s = .Range(UPbStd_ColumnConcErrors12s & CellRow)
-                UPbStd(counter).ConcErrorsAbs = .Range(UPbStd_ColumnConcErrorsAbs & CellRow)
+                UPbStd(Counter).StandardName = .Range(UPbStd_ColumnStandardName & CellRow)
+                UPbStd(Counter).Mineral = .Range(UPbStd_ColumnMineral & CellRow)
+                UPbStd(Counter).Description = .Range(UPbStd_ColumnDescription & CellRow)
+                UPbStd(Counter).Ratio68 = Val(.Range(UPbStd_ColumnRatio68 & CellRow))
+                UPbStd(Counter).Ratio68Error = Val(.Range(UPbStd_ColumnRatio68Error & CellRow))
+                UPbStd(Counter).Ratio75 = Val(.Range(UPbStd_ColumnRatio75 & CellRow))
+                UPbStd(Counter).Ratio75Error = Val(.Range(UPbStd_ColumnRatio75Error & CellRow))
+                UPbStd(Counter).Ratio76 = Val(.Range(UPbStd_ColumnRatio76 & CellRow))
+                UPbStd(Counter).Ratio76Error = Val(.Range(UPbStd_ColumnRatio76Error & CellRow))
+                UPbStd(Counter).Ratio82 = Val(.Range(UPbStd_ColumnRatio82 & CellRow))
+                UPbStd(Counter).Ratio82Error = Val(.Range(UPbStd_ColumnRatio82Error & CellRow))
+                UPbStd(Counter).RatioErrors12s = .Range(UPbStd_ColumnRatioErrors12s & CellRow)
+                UPbStd(Counter).RatioErrorsAbs = .Range(UPbStd_ColumnRatioErrorsAbs & CellRow)
+                UPbStd(Counter).UraniumConc = Val(.Range(UPbStd_ColumnUraniumConc & CellRow))
+                UPbStd(Counter).UraniumConcError = Val(.Range(UPbStd_ColumnUraniumConcError & CellRow))
+                UPbStd(Counter).ThoriumConc = Val(.Range(UPbStd_ColumnThoriumConc & CellRow))
+                UPbStd(Counter).ThoriumConcError = Val(.Range(UPbStd_ColumnThoriumConcError & CellRow))
+                UPbStd(Counter).ConcErrors12s = .Range(UPbStd_ColumnConcErrors12s & CellRow)
+                UPbStd(Counter).ConcErrorsAbs = .Range(UPbStd_ColumnConcErrorsAbs & CellRow)
             
-                counter = counter + 1
+                Counter = Counter + 1
                 
                 If Not CellRow = .Range(UPbStd_ColumnStandardName & UPbStd_CHeaderRow + 1).End(xlDown).Row Then
                     ReDim Preserve UPbStd(1 To UBound(UPbStd) + 1) As UPbStandards
@@ -1588,18 +1238,18 @@ Sub Load_UPbStandardsTypeList()
 End Sub
 
 Sub protectsheets()
-    Dim WS As Worksheet
+    Dim Ws As Worksheet
         
-        For Each WS In mwbk.Worksheets
-            WS.Protect , False, False, False, False
+        For Each Ws In mwbk.Worksheets
+            Ws.Protect , False, False, False, False
         Next
 End Sub
 
 Sub unprotectsheets()
-    Dim WS As Worksheet
+    Dim Ws As Worksheet
     
-    For Each WS In mwbk.Worksheets
-        WS.Unprotect
+    For Each Ws In mwbk.Worksheets
+        Ws.Unprotect
     Next
 
 End Sub
@@ -1758,9 +1408,9 @@ Sub DefaultValues()
     'Below, the default values for each box in Box1_Start will be defined.
     
     Box1_Start.CheckBox2_CheckRawData.Value = True
-    Box1_Start.TextBox8_BlankName.Value = "BCO"
-    Box1_Start.TextBox9_SamplesNames.Value = "Zir"
-    Box1_Start.TextBox10_ExternalStandardName = "GJ"
+    Box1_Start.TextBox8_BlankName.Value = TW_BlankName.Value
+    Box1_Start.TextBox9_SamplesNames.Value = TW_SampleName.Value
+    Box1_Start.TextBox10_ExternalStandardName = TW_PrimaryStandardName.Value
     Box1_Start.TextBox4.Value = Date & " (dd/mm/yyyy)" 'Inserts the date of the day when the data reduction is done.
         
     'Lines below will add the sample name based on the name of the folder where the files are
@@ -1905,7 +1555,7 @@ Sub CheckRawData()
     Dim E As Integer
     Dim f As Range
     Dim CounterTotal As Integer
-    Dim counter As Integer
+    Dim Counter As Integer
     Dim SearchStr As Long
     
     Dim AddressRawDataFile() As Variant 'Array of variables with address in Box2_UPb_Options
@@ -1916,7 +1566,6 @@ Sub CheckRawData()
     Dim result1 As Variant
     Dim result2 As Variant
     Dim Result As Variant
-    Dim ScrUpdt As Boolean
     
     If SampleName_UPb Is Nothing Then
         Call PublicVariables
@@ -1975,17 +1624,11 @@ Sub CheckRawData()
     
     CyclesNumber = RawNumberCycles_UPb
     
-    ScrUpdt = Application.ScreenUpdating
-    Application.ScreenUpdating = False
-    
     If CheckData_UPb = True Then
         
         For Each d In AllSamplesPath
             
             On Error Resume Next
-            
-            Application.ScreenUpdating = False
-            
                 Set OpenedWorkbook = Workbooks.Open(d)
                     If Err.Number <> 0 Then
                         '''debug.print D
@@ -2033,37 +1676,37 @@ Sub CheckRawData()
             
             '206Pb signal should be > 0 in at least 50% of the cycles
             CounterTotal = 0
-            counter = 0
+            Counter = 0
             
         If SearchStr > 0 Then
                 For Each f In OpenedWorkbook.Worksheets(1).Range(RawPb206Range)
                     
                     If f <= 0 Then
-                        counter = counter + 1
+                        Counter = Counter + 1
                     End If
                     
                     CounterTotal = CounterTotal + 1
                 Next
                 
-                    If 100 * (counter / CounterTotal) > 50 Then
-                        MsgBox ("206Pb signal is <= 0 in " & Round(100 * (counter / CounterTotal), 2) & "% of the cycles in " & _
+                    If 100 * (Counter / CounterTotal) > 50 Then
+                        MsgBox ("206Pb signal is <= 0 in " & Round(100 * (Counter / CounterTotal), 2) & "% of the cycles in " & _
                         OpenedWorkbook.Name & ". Be careful with this data.")
                     End If
                 
             '238U signal should be > 0 in at least 50% of the cycles
             CounterTotal = 0
-            counter = 0
+            Counter = 0
             For Each f In OpenedWorkbook.Worksheets(1).Range(RawU238Range)
                 
                 If f <= 0 Then
-                    counter = counter + 1
+                    Counter = Counter + 1
                 End If
                 
                 CounterTotal = CounterTotal + 1
             Next
             
-                If 100 * (counter / CounterTotal) > 50 Then
-                    MsgBox ("238U signal is <= 0 in " & Round(100 * (counter / CounterTotal), 2) & "% of the cycles in " & _
+                If 100 * (Counter / CounterTotal) > 50 Then
+                    MsgBox ("238U signal is <= 0 in " & Round(100 * (Counter / CounterTotal), 2) & "% of the cycles in " & _
                     OpenedWorkbook.Name & ". Be careful with this data.")
                 End If
 
@@ -2074,8 +1717,6 @@ Sub CheckRawData()
         Next
     
     End If
-    
-    Application.ScreenUpdating = ScrUpdt
 
 End Sub
 
@@ -2161,7 +1802,7 @@ Sub StandardsUPbComboBox()
     'stored in add-in workbook.
 
     Dim StandardsNamesHeader As Range 'Cell with standard names header.
-    Dim counter As Integer 'Used to add itens to External Standard ComboBox
+    Dim Counter As Integer 'Used to add itens to External Standard ComboBox
     Dim StdRng As Range
 
     Box1_Start.ComboBox1_ExternalStd = ExternalStandard_UPb.Value
@@ -2170,12 +1811,12 @@ Sub StandardsUPbComboBox()
     Box1_Start.ComboBox1_ExternalStd.Clear
     Box2_UPb_Options.ComboBox1_ExternalStd.Clear
 
-        For counter = 1 To UBound(UPbStd)
-            Box1_Start.ComboBox1_ExternalStd.AddItem (UPbStd(counter).StandardName)
+        For Counter = 1 To UBound(UPbStd)
+            Box1_Start.ComboBox1_ExternalStd.AddItem (UPbStd(Counter).StandardName)
         Next
         
-        For counter = 1 To UBound(UPbStd)
-            Box2_UPb_Options.ComboBox1_ExternalStd.AddItem UPbStd(counter).StandardName
+        For Counter = 1 To UBound(UPbStd)
+            Box2_UPb_Options.ComboBox1_ExternalStd.AddItem UPbStd(Counter).StandardName
         Next
 
 End Sub
@@ -2480,7 +2121,7 @@ Sub MacroFolderOffice2010()
 'This sub makes a list of all the files in the indicated folder, looking for those necessary
 'to data reduction.
 
-    Dim fso As Object 'Scripting.FileSystemObject
+    Dim FSO As Object 'Scripting.FileSystemObject
     Dim fld As Object 'Scripting.Folder
     Dim fl As Object 'Scripting.File
     Dim n As Long 'Necessary to indicate where the file path and the file name with extension will be copied
@@ -2490,12 +2131,10 @@ Sub MacroFolderOffice2010()
     If SamList_Sh Is Nothing Then
         Call PublicVariables
     End If
-    
-    SamList_Sh.Cells.Clear
 
-    Set fso = CreateObject("Scripting.FileSystemObject")
+    Set FSO = CreateObject("Scripting.FileSystemObject")
     On Error Resume Next
-        Set fld = fso.GetFolder(FolderPath_UPb)
+        Set fld = FSO.GetFolder(FolderPath_UPb)
         
         If Err.Number <> 0 Then
             MsgBox "Please, check the address of the folder where your data is."
@@ -2509,12 +2148,16 @@ Sub MacroFolderOffice2010()
               
     With SamList_Sh
         
+        If PreserveCycles = False Then
+            .Cells.Clear
+        End If
+        
         n = SamList_FirstLine
         a = 0
         For Each fl In fld.Files
-            If fso.getExtensionName(fl.path) = extension Then
+            If FSO.getExtensionName(fl.path) = extension Then
                 .Cells(n, SamList_FilePath) = fl.path 'Copies the file address
-                    .Cells(n, SamList_FileName) = Replace(fso.GetFileName(fl.path), RemoveExtension, "") 'Copy the file name (with extension)
+                    .Cells(n, SamList_FileName) = Replace(FSO.GetFileName(fl.path), RemoveExtension, "") 'Copy the file name (with extension)
                         .Cells(n, SamList_ID) = n - 2 'Index for the sample
                 
                         n = n + 1
@@ -2543,7 +2186,8 @@ Sub FirstCycleTime()
     'This program opens every raw data file and copies the first cycle time to SamList sheet
     'Then it calls WriteCycles to copy the cycles IDs that will be used on the following calculations
 
-    'Updated 23102015
+    'Application.ScreenUpdating = False
+    ''Application.DisplayAlerts = False
 
     Dim WorkbookOpened As Workbook
     Dim cell As Range
@@ -2564,7 +2208,7 @@ Sub FirstCycleTime()
         End If
 
         On Error Resume Next
-            Set WorkbookOpened = Workbooks.Open(FileName:=cell)
+            Workbooks.Open FileName:=cell
                 If Err.Number <> 0 Then
                     MsgBox MissingFile1 & cell & MissingFile2
                         Call UpdateFilesAddresses
@@ -2572,13 +2216,15 @@ Sub FirstCycleTime()
                                 End
                 End If
         On Error GoTo 0
-                
-            SamList_Sh.Range("D" & cell.Row) = DateTimeCustomFormat(WorkbookOpened, WorkbookOpened.Worksheets(1).Range(RawCyclesTimeRange).Item(1), _
-                   WorkbookOpened.Worksheets(1).Range(AnalysisDateRange), "hh:mm:ss:ms(xxx)", "Date: dd/mm/yyyy")
-                           
-               Call WriteCycles(WorkbookOpened.Sheets(1).Range(RawCyclesTimeRange), cell.Row)
+    
+            Set WorkbookOpened = ActiveWorkbook
+            
+                 SamList_Sh.Range("D" & cell.Row) = DateTimeCustomFormat(WorkbookOpened, WorkbookOpened.Worksheets(1).Range(RawCyclesTimeRange).Item(1), _
+                 WorkbookOpened.Worksheets(1).Range(AnalysisDateRange), "hh:mm:ss:ms(xxx)", "Date: dd/mm/yyyy")
+                                
+                    Call WriteCycles(WorkbookOpened.Sheets(1).Range(RawCyclesTimeRange), cell.Row)
 
-               WorkbookOpened.Close (False)
+                    WorkbookOpened.Close (False)
     Next
         
     ''Application.DisplayAlerts = true
@@ -2593,6 +2239,8 @@ Sub WriteCycles(CyclesRange As Range, PasteRow As Integer)
     'Arguments:
         'CyclesRanges - Range with the cycles (IDs or times)
         'PasteRow - Row of the analysis, the same as the ID of the analysis
+        'NeedRecalculate means that the user removed some cycles and now the calculation must be done again. The program
+        'will add an * to the end of the selected cycles.
 
     Dim cell2 As Range
     Dim a As Range 'Range of cycles time in raw data file (complete path)
@@ -2607,8 +2255,16 @@ Sub WriteCycles(CyclesRange As Range, PasteRow As Integer)
     End If
 
     Set B = SamList_Sh.Range(SamList_Cycles & PasteRow)
-       
-    B.Clear
+    
+    If PreserveCycles = True Then
+            
+           Exit Sub
+    
+    ElseIf PreserveCycles = False Then
+    
+        B.Clear
+    
+    End If
     
     d = CyclesRange.Row - 1
     
@@ -3199,7 +2855,7 @@ Sub IdentifyFileType()
         Call PublicVariables
     End If
     
-    Set FileNamesStart = SamList_Sh.Range("B" & SamList_FirstLine)
+    Set FileNamesStart = SamList_Sh.Range(SamList_FileName & SamList_FirstLine)
     Set FileNamesEnd = SamList_Sh.Range(FileNamesStart, FileNamesStart.End(xlDown)) 'First cell of the range with the file names
     
     Blk_Names = Split(BlankName_UPb, ",") 'Splits the string with n names in a array with n elements
@@ -3326,13 +2982,13 @@ Sub IgnoreAnalysis(Arr1 As Variant)
     
     'Created 13102015
     
-    Dim counter1 As Long
+    Dim Counter1 As Long
     Dim DeleteElement As Boolean
     
     If IsArrayEmpty(Arr1) = False Then
-        For counter1 = LBound(Arr1) To UBound(Arr1)
-            If Left(SamList_Sh.Range(Arr1(counter1)), 1) = "*" Then
-                DeleteElement = DeleteArrayElement(Arr1, counter1, True)
+        For Counter1 = LBound(Arr1) To UBound(Arr1)
+            If Left(SamList_Sh.Range(Arr1(Counter1)), 1) = "*" Then
+                DeleteElement = DeleteArrayElement(Arr1, Counter1, True)
             End If
         Next
     End If
@@ -3349,7 +3005,7 @@ Public Sub LoadSamListMap()
             
     Dim cell As Range
     Dim a As Integer
-    Dim counter As Integer
+    Dim Counter As Integer
     
     If SampleName_UPb Is Nothing Then
         Call PublicVariables
@@ -3362,7 +3018,7 @@ Public Sub LoadSamListMap()
     Set MapIDsRange = SamList_Sh.Range("H" & SamList_FirstLine, SamList_Sh.Range("H" & SamList_FirstLine).End(xlDown))
         
     a = SamList_FirstLine 'Row number with headers of SamList map
-    counter = 1
+    Counter = 1
     
     ReDim Preserve AnalysesList(1 To 1) As SamplesMap '''''''''''''''''''''''''CHECAR   <<<<<-------------------------------------
     
@@ -3392,16 +3048,16 @@ Public Sub LoadSamListMap()
         On Error GoTo ErrHandler
         
         'Below, we make a copy of the IDs to AnalysesList so that we can access them easily during data reduction.
-        AnalysesList(counter).sample = SamList_Sh.Range("H" & a).Value
-        AnalysesList(counter).Std1 = SamList_Sh.Range("I" & a).Value
-        AnalysesList(counter).Std2 = SamList_Sh.Range("J" & a).Value
-        AnalysesList(counter).Blk1 = SamList_Sh.Range("K" & a).Value
-        AnalysesList(counter).Blk2 = SamList_Sh.Range("L" & a).Value
+        AnalysesList(Counter).sample = SamList_Sh.Range("H" & a).Value
+        AnalysesList(Counter).Std1 = SamList_Sh.Range("I" & a).Value
+        AnalysesList(Counter).Std2 = SamList_Sh.Range("J" & a).Value
+        AnalysesList(Counter).Blk1 = SamList_Sh.Range("K" & a).Value
+        AnalysesList(Counter).Blk2 = SamList_Sh.Range("L" & a).Value
         
         ReDim Preserve AnalysesList(1 To UBound(AnalysesList) + 1) As SamplesMap
         
         a = a + 1
-        counter = counter + 1
+        Counter = Counter + 1
         
     Next
     
@@ -3422,7 +3078,7 @@ Public Sub LoadStdListMap()
             
     Dim cell As Range
     Dim a As Integer
-    Dim counter As Integer
+    Dim Counter As Integer
     
     If SampleName_UPb Is Nothing Then
         Call PublicVariables
@@ -3435,7 +3091,7 @@ Public Sub LoadStdListMap()
     Set MapIDsRange = SamList_Sh.Range("F" & SamList_FirstLine, SamList_Sh.Range("F" & SamList_FirstLine).End(xlDown))
         
     a = SamList_FirstLine 'Row number with headers of SamList map
-    counter = 1
+    Counter = 1
     
     ReDim Preserve AnalysesList_std(1 To 1) As ExtStandardsMap '''''''''''''''''''''''''CHECAR   <<<<<-------------------------------------
     
@@ -3455,13 +3111,13 @@ Public Sub LoadStdListMap()
         On Error GoTo ErrHandler
         
         'Below, we make a copy of the IDs to AnalysesList so that we can access them easily during data reduction.
-        AnalysesList_std(counter).Std = SamList_Sh.Range("F" & a).Value
-        AnalysesList_std(counter).Blk1 = SamList_Sh.Range("G" & a).Value
+        AnalysesList_std(Counter).Std = SamList_Sh.Range("F" & a).Value
+        AnalysesList_std(Counter).Blk1 = SamList_Sh.Range("G" & a).Value
         
         ReDim Preserve AnalysesList_std(1 To UBound(AnalysesList_std) + 1) As ExtStandardsMap
         
         a = a + 1
-        counter = counter + 1
+        Counter = Counter + 1
         
     Next
     
@@ -3491,7 +3147,7 @@ Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
     Dim B As Variant
     Dim c As Boolean
     Dim d As Integer
-    Dim counter As Integer
+    Dim Counter As Integer
     
     'The * means that the user plotted data but, after closing the worksheet with the plots,
     'he/she didn't recalculate the analysis.
@@ -3511,10 +3167,10 @@ Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
         
     ReDim AllCycles(1 To NumberCycles) As Integer
     
-    counter = 1
+    Counter = 1
     For Each a In AllCycles
-        AllCycles(counter) = counter
-            counter = counter + 1
+        AllCycles(Counter) = Counter
+            Counter = Counter + 1
     Next
         
     For Each a In AllCycles 'ChoosenCyclesArray
@@ -3647,8 +3303,8 @@ Sub MatchValidRangeItems(ByVal Rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As
     
     'Returns a range with only valid pairs of cells.
     
-    Dim counter As Long
-    Dim counter2 As Long
+    Dim Counter As Long
+    Dim Counter2 As Long
     Dim NotValidPairItem() As Integer
     Dim ItemFrom1 As Variant
     Dim ItemFrom2 As Variant
@@ -3688,11 +3344,11 @@ Sub MatchValidRangeItems(ByVal Rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As
 '    Rng2.Select
 
     'All items from Range1, Range1 and Range1 will be checked.
-    For counter = 1 To NumRows
+    For Counter = 1 To NumRows
         
-        ItemFrom1 = Range1.Item(counter)
-        ItemFrom2 = Range2.Item(counter)
-        ItemFrom3 = Range3.Item(counter)
+        ItemFrom1 = Range1.Item(Counter)
+        ItemFrom2 = Range2.Item(Counter)
+        ItemFrom3 = Range3.Item(Counter)
         
         'ItemFrom1, ItemFrom2 and ItemFrom3 must be numeric and different from 0
         If WorksheetFunction.IsNumber(ItemFrom1) = False Or _
@@ -3702,9 +3358,9 @@ Sub MatchValidRangeItems(ByVal Rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As
            ItemFrom2 = 0 Or _
            ItemFrom3 = 0 Then
                 
-                NotValidPairItem(UBound(NotValidPairItem)) = counter
+                NotValidPairItem(UBound(NotValidPairItem)) = Counter
                 
-                    If Not counter = NumRows Then
+                    If Not Counter = NumRows Then
                         ReDim Preserve NotValidPairItem(1 To UBound(NotValidPairItem) + 1)
                     End If
         End If
@@ -3722,15 +3378,15 @@ Sub MatchValidRangeItems(ByVal Rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As
             IsThereEmptyElementArray = DeleteArrayElement(NotValidPairItem, UBound(NotValidPairItem), True)
         End If
     
-        For counter = 1 To UBound(NotValidPairItem)
-            For counter2 = 1 To NumRows
-                If counter2 = NotValidPairItem(counter) Then
+        For Counter = 1 To UBound(NotValidPairItem)
+            For Counter2 = 1 To NumRows
+                If Counter2 = NotValidPairItem(Counter) Then
                     
-                    Range1.Item(counter2).ClearContents
-                    Range2.Item(counter2).ClearContents
-                    Range3.Item(counter2).ClearContents
+                    Range1.Item(Counter2).ClearContents
+                    Range2.Item(Counter2).ClearContents
+                    Range3.Item(Counter2).ClearContents
                     
-                    counter2 = NumRows
+                    Counter2 = NumRows
                 End If
             Next
         Next
@@ -3756,9 +3412,10 @@ End Sub
 Sub CreateFinalReport()
 
     Dim PasteRow As Long
-    Dim counter As Long
+    Dim Counter As Long
     Dim Range_SlpStdBlkCorr As Range
     Dim Range_SlpStdCorr As Range
+    Dim Range_SlpStdCorrHeaders As Range
     Dim CellRange As Range
     Dim FindID As Object
     Dim ScreenUpdt As Boolean
@@ -3808,7 +3465,9 @@ Sub CreateFinalReport()
     Call SetPathsNamesIDsTimesCycles
     
     With SlpStdCorr_Sh
+        .AutoFilterMode = False
         Set Range_SlpStdCorr = .Range(.Range(StdCorr_ColumnID & StdCorr_HeaderRow + 1), .Range(StdCorr_ColumnID & StdCorr_HeaderRow).End(xlDown))
+        Set Range_SlpStdCorrHeaders = .Range(.Range(StdCorr_FirstColumn & StdCorr_HeaderRow), .Range(StdCorr_LastColumn & StdCorr_HeaderRow))
     End With
         
         With SlpStdBlkCorr_Sh
@@ -3820,7 +3479,7 @@ Sub CreateFinalReport()
     End If
 
     PasteRow = 2
-    counter = PasteRow
+    Counter = PasteRow
     
     LastItem = Range_SlpStdCorr.count
 
@@ -3836,7 +3495,24 @@ Sub CreateFinalReport()
     For Each CellRange In Range_SlpStdCorr
 
         With SlpStdCorr_Sh
-                   
+        
+            'The three lines below copy the color of the cells in SlpStdCorr_Sh and the strikethrough state
+            With FinalReport_Sh.Range(FR_ColumnSlpName & FR_HeaderRow + PasteRow, FR_LastColumn & FR_HeaderRow + PasteRow)
+                With .Font
+                    .Color = SlpStdCorr_Sh.Range(StdCorr_SlpName & CellRange.Row).Font.Color
+                    .TintAndShade = SlpStdCorr_Sh.Range(StdCorr_SlpName & CellRange.Row).Font.TintAndShade
+                    .Strikethrough = SlpStdCorr_Sh.Range(StdCorr_SlpName & CellRange.Row).Font.Strikethrough
+                End With
+                
+                With .Interior
+                        .Pattern = SlpStdCorr_Sh.Range(StdCorr_SlpName & CellRange.Row).Interior.Pattern
+                        .PatternColorIndex = SlpStdCorr_Sh.Range(StdCorr_SlpName & CellRange.Row).Interior.PatternColorIndex
+                        .PatternTintAndShade = SlpStdCorr_Sh.Range(StdCorr_SlpName & CellRange.Row).Interior.PatternTintAndShade
+                        .ThemeColor = SlpStdCorr_Sh.Range(StdCorr_SlpName & CellRange.Row).Interior.ThemeColor
+                        .TintAndShade = SlpStdCorr_Sh.Range(StdCorr_SlpName & CellRange.Row).Interior.TintAndShade
+                End With
+            End With
+        
             FinalReport_Sh.Range(FR_ColumnSlpName & FR_HeaderRow + PasteRow) = .Range(StdCorr_SlpName & CellRange.Row)
             FinalReport_Sh.Range(FR_Column204PbCps & FR_HeaderRow + PasteRow) = .Range(StdCorr_Column4 & CellRange.Row)
             FinalReport_Sh.Range(FR_ColumnThU & FR_HeaderRow + PasteRow) = .Range(StdCorr_Column28 & CellRange.Row)
@@ -3928,20 +3604,25 @@ Sub CreateFinalReport()
                 FinalReport_Sh.Range(FR_ColumnAge762StdAbs & FR_HeaderRow + PasteRow) = _
                     2 * FinalReport_Sh.Range(FR_ColumnAge762StdAbs & FR_HeaderRow + PasteRow)
             On Error GoTo 0
-            
+        
+        'Copying format
+                
+        
         If Not CellRange.Row = Range_SlpStdCorr.Item(LastItem).Row Then
             With FinalReport_Sh
                 .Rows(FR_HeaderRow + PasteRow).Insert Shift:=xlDown 'Adding a new row
-                    .Rows(FR_HeaderRow + counter + 1).EntireRow.Copy 'Copying a row with thencorrectnumber format
+                    .Rows(FR_HeaderRow + Counter + 1).EntireRow.Copy 'Copying a row with thencorrectnumber format
                         .Rows(FR_HeaderRow + PasteRow).PasteSpecial Paste:=xlPasteAllExceptBorders 'pasting to the new row before it receives any valy
                             .Rows(FR_HeaderRow + PasteRow).EntireRow.ClearContents 'Cleaning the new row contents
             End With
         End If
     
-        counter = counter + 1
+        Counter = Counter + 1
     Next
     
     Call FormatFinalReport
+    
+    Range_SlpStdCorrHeaders.AutoFilter
     
     Call UnloadAll
 
@@ -4031,105 +3712,6 @@ Sub AskToPreserveCycles()
 
 End Sub
 
-Sub BackupCycles()
-    
-    'This procedure will take the list of selected cycles in Samlist sheet and store in an array. At some point, this array
-    'will be accessed so the cycles be reinserted in the samlist sheet.
-    
-    'Created 23102015
-    
-    Dim counter As Long
-    Dim CyclesRange As Range
-    Dim NamesRange As Range
-    Dim NumberSamples1 As Long
-    Dim NumberSamples2 As Long
-    
-    If SamList_Sh Is Nothing Then Call PublicVariables
-    
-    Set CyclesRange = SamList_Sh.Range(SamList_Cycles & SamList_HeadersLine2 + 1, SamList_Sh.Range(SamList_Cycles & SamList_HeadersLine2 + 1).End(xlDown))
-    Set NamesRange = SamList_Sh.Range(SamList_FileName & SamList_HeadersLine2 + 1, SamList_Sh.Range(SamList_FileName & SamList_HeadersLine2 + 1).End(xlDown))
-    
-    NumberSamples1 = CyclesRange.count
-    NumberSamples2 = NamesRange.count
-        
-        If NumberSamples1 <> NumberSamples2 Then
-            MsgBox "Please, check the file names and selected cycles ranges in SamList sheet. It is possible that items are missing from one of these ranges.", vbOKOnly
-                Call UnloadAll
-                    End
-        End If
-    
-    ReDim CyclesBackUpArr(1 To 2, 1 To NumberSamples1) As String
-    
-    For counter = 1 To NumberSamples1
-        CyclesBackUpArr(1, counter) = CyclesRange.Item(counter)
-        CyclesBackUpArr(2, counter) = NamesRange.Item(counter)
-    Next
-    
-End Sub
-
-Sub RestoreCycles()
-
-    'Created 23102015
-    'This procedure will take the CyclesBackUpArr array, compare the names of the files in this array with those in SamList and then
-    'copy the selected cycles in the array to the sheet.
-    
-    Dim counter1 As Long
-    Dim Cell1 As Range
-    Dim NamesRange As Range
-    Dim NamesMatched As Boolean
-    Dim Foldername As String
-    
-    
-    NamesMatched = False
-    
-    If IsArrayEmpty(CyclesBackUpArr) = False Then
-        
-            Set NamesRange = SamList_Sh.Range(SamList_FileName & SamList_HeadersLine2 + 1, SamList_Sh.Range(SamList_FileName & SamList_HeadersLine2 + 1).End(xlDown))
-                
-                If NamesRange.count < UBound(CyclesBackUpArr, 2) Then
-                    If MsgBox("There are less analyses in the selected folder. Would you like to stop " & _
-                        "the program and check the folder?", vbYesNo) = vbYes Then
-                            
-                            Call FormatMainSh
-                                Shell "C:\WINDOWS\explorer.exe """ & FolderPath_UPb.Value & "", vbNormalFocus
-                                    Call UnloadAll
-                                        End
-                    Else
-                        Call FirstCycleTime 'this procedure because it will open wach data file, copie the time when the first cycle was analyzed
-                                            'and then fill cycles range with the standard cycles.
-                    
-                    End If
-                End If
-            
-                For Each Cell1 In NamesRange
-                    
-                    For counter1 = 1 To UBound(CyclesBackUpArr, 2)
-                        
-                        If Cell1 = CyclesBackUpArr(2, counter1) Then
-                            SamList_Sh.Range(SamList_Cycles & Cell1.Row) = CyclesBackUpArr(1, counter1)
-                                NamesMatched = True
-                                    Exit For
-                        End If
-                    
-                    Next
-                    
-                Next
-                
-    Else
-        MsgBox "CyclesBackUpArr was not properly created."
-            Call UnloadAll
-                End
-    End If
-    
-    If NamesMatched = False Then
-        MsgBox "It was not possible to restore at least one of the cycles previously selected. Any changes in the names of the files was made?" & _
-            "The program will stop.", vbOKOnly
-            Call UnloadAll
-                End
-    End If
-        
-End Sub
-
 Sub AskToPreserveListMaps()
 
     'Program to ask the user if he/she wants to preserve the SamList and StdList maps, considering
@@ -4182,7 +3764,9 @@ Sub ChangeAnalysesDate()
 
     'Created 17102015
     Dim Book As Workbook
-        
+    
+    Application.ScreenUpdating = False
+    
     For Each Book In Workbooks
     
         Range("A4").FormulaR1C1 = "Date: 19/10/2015"
@@ -4195,27 +3779,445 @@ Sub ChangeAnalysesDate()
             
     Next
     
+    Application.ScreenUpdating = True
 End Sub
 
-Sub ReductionSteps( _
-    RunProgram0 As Boolean, _
-    RunProgram1 As Boolean, _
-    RunProgram2 As Boolean, _
-    RunProgram3 As Boolean, _
-    RunProgram4 As Boolean, _
-    RunProgram5 As Boolean, _
-    RunProgram6 As Boolean, _
-    RunProgram7 As Boolean)
+Sub FullDataReductionNew(Optional Program0 As Boolean = True, Optional Program1 As Boolean = True, _
+Optional Program2 As Boolean = True, Optional Program3 As Boolean = True, Optional Program4 As Boolean = True, _
+Optional Program5 As Boolean = True, Optional Program6 As Boolean = True, Optional Program7 As Boolean = True)
+
+    Dim StartTime As Double
+    Dim StartTimeSpecific As Double
+    Dim MainProgramsTime As Double
     
-    'This procedure sets the public CheckBoxProgram variables.
+    Dim EndTime As Double
+    Dim EndTime0 As Double
+    Dim EndTime1 As Double
+    Dim EndTime2 As Double
+    Dim EndTime3 As Double
+    Dim EndTime4 As Double
+    Dim EndTime5 As Double
+    Dim EndTime6 As Double
+    Dim EndTime7 As Double
+    Dim EndTime8 As Double
+    Dim EndTime9 As Double
+    Dim EndTime10 As Double
+    Dim EndTime11 As Double
+    Dim EndTime12 As Double
+    Dim EndTime13 As Double
+    Dim EndTime14 As Double
+    Dim EndTime15 As Double
+    Dim EndTime16 As Double
+    Dim EndTime17 As Double
     
-    CheckBoxProgram0 = RunProgram0
-    CheckBoxProgram1 = RunProgram1
-    CheckBoxProgram2 = RunProgram2
-    CheckBoxProgram3 = RunProgram3
-    CheckBoxProgram4 = RunProgram4
-    CheckBoxProgram5 = RunProgram5
-    CheckBoxProgram6 = RunProgram6
-    CheckBoxProgram7 = RunProgram7
+    Dim DeltaTime0 As Double
+    Dim DeltaTime1 As Double
+    Dim DeltaTime2 As Double
+    Dim DeltaTime3 As Double
+    Dim DeltaTime4 As Double
+    Dim DeltaTime5 As Double
+    Dim DeltaTime6 As Double
+    Dim DeltaTime7 As Double
+    Dim DeltaTime8 As Double
+    Dim DeltaTime9 As Double
+    Dim DeltaTime10 As Double
+    Dim DeltaTime11 As Double
+    Dim DeltaTime12 As Double
+    Dim DeltaTime13 As Double
+    Dim DeltaTime14 As Double
+    Dim DeltaTime15 As Double
+    Dim DeltaTime16 As Double
+    Dim DeltaTime17 As Double
+    
+    Dim TotalAnalyses As Long
+    
+    On Error GoTo 0
+    
+    StartTime = Timer
+        
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    
+    If IsUserFormLoaded(Box7_FullReduction.Name) = False Then
+        MsgBox "Box7_FullReduction not loaded."
+    End If
+    
+    Call PublicVariables
+    
+    Call Load_UPbStandardsTypeList
+    
+    Call AskToPreserveCycles
+    
+    If PreserveCycles = True Then
+        Call BackupCycles
+    End If
+    
+    Call unprotectsheets
+
+    Call FormatMainSh
+    
+    If Program0 = True Then
+        
+        StartTimeSpecific = Timer
+        
+        Call MacroFolderOffice2010
+            EndTime0 = Timer
+                DeltaTime0 = Timer - StartTimeSpecific
+                    MainProgramsTime = MainProgramsTime + DeltaTime0
+                        
+                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox0, DeltaTime0)
+                        
+        mwbk.Save
+
+    End If
+
+    If Program1 = True Then
+        
+        StartTimeSpecific = Timer
+        
+        Call CheckRawData
+            EndTime1 = Timer
+                DeltaTime1 = Timer - StartTimeSpecific
+                    MainProgramsTime = MainProgramsTime + DeltaTime1
+                    
+                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox1, DeltaTime1)
+    End If
+    
+    If Program2 = True Then
+        
+        StartTimeSpecific = Timer
+        
+        Call FirstCycleTime
+            EndTime2 = Timer
+                DeltaTime2 = Timer - StartTimeSpecific
+                    MainProgramsTime = MainProgramsTime + DeltaTime2
+                    
+                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox2, DeltaTime2)
+        
+        mwbk.Save
+    
+    End If
+    
+    Call IdentifyFileType
+
+    mwbk.Save
+
+    If Program3 = True Then
+    
+        StartTimeSpecific = Timer
+        
+        Call CreateStdListMap
+            EndTime3 = Timer
+                DeltaTime3 = Timer - StartTimeSpecific
+                    MainProgramsTime = MainProgramsTime + DeltaTime3
+    
+                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox3, DeltaTime3)
+                        
+        mwbk.Save
+
+    End If
+    
+    If Program4 = True Then
+        
+        StartTimeSpecific = Timer
+        
+        Call CreateSamListMap
+            EndTime4 = Timer
+                DeltaTime4 = Timer - StartTimeSpecific
+                    MainProgramsTime = MainProgramsTime + DeltaTime4
+    
+                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox4, DeltaTime4)
+    
+        mwbk.Save
+
+    End If
+    
+    If Program5 = True Then
+        
+        StartTimeSpecific = Timer
+        
+        Call CalcBlank
+            EndTime5 = Timer
+                DeltaTime5 = Timer - StartTimeSpecific
+                    MainProgramsTime = MainProgramsTime + DeltaTime5
+    
+                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox5, DeltaTime5)
+    
+        mwbk.Save
+    
+    End If
+        
+    If Program6 = True Then
+        
+        StartTimeSpecific = Timer
+    
+        Call CalcAllSlpStd_BlkCorr
+            EndTime6 = Timer
+                DeltaTime6 = Timer - StartTimeSpecific
+                    MainProgramsTime = MainProgramsTime + DeltaTime6
+                        
+                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox6, DeltaTime6)
+        
+        mwbk.Save
+
+    End If
+    
+    If Program7 = True Then
+        
+        StartTimeSpecific = Timer
+        
+        Call CalcAllSlp_StdCorr
+            EndTime7 = Timer
+                DeltaTime7 = Timer - StartTimeSpecific
+                    MainProgramsTime = MainProgramsTime + DeltaTime7
+        
+                        Call UpdateFullReductionForm1(Box7_FullReduction.TextBox7, DeltaTime7)
+        
+        mwbk.Save
+        
+    End If
+    
+    Call protectsheets
+    
+    If PreserveCycles = True Then
+        Call RestoreCycles
+    End If
+    
+    mwbk.Save
+    
+    EndTime = Timer - StartTime
+    
+    If AllSamplesPath Is Nothing Then
+        Set AllSamplesPath = SamList_Sh.Range("A" & SamList_FirstLine, SamList_Sh.Range("A" & SamList_FirstLine).End(xlDown))
+    End If
+    
+    TotalAnalyses = AllSamplesPath.count
+    
+    Call UpdateFullReductionForm2( _
+            EndTime, _
+            TotalAnalyses, _
+            MainProgramsTime, _
+            DeltaTime0, _
+            DeltaTime1, _
+            DeltaTime2, _
+            DeltaTime3, _
+            DeltaTime4, _
+            DeltaTime5, _
+            DeltaTime6, _
+            DeltaTime7, _
+            Box7_FullReduction.TextBox0, _
+            Box7_FullReduction.TextBox1, _
+            Box7_FullReduction.TextBox2, _
+            Box7_FullReduction.TextBox3, _
+            Box7_FullReduction.TextBox4, _
+            Box7_FullReduction.TextBox5, _
+            Box7_FullReduction.TextBox6, _
+            Box7_FullReduction.TextBox7)
+    
+    Call FormatMainSh
+    
+    DoEvents
+           
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
+
 
 End Sub
+
+Sub BackupCycles()
+    
+    'This procedure will take the list of selected cycles in Samlist sheet and store in an array. At some point, this array
+    'will be accessed so the cycles be reinserted in the samlist sheet.
+    
+    'Created 23102015
+    
+    Dim Counter As Long
+    Dim CyclesRange As Range
+    Dim NamesRange As Range
+    Dim NumberSamples1 As Long
+    Dim NumberSamples2 As Long
+    
+    If SamList_Sh Is Nothing Then Call PublicVariables
+    
+    Set CyclesRange = SamList_Sh.Range(SamList_Cycles & SamList_HeadersLine2 + 1, SamList_Sh.Range(SamList_Cycles & SamList_HeadersLine2 + 1).End(xlDown))
+    Set NamesRange = SamList_Sh.Range(SamList_FileName & SamList_HeadersLine2 + 1, SamList_Sh.Range(SamList_FileName & SamList_HeadersLine2 + 1).End(xlDown))
+    
+    NumberSamples1 = CyclesRange.count
+    NumberSamples2 = NamesRange.count
+        
+        If NumberSamples1 <> NumberSamples2 Then
+            MsgBox "Please, check the file names and selected cycles ranges in SamList sheet. It is possible that items are missing from one of these ranges.", vbOKOnly
+                Call UnloadAll
+                    End
+        End If
+    
+    ReDim CyclesBackUpArr(1 To 2, 1 To NumberSamples1) As String
+    
+    For Counter = 1 To NumberSamples1
+        CyclesBackUpArr(1, Counter) = CyclesRange.Item(Counter)
+        CyclesBackUpArr(2, Counter) = NamesRange.Item(Counter)
+    Next
+    
+End Sub
+
+Sub RestoreCycles()
+
+    'Created 23102015
+    'This procedure will take the CyclesBackUpArr array, compare the names of the files in this array with those in SamList and then
+    'copy the selected cycles in the array to the sheet.
+    
+    Dim Counter1 As Long
+    Dim Cell1 As Range
+    Dim NamesRange As Range
+    Dim NamesMatched As Boolean
+    Dim Foldername As String
+    
+    
+    NamesMatched = False
+    
+    If IsArrayEmpty(CyclesBackUpArr) = False Then
+        
+            Set NamesRange = SamList_Sh.Range(SamList_FileName & SamList_HeadersLine2 + 1, SamList_Sh.Range(SamList_FileName & SamList_HeadersLine2 + 1).End(xlDown))
+                
+                If NamesRange.count < UBound(CyclesBackUpArr, 2) Then
+                    If MsgBox("There are less analyses in the selected folder. Would you like to stop " & _
+                        "the program and check the folder?", vbYesNo) = vbYes Then
+                            
+                            Call FormatMainSh
+                                Shell "C:\WINDOWS\explorer.exe """ & FolderPath_UPb.Value & "", vbNormalFocus
+                                    Call UnloadAll
+                                        End
+                    Else
+                        Call FirstCycleTime 'this procedure because it will open wach data file, copie the time when the first cycle was analyzed
+                                            'and then fill cycles range with the standard cycles.
+                    
+                    End If
+                End If
+            
+                For Each Cell1 In NamesRange
+                    
+                    For Counter1 = 1 To UBound(CyclesBackUpArr, 2)
+                        
+                        If Cell1 = CyclesBackUpArr(2, Counter1) Then
+                            SamList_Sh.Range(SamList_Cycles & Cell1.Row) = CyclesBackUpArr(1, Counter1)
+                                NamesMatched = True
+                                    Exit For
+                        End If
+                    
+                    Next
+                    
+                Next
+                
+    Else
+        MsgBox "CyclesBackUpArr was not properly created."
+            Call UnloadAll
+                End
+    End If
+    
+    If NamesMatched = False Then
+        MsgBox "It was not possible to restore at least one of the cycles previously selected. Any changes in the names of the files was made?" & _
+            "The program will stop.", vbOKOnly
+            Call UnloadAll
+                End
+    End If
+        
+End Sub
+
+Sub UpdateFullReductionForm1(ByRef TxtB As MSForms.TextBox, ByVal DeltaTime As Double)
+    
+'    If IsUserFormLoaded(Box7_FullReduction.Name) = True Then
+    Dim ScrUpdt As Boolean
+    
+    ScrUpdt = Application.ScreenUpdating
+    
+    Application.ScreenUpdating = True
+        With TxtB
+            .Text = Round(DeltaTime, 2)
+            .BackColor = vbGreen
+            .ForeColor = vbBlack
+        End With
+    DoEvents
+    Application.ScreenUpdating = ScrUpdt
+    
+'    End If
+
+End Sub
+
+Sub UpdateFullReductionForm2( _
+        ByVal EndTime As Double, _
+        ByVal TotalAnalyses As Long, _
+        ByVal MainProgramsTime As Double, _
+        ByVal DeltaTime0 As Double, _
+        ByVal DeltaTime1 As Double, _
+        ByVal DeltaTime2 As Double, _
+        ByVal DeltaTime3 As Double, _
+        ByVal DeltaTime4 As Double, _
+        ByVal DeltaTime5 As Double, _
+        ByVal DeltaTime6 As Double, _
+        ByVal DeltaTime7 As Double, _
+        ByRef Txt0 As MSForms.TextBox, _
+        ByRef Txt1 As MSForms.TextBox, _
+        ByRef Txt2 As MSForms.TextBox, _
+        ByRef Txt3 As MSForms.TextBox, _
+        ByRef Txt4 As MSForms.TextBox, _
+        ByRef Txt5 As MSForms.TextBox, _
+        ByRef Txt6 As MSForms.TextBox, _
+        ByRef Txt7 As MSForms.TextBox)
+        
+    Dim Ctl As Control
+    
+    If Box7_FullReduction.Program0.Value = True Then
+        Txt0.Text = Round((DeltaTime0 / MainProgramsTime), 2)
+    End If
+
+    If Box7_FullReduction.Program1.Value = True Then
+        Txt1.Text = Round((DeltaTime1 / MainProgramsTime), 2)
+    End If
+    
+    If Box7_FullReduction.Program2.Value = True Then
+        Txt2.Text = Round((DeltaTime2 / MainProgramsTime), 2)
+    End If
+    
+    If Box7_FullReduction.Program3.Value = True Then
+        Txt3.Text = Round((DeltaTime3 / MainProgramsTime), 2)
+    End If
+    
+    If Box7_FullReduction.Program4.Value = True Then
+        Txt4.Text = Round((DeltaTime4 / MainProgramsTime), 2)
+    End If
+    
+    If Box7_FullReduction.Program5.Value = True Then
+        Txt5.Text = Round((DeltaTime5 / MainProgramsTime), 2)
+    End If
+    
+    If Box7_FullReduction.Program6.Value = True Then
+        Txt6.Text = Round((DeltaTime6 / MainProgramsTime), 2)
+    End If
+    
+    If Box7_FullReduction.Program7.Value = True Then
+        Txt7.Text = Round((DeltaTime7 / MainProgramsTime), 2)
+    End If
+    
+    With Box7_FullReduction
+        
+        On Error Resume Next
+            .TextBox9.Text = Round(EndTime, 2)
+            .TextBox10.Text = TotalAnalyses
+            .TextBox11.Text = Round((EndTime / TotalAnalyses), 2)
+        On Error GoTo 0
+        
+    End With
+    
+    Box7_FullReduction.CommandButton1.Caption = "COMPLETE!"
+    
+    Box7_FullReduction.CommandButton2.Visible = True
+
+    For Each Ctl In Box7_FullReduction.Controls
+        If TypeName(Ctl) = "TextBox" Then
+            Ctl.BackColor = vbGreen
+            Ctl.ForeColor = vbBlack
+        End If
+    Next
+
+End Sub
+

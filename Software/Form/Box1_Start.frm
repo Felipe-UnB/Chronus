@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} Box1_Start 
-   ClientHeight    =   8535.001
+   ClientHeight    =   8535
    ClientLeft      =   45
    ClientTop       =   375
    ClientWidth     =   5625
@@ -45,6 +45,33 @@ End Sub
 Private Sub CommandButton6_Addresses_Click()
 
     Call SetAddressess
+
+End Sub
+
+Private Sub CommandButton7_Click()
+
+    If _
+        Len(TextBox10_ExternalStandardName.Value) >= 2 And _
+        CompareAnalysisNames(TextBox10_ExternalStandardName) <> "ERROR" And _
+        Len(TextBox8_BlankName.Value) >= 2 And _
+        CompareAnalysisNames(TextBox8_BlankName) <> "ERROR" And _
+        Len(TextBox9_SamplesNames.Value) >= 2 And _
+        CompareAnalysisNames(TextBox9_SamplesNames) <> "ERROR" _
+    Then
+        
+        TW_BlankName.Value = Box1_Start.TextBox8_BlankName.Value
+        TW_SampleName.Value = Box1_Start.TextBox9_SamplesNames.Value
+        TW_PrimaryStandardName.Value = Box1_Start.TextBox10_ExternalStandardName
+        
+        MsgBox "Names set!", vbOKOnly
+        
+    Else
+    
+        TW.Save
+        
+        MsgBox "Names not set. Please, check each field.", vbOKOnly
+        
+    End If
 
 End Sub
 
@@ -180,7 +207,7 @@ Private Sub CommandButton3_Ok_Click()
     Dim MsgBoxAlert As Variant 'Message box for for many checks done below
     Dim c As Variant 'Variable used in a for each structure
     Dim AddressRawDataFile As Variant 'Array of variables with address in Box2_UPb_Options
-    Dim counter As Integer
+    Dim Counter As Integer
     Dim StdName As Integer
     
     'The conditional clauses below are necessary because not all isotopes must have been analyzed
@@ -370,10 +397,10 @@ Private Sub CommandButton3_Ok_Click()
     'The 6 lines below are necessary to identify the number of the external standard in UpbStd
     StdName = 0
         
-        For counter = LBound(UPbStd) To UBound(UPbStd)
-           If UPbStd(counter).StandardName = ExternalStandard_UPb Then
-               StdName = counter
-                   counter = UBound(UPbStd)
+        For Counter = LBound(UPbStd) To UBound(UPbStd)
+           If UPbStd(Counter).StandardName = ExternalStandard_UPb Then
+               StdName = Counter
+                   Counter = UBound(UPbStd)
            End If
         Next
         
@@ -437,17 +464,7 @@ Private Sub CommandButton3_Ok_Click()
         
         If MsgBox("Would you like to start the reduction process?", vbYesNo) = vbYes Then
             Application.ScreenUpdating = ScreenUpd
-                
-                CheckBoxProgram0 = True
-                CheckBoxProgram1 = True
-                CheckBoxProgram2 = True
-                CheckBoxProgram3 = True
-                CheckBoxProgram4 = True
-                CheckBoxProgram5 = True
-                CheckBoxProgram6 = True
-                CheckBoxProgram7 = True
-
-                Box7_FullReduction.Show
+                Call FullDataReduction
         Else
             Application.ScreenUpdating = ScreenUpd
                 Call UnloadAll
@@ -455,6 +472,7 @@ Private Sub CommandButton3_Ok_Click()
         End If
 
     mwbk.Save
+        Application.RecentFiles.Add (mwbk.Name)
 
 End Sub
 

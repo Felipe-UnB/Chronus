@@ -3,10 +3,10 @@ Option Explicit
 
 Function IsUDTvariableInitialized(AnyVariable As Variant) As Boolean
     
-    Dim counter As Integer
+    Dim Counter As Integer
     
     On Error Resume Next
-    counter = LBound(AnyVariable)
+    Counter = LBound(AnyVariable)
     
         If Err.Number <> 0 Then
             IsUDTvariableInitialized = False
@@ -413,11 +413,11 @@ Public Function SheetExists(SheetName As String, WB As Workbook) As Boolean
     ' SheetExists
     ' This tests whether SheetName exists in a workbook.
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        Dim WS As Worksheet
+        Dim Ws As Worksheet
         
         On Error Resume Next
         Err.Clear
-        Set WS = WB.Worksheets(SheetName)
+        Set Ws = WB.Worksheets(SheetName)
         
         If Err.Number = 0 Then
             SheetExists = True
@@ -458,13 +458,13 @@ Function SheetExists2(n As String, WB As Workbook) As Boolean
     'and checks if this is the name of any of the
     'worksheets in a choosen workbook
   
-  Dim WS As Worksheet
+  Dim Ws As Worksheet
   
   SheetExists2 = False
   
-  For Each WS In WB.Sheets
+  For Each Ws In WB.Sheets
     
-    If n = WS.Name Then
+    If n = Ws.Name Then
       
       SheetExists2 = True
       
@@ -472,7 +472,7 @@ Function SheetExists2(n As String, WB As Workbook) As Boolean
     
     End If
   
-  Next WS
+  Next Ws
   
 End Function
 
@@ -672,7 +672,7 @@ Function ColumnsRowsNumber(RangesArray As Variant)
     'This function checks if all ranges have the same number of columns and rows
     
     Dim SameNumber As Boolean
-    Dim counter As Integer
+    Dim Counter As Integer
     Dim RowNumber As Integer
     Dim ColumnNumber As Integer
     
@@ -681,9 +681,9 @@ Function ColumnsRowsNumber(RangesArray As Variant)
     RowNumber = RangesArray(1).Value
     ColumnNumber = RangesArray(1).Value
     
-    For counter = LBound(RangesArray) To UBound(RangesArray)
+    For Counter = LBound(RangesArray) To UBound(RangesArray)
     
-        counter = counter + 1
+        Counter = Counter + 1
     
     Next
         
@@ -828,7 +828,7 @@ Function NonEmptyCellsRange(Rng As Range, RngFirstCell As Range, Sh As Worksheet
     Dim CountCells As Long
     Dim NewItem As Double
     Dim ArrayItem As Variant
-    Dim counter As Integer
+    Dim Counter As Integer
     Dim RedimCounter As Integer
     Dim IsThereEmptyElementArray As Boolean
     
@@ -840,7 +840,7 @@ Function NonEmptyCellsRange(Rng As Range, RngFirstCell As Range, Sh As Worksheet
     End If
     
     CountCells = Rng.count 'Number of cells in rng
-    counter = 1
+    Counter = 1
     RedimCounter = 1
     
     For ItemNumber = 1 To CountCells
@@ -948,16 +948,16 @@ Function InstalledIsoplot() As Boolean
 
     Dim AddInInList As Boolean
     Dim IsoplotAddin As AddIn
-    Dim counter As Integer
+    Dim Counter As Integer
     
-'    ScreenUpd = Application.ScreenUpdating
-'
-'    Application.ScreenUpdating = False
+    ScreenUpd = Application.ScreenUpdating
     
-    For counter = 1 To AddIns.count
-        If AddIns.Item(counter).Name = "Isoplot4.15.xlam" Then
+    Application.ScreenUpdating = False
+    
+    For Counter = 1 To AddIns.count
+        If AddIns.Item(Counter).Name = "Isoplot4.15.xlam" Then
             AddInInList = True
-                counter = AddIns.count
+                Counter = AddIns.count
         End If
     Next
     
@@ -979,7 +979,7 @@ Function InstalledIsoplot() As Boolean
             InstalledIsoplot = False
     End If
     
-'    Application.ScreenUpdating = ScreenUpd
+    Application.ScreenUpdating = ScreenUpd
 
 End Function
 
@@ -1073,13 +1073,13 @@ Function Ratio76fromInterations6875(age76 As Double, startRatio As Double, Optio
     'added to startRatio every interaction. Delta is the acceptable difference between expected 76 age and the age
     'calculated by Isoplot considering the startRatio (increased or not).
 
-    Dim counter As Integer
+    Dim Counter As Integer
     Dim age76Isoplot
     
     Incre = 0.00000001
     Delta = 0.001
     
-    For counter = 1 To Intercations
+    For Counter = 1 To Intercations
         age76Isoplot = agepb76(startRatio)
             
             If Sqr(WorksheetFunction.Power(age76Isoplot - age76, 2)) <= Delta Then
@@ -1178,8 +1178,8 @@ Function CompareAnalysisNames(ByRef TxtBox As MSForms.TextBox)
     Dim SimilarName As Boolean
     Dim TargetName As String
     Dim ControlsArray() As MSForms.TextBox  'Array of all textboxes with analyses types names
-    Dim counter1 As Long
-    Dim counter2 As Long
+    Dim Counter1 As Long
+    Dim Counter2 As Long
     
     TargetName = TxtBox.Value
     CompareAnalysisNames = "OK"
@@ -1192,12 +1192,12 @@ Function CompareAnalysisNames(ByRef TxtBox As MSForms.TextBox)
     Set ControlsArray(3) = Box1_Start.TextBox8_BlankName
     Set ControlsArray(4) = Box1_Start.TextBox5_InternalStandardName
     
-    counter1 = 1
+    Counter1 = 1
     
-        For counter2 = 1 To 4
-            If ControlsArray(counter2).Name <> TxtBox.Name Then 'Compares the name of the textbox to avoid adding the TxtBox
-                AnalysisNames(counter1) = ControlsArray(counter2).Value
-                    counter1 = counter1 + 1
+        For Counter2 = 1 To 4
+            If ControlsArray(Counter2).Name <> TxtBox.Name Then 'Compares the name of the textbox to avoid adding the TxtBox
+                AnalysisNames(Counter1) = ControlsArray(Counter2).Value
+                    Counter1 = Counter1 + 1
             End If
         Next
             
@@ -1209,5 +1209,3 @@ Function CompareAnalysisNames(ByRef TxtBox As MSForms.TextBox)
     End If
 
 End Function
-
-

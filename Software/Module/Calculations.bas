@@ -322,11 +322,6 @@ Sub CalcAllSlpStd_BlkCorr()
     SlpStdBlkCorr_Sh.Cells.Clear
     
     For Each a In SlpStd
-    
-        If c = Int(UBound(SlpStd) / 2) Then
-            DoEvents
-        End If
-    
         c = c + 1
         
         'Below, a is the sample ID, c is a counter for the lines where data will be pasted
@@ -352,10 +347,6 @@ Sub CalcAllSlpStd_BlkCorr()
     c = SlpStdBlkCorr_Sh.Range("A" & HeaderRow + 1).End(xlDown).Row
     
     For Each a In ExtStd
-        
-        If c = Int(UBound(ExtStd) / 2) Then
-            DoEvents
-        End If
         
         c = c + 1
         
@@ -1376,11 +1367,6 @@ Sub CalcBlank()
     c = 1
         
     For Each a In Blanks
-    
-'        If c = Int(UBound(Blanks) / 2) Then
-            DoEvents
-'        End If
-    
         c = c + 1
             
             On Error Resume Next
@@ -1541,7 +1527,7 @@ End Sub
 Sub CalcAllSlp_StdCorr()
     
     Dim a As Integer
-    Dim counter As Integer
+    Dim Counter As Integer
     Dim SamplesID As Range
     Dim sample As Range
     
@@ -1566,16 +1552,16 @@ Sub CalcAllSlp_StdCorr()
         End If
     On Error GoTo 0
     
-    counter = StdCorr_HeaderRow + 1
+    Counter = StdCorr_HeaderRow + 1
         
     'ID of sample or internal standard will be pasted to SlpStdCorr
     For a = 1 To UBound(AnalysesList) - 1
         
-        SlpStdCorr_Sh.Range(StdCorr_ColumnID & counter) = AnalysesList(a).sample 'ID of sample or internal standard will be pasted to SlpStdCorr
+        SlpStdCorr_Sh.Range(StdCorr_ColumnID & Counter) = AnalysesList(a).sample 'ID of sample or internal standard will be pasted to SlpStdCorr
                         
-            SlpStdCorr_Sh.Range(StdCorr_TetaFactor & counter) = TetaFactor(a)
+            SlpStdCorr_Sh.Range(StdCorr_TetaFactor & Counter) = TetaFactor(a)
             
-            counter = counter + 1
+            Counter = Counter + 1
     Next
     
     If SlpStdCorr_Sh.Range(StdCorr_ColumnID & StdCorr_HeaderRow + 1).End(xlDown) = "" Then
@@ -1607,7 +1593,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
     'Updated 11/09/2015 - 68 75 concordance added
     
     Dim E As Integer
-    Dim counter As Integer
+    Dim Counter As Integer
     Dim AnalysesListNumber As Integer
     
     Dim P As Range 'Column68 or Column76 or Column2 or Column4 or Column64 or Column74 or Column28
@@ -1719,25 +1705,25 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
         .Range(StdCorr_SlpName & c) = PathsNamesIDsTimesCycles(FileName, a)
     End With
     
-    counter = 1
+    Counter = 1
     
     'The following 6 lines are used just to check if UPbStd was initialized
     On Error Resume Next
-        counter = LBound(UPbStd)
+        Counter = LBound(UPbStd)
             If Err.Number <> 0 Then
                 Call Load_UPbStandardsTypeList
             End If
     On Error GoTo 0
     
     'The 6 lines below are necessary to adentify the number of the external standard in UpbStd
-    For counter = LBound(UPbStd) To UBound(UPbStd)
-        If UPbStd(counter).StandardName = ExternalStandard_UPb Then
-            StdName = counter
-                counter = UBound(UPbStd)
+    For Counter = LBound(UPbStd) To UBound(UPbStd)
+        If UPbStd(Counter).StandardName = ExternalStandard_UPb Then
+            StdName = Counter
+                Counter = UBound(UPbStd)
         End If
     Next
 
-    counter = 2
+    Counter = 2
             
     For E = 1 To UBound(AnalysesList) 'For each structure used to find the sample inside AnalysesList
         If a = AnalysesList(E).sample Then
@@ -2601,7 +2587,7 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
     Dim YAverage As Double 'Average of Y points
     Dim YStdDev As Double
     Dim Y68 As Range, Y76 As Range, Y28 As Range, Y74 As Range, Y64 As Range 'Ranges of dependent variables. MUST HAVE ONLY ONE AREA!
-    Dim counter As Integer
+    Dim Counter As Integer
     Dim CellInRange As Range
     Dim lineSlope As Double
     Dim lineIntercept As Double
@@ -2674,17 +2660,17 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
                 
                 StdDev68Ypts = LineFitStdDev(Y68, x)
                 
-                    For counter = 1 To Y68.count
+                    For Counter = 1 To Y68.count
                         
-                        YiPred = LineFitYiPred(Y68, x, x.Item(counter))
+                        YiPred = LineFitYiPred(Y68, x, x.Item(Counter))
                         UpperLimit = YiPred + StdDev68Ypts * StdDevLimit
                         LowerLimit = YiPred - StdDev68Ypts * StdDevLimit
                                         
-                        If Not IsEmpty(Y68.Item(counter)) Then
+                        If Not IsEmpty(Y68.Item(Counter)) Then
                         
-                            If Y68.Item(counter) > UpperLimit Or Y68.Item(counter) < LowerLimit Then
+                            If Y68.Item(Counter) > UpperLimit Or Y68.Item(Counter) < LowerLimit Then
                             
-                                ClearRowArray(UBound(ClearRowArray)) = Y68.Item(counter).Row
+                                ClearRowArray(UBound(ClearRowArray)) = Y68.Item(Counter).Row
                                     ReDim Preserve ClearRowArray(1 To UBound(ClearRowArray) + 1)
                                     
                             End If
@@ -2702,12 +2688,12 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
                     UpperLimit = YAverage + StdDevLimit * YStdDev
                     LowerLimit = YAverage - StdDevLimit * YStdDev
             
-                        For counter = 1 To Y68.count
+                        For Counter = 1 To Y68.count
                             
-                            If Not IsEmpty(Y68.Item(counter)) Then
+                            If Not IsEmpty(Y68.Item(Counter)) Then
                             
-                                If Y68.Item(counter) > UpperLimit Or Y68.Item(counter) < LowerLimit Then
-                                    ClearRowArray(UBound(ClearRowArray)) = Y68.Item(counter).Row
+                                If Y68.Item(Counter) > UpperLimit Or Y68.Item(Counter) < LowerLimit Then
+                                    ClearRowArray(UBound(ClearRowArray)) = Y68.Item(Counter).Row
                                         ReDim Preserve ClearRowArray(1 To UBound(ClearRowArray) + 1)
                                 End If
                                 
@@ -2726,12 +2712,12 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
         UpperLimit = YAverage + StdDevLimit * YStdDev
         LowerLimit = YAverage - StdDevLimit * YStdDev
         
-            For counter = 1 To Y76.count
+            For Counter = 1 To Y76.count
             
-                If Not IsEmpty(Y76.Item(counter)) Then
+                If Not IsEmpty(Y76.Item(Counter)) Then
                                            
-                    If Y76.Item(counter) > UpperLimit Or Y76.Item(counter) < LowerLimit Then
-                        ClearRowArray(UBound(ClearRowArray)) = Y76.Item(counter).Row
+                    If Y76.Item(Counter) > UpperLimit Or Y76.Item(Counter) < LowerLimit Then
+                        ClearRowArray(UBound(ClearRowArray)) = Y76.Item(Counter).Row
                             ReDim Preserve ClearRowArray(1 To UBound(ClearRowArray) + 1)
                     End If
                             
@@ -2749,12 +2735,12 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
         UpperLimit = YAverage + StdDevLimit * YStdDev
         LowerLimit = YAverage - StdDevLimit * YStdDev
         
-            For counter = 1 To Y28.count
+            For Counter = 1 To Y28.count
             
-                If Not IsEmpty(Y28.Item(counter)) Then
+                If Not IsEmpty(Y28.Item(Counter)) Then
                                                 
-                    If Y28.Item(counter) > UpperLimit Or Y28.Item(counter) < LowerLimit Then
-                        ClearRowArray(UBound(ClearRowArray)) = Y28.Item(counter).Row
+                    If Y28.Item(Counter) > UpperLimit Or Y28.Item(Counter) < LowerLimit Then
+                        ClearRowArray(UBound(ClearRowArray)) = Y28.Item(Counter).Row
                             ReDim Preserve ClearRowArray(1 To UBound(ClearRowArray) + 1)
                     End If
                             
@@ -2772,12 +2758,12 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
         UpperLimit = YAverage + StdDevLimit * YStdDev
         LowerLimit = YAverage - StdDevLimit * YStdDev
         
-            For counter = 1 To Y74.count
+            For Counter = 1 To Y74.count
                 
-                If Not IsEmpty(Y74.Item(counter)) Then
+                If Not IsEmpty(Y74.Item(Counter)) Then
                                                 
-                    If Y74.Item(counter) > UpperLimit Or Y74.Item(counter) < LowerLimit Then
-                        ClearRowArray(UBound(ClearRowArray)) = Y74.Item(counter).Row
+                    If Y74.Item(Counter) > UpperLimit Or Y74.Item(Counter) < LowerLimit Then
+                        ClearRowArray(UBound(ClearRowArray)) = Y74.Item(Counter).Row
                             ReDim Preserve ClearRowArray(1 To UBound(ClearRowArray) + 1)
                     End If
                             
@@ -2795,12 +2781,12 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
         UpperLimit = YAverage + StdDevLimit * YStdDev
         LowerLimit = YAverage - StdDevLimit * YStdDev
         
-            For counter = 1 To Y64.count
+            For Counter = 1 To Y64.count
             
-                If Not IsEmpty(Y64.Item(counter)) Then
+                If Not IsEmpty(Y64.Item(Counter)) Then
                                                 
-                    If Y64.Item(counter) > UpperLimit Or Y64.Item(counter) < LowerLimit Then
-                        ClearRowArray(UBound(ClearRowArray)) = Y64.Item(counter).Row
+                    If Y64.Item(Counter) > UpperLimit Or Y64.Item(Counter) < LowerLimit Then
+                        ClearRowArray(UBound(ClearRowArray)) = Y64.Item(Counter).Row
                             ReDim Preserve ClearRowArray(1 To UBound(ClearRowArray) + 1)
                     End If
                     
@@ -2825,7 +2811,7 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
     End If
     
     If Not IsEmpty(ClearRowArray_Unique(LBound(ClearRowArray_Unique))) = True Then
-        If (NumElements(ClearRowArray_Unique, 1) - 1) / (counter - 1) > 0.5 Then 'The "- 1" is related to the problem that there is always one item more in ClearRowArray than necessary
+        If (NumElements(ClearRowArray_Unique, 1) - 1) / (Counter - 1) > 0.5 Then 'The "- 1" is related to the problem that there is always one item more in ClearRowArray than necessary
             If MsgBox("More than 50% of rows contain data that didn't pass the " & StdDevLimit & _
                 "standard deviation test. Do you still want to clear these rows?", vbYesNo) = vbNo Then
                 Exit Sub
@@ -2844,14 +2830,14 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
     End If
     
     'Deleting cells
-    counter = 1
+    Counter = 1
         
         'Enable lines below related to screenupdating if you'd like that the user be able to see
         'outliers being deleted
 '        ScreenUpdt = Application.ScreenUpdating
 '            Application.ScreenUpdating = True
-                For counter = LBound(ClearRowArray_Unique) To UBound(ClearRowArray_Unique)
-                    Sh.Range(Plot_FirstColumn & ClearRowArray_Unique(counter), Plot_LastColumn & ClearRowArray_Unique(counter)).Clear
+                For Counter = LBound(ClearRowArray_Unique) To UBound(ClearRowArray_Unique)
+                    Sh.Range(Plot_FirstColumn & ClearRowArray_Unique(Counter), Plot_LastColumn & ClearRowArray_Unique(Counter)).Clear
                 Next
 '            Application.ScreenUpdating = ScreenUpdt
             
@@ -2884,7 +2870,7 @@ Sub ExternalReproSamples()
     Dim c As Long
     Dim d As Long
     Dim f As Variant
-    Dim counter As Long
+    Dim Counter As Long
     Dim IDsRange As Range 'Range with IDs of all samples and standards (internal and external) are in SlpStdBlkCorr_Sh
     Dim LastRow As Integer 'Last row of IDsRange
     Dim E As Long
@@ -2946,21 +2932,21 @@ Sub ExternalReproSamples()
             c = c + 1
         Next
         
-    counter = 1
+    Counter = 1
     
     'The following 6 lines are used just to check if UPbStd was initialized
     On Error Resume Next
-        counter = LBound(UPbStd)
+        Counter = LBound(UPbStd)
             If Err.Number <> 0 Then
                 Call Load_UPbStandardsTypeList
             End If
     On Error GoTo 0
     
     'The 6 lines below are necessary to adentify the number of the external standard in UpbStd
-    For counter = LBound(UPbStd) To UBound(UPbStd)
-        If UPbStd(counter).StandardName = ExternalStandard_UPb Then
-            StdName = counter
-                counter = UBound(UPbStd)
+    For Counter = LBound(UPbStd) To UBound(UPbStd)
+        If UPbStd(Counter).StandardName = ExternalStandard_UPb Then
+            StdName = Counter
+                Counter = UBound(UPbStd)
         End If
     Next
 

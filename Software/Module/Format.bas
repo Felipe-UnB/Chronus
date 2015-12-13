@@ -1,13 +1,30 @@
 Attribute VB_Name = "Format"
 Option Explicit
 Sub FormatMainSh()
+    
+    'Updated 06112015
+    
+    Dim SearchStr As Long
 
+    If SlpStdCorr_Sh Is Nothing Then
+        Call PublicVariables
+    End If
+    
+    SearchStr = InStr(SlpStdCorr_Sh.Range(StdCorr_Column681Std & HeaderRow), "%")
+        
     Call FormatSamList
     Call FormatStartANDOptions
-    Call FormatBlkCalc
-    Call FormatSlpStdBlkCorr
-    Call FormatSlpStdCorr
     Call FormatFinalReport
+    
+    If SearchStr = 0 Then
+        Call FormatBlkCalc(True)
+        Call FormatSlpStdBlkCorr(True)
+        Call FormatSlpStdCorr(True)
+    Else
+        Call FormatBlkCalc(False)
+        Call FormatSlpStdBlkCorr(False)
+        Call FormatSlpStdCorr(False)
+    End If
     
 End Sub
 
@@ -130,7 +147,7 @@ Sub FormatPlot(TargetSh As Worksheet)
 
 End Sub
 
-Sub FormatBlkCalc(Optional AbsoluteUncertanty As Boolean = True)
+Sub FormatBlkCalc(Optional AbsoluteUncertainty As Boolean = True)
 
     'Procedure that formats the BlkCalc sheet.
     
@@ -145,9 +162,9 @@ Sub FormatBlkCalc(Optional AbsoluteUncertanty As Boolean = True)
         Call PublicVariables
     End If
     
-    If AbsoluteUncertanty = True Then
+    If AbsoluteUncertainty = True Then
         UncertantyText = "abs"
-    ElseIf AbsoluteUncertanty = False Then
+    ElseIf AbsoluteUncertainty = False Then
         UncertantyText = "%"
     End If
 
@@ -290,16 +307,16 @@ Sub FormatFinalReport()
         'Rho
         .Range(FR_ColumnWethRho & ":" & FR_ColumnWethRho).NumberFormat = "0.00"
 
-        With .Cells.Interior
-            .Pattern = xlNone
-            .TintAndShade = 0
-            .PatternTintAndShade = 0
-        End With
-        
-        With .Cells.Font
-            .ColorIndex = xlAutomatic
-            .TintAndShade = 0
-        End With
+'        With .Cells.Interior
+'            .Pattern = xlNone
+'            .TintAndShade = 0
+'            .PatternTintAndShade = 0
+'        End With
+'
+'        With .Cells.Font
+'            .ColorIndex = xlAutomatic
+'            .TintAndShade = 0
+'        End With
         
         .Cells.FormatConditions.Delete
 
@@ -358,7 +375,7 @@ Sub FormatSlpStdBlkCorr(Optional AbsoluteUncertainty As Boolean = True)
         UncertantyText = "%"
     End If
 
-    'ScreenUpdt = Application.ScreenUpdating
+    ScreenUpdt = Application.ScreenUpdating
 
     With SlpStdBlkCorr_Sh
     
@@ -599,7 +616,7 @@ Sub FormatSlpStdBlkCorr(Optional AbsoluteUncertainty As Boolean = True)
     
 End Sub
 
-Sub FormatSlpStdCorr(Optional AbsoluteUncertanty As Boolean = True)
+Sub FormatSlpStdCorr(Optional AbsoluteUncertainty As Boolean = True, Optional HighlightAnalysis As Boolean = True)
     
     'Procedure that formats the SlpStdCorr sheet
     
@@ -614,9 +631,9 @@ Sub FormatSlpStdCorr(Optional AbsoluteUncertanty As Boolean = True)
         Call PublicVariables
     End If
     
-    If AbsoluteUncertanty = True Then
+    If AbsoluteUncertainty = True Then
         UncertantyText = "abs"
-    ElseIf AbsoluteUncertanty = False Then
+    ElseIf AbsoluteUncertainty = False Then
         UncertantyText = "%"
     End If
 
@@ -876,10 +893,12 @@ Sub FormatSlpStdCorr(Optional AbsoluteUncertanty As Boolean = True)
         
     End With
     
-    Call HighlightIntStd(SlpStdCorr_Sh)
-    Call HighlightExtStd(SlpStdCorr_Sh)
-    Call HighlightNAs(SlpStdCorr_Sh)
-
+    If HighlightAnalysis = True Then
+        Call HighlightIntStd(SlpStdCorr_Sh)
+        Call HighlightExtStd(SlpStdCorr_Sh)
+        Call HighlightNAs(SlpStdCorr_Sh)
+    End If
+    
 End Sub
 
 Sub FormatStartANDOptions()
@@ -1205,7 +1224,7 @@ Sub HighlightIntStd(Sh As Worksheet)
     Dim FindCells As Object
     Dim FirstAddress As String
     Dim IntStdNames() As String
-    Dim counter As Integer
+    Dim Counter As Integer
     Dim TCnumber As Long 'ThemeColor number
     
     If InternalStandard_UPb Is Nothing Then
@@ -1217,13 +1236,13 @@ Sub HighlightIntStd(Sh As Worksheet)
     TCnumber = 1
     
     If IsArrayEmpty(IntStdNames) = False Then
-        For counter = LBound(IntStdNames) To UBound(IntStdNames)
-            IntStdNames(counter) = Replace(IntStdNames(counter), " ", "")
+        For Counter = LBound(IntStdNames) To UBound(IntStdNames)
+            IntStdNames(Counter) = Replace(IntStdNames(Counter), " ", "")
         Next
         
-        For counter = LBound(IntStdNames) To UBound(IntStdNames)
+        For Counter = LBound(IntStdNames) To UBound(IntStdNames)
             With Sh.Cells
-                Set FindCells = .Find(IntStdNames(counter), LookIn:=xlValues)
+                Set FindCells = .Find(IntStdNames(Counter), LookIn:=xlValues)
                 If Not FindCells Is Nothing Then
                     FirstAddress = FindCells.Address
                     Do
@@ -1235,7 +1254,6 @@ Sub HighlightIntStd(Sh As Worksheet)
                                     .PatternTintAndShade = 0
                                     .ThemeColor = TCnumber
                                     .TintAndShade = -0.25
-                                
                             End With
                             
                             With .Font

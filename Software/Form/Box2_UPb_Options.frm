@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} Box2_UPb_Options 
    Caption         =   "Options"
-   ClientHeight    =   8475.001
+   ClientHeight    =   8475
    ClientLeft      =   45
    ClientTop       =   375
    ClientWidth     =   5085
@@ -89,49 +89,49 @@ End Sub
 
 Private Sub ComboBox1_ExternalStd_Change()
     
-    Dim counter As Integer
+    Dim Counter As Integer
     
     Set ChoosenStandard = Box2_UPb_Options.ComboBox1_ExternalStd
            
-    For counter = 1 To UBound(UPbStd)
-        If UPbStd(counter).StandardName = ChoosenStandard Then
-            Box2_UPb_Options.TextBox25 = UPbStd(counter).Mineral
-            Box2_UPb_Options.TextBox11_StandardDescription = UPbStd(counter).Description
-            Box2_UPb_Options.TextBox12_68Ratio = Val(UPbStd(counter).Ratio68)
-            Box2_UPb_Options.TextBox15_68RatioError = Val(UPbStd(counter).Ratio68Error)
-            Box2_UPb_Options.TextBox13_75Ratio = Val(UPbStd(counter).Ratio75)
-            Box2_UPb_Options.TextBox16_75RatioError = Val(UPbStd(counter).Ratio75Error)
-            Box2_UPb_Options.TextBox14_76Ratio = Val(UPbStd(counter).Ratio76)
-            Box2_UPb_Options.TextBox17_76RatioError = Val(UPbStd(counter).Ratio76Error)
-            Box2_UPb_Options.TextBox23_82Ratio = Val(UPbStd(counter).Ratio82)
-            Box2_UPb_Options.TextBox24_82RatioError = Val(UPbStd(counter).Ratio82Error)
+    For Counter = 1 To UBound(UPbStd)
+        If UPbStd(Counter).StandardName = ChoosenStandard Then
+            Box2_UPb_Options.TextBox25 = UPbStd(Counter).Mineral
+            Box2_UPb_Options.TextBox11_StandardDescription = UPbStd(Counter).Description
+            Box2_UPb_Options.TextBox12_68Ratio = Val(UPbStd(Counter).Ratio68)
+            Box2_UPb_Options.TextBox15_68RatioError = Val(UPbStd(Counter).Ratio68Error)
+            Box2_UPb_Options.TextBox13_75Ratio = Val(UPbStd(Counter).Ratio75)
+            Box2_UPb_Options.TextBox16_75RatioError = Val(UPbStd(Counter).Ratio75Error)
+            Box2_UPb_Options.TextBox14_76Ratio = Val(UPbStd(Counter).Ratio76)
+            Box2_UPb_Options.TextBox17_76RatioError = Val(UPbStd(Counter).Ratio76Error)
+            Box2_UPb_Options.TextBox23_82Ratio = Val(UPbStd(Counter).Ratio82)
+            Box2_UPb_Options.TextBox24_82RatioError = Val(UPbStd(Counter).Ratio82Error)
             
-            If UPbStd(counter).RatioErrors12s = 1 Then
+            If UPbStd(Counter).RatioErrors12s = 1 Then
                 Box2_UPb_Options.OptionButton1_1sigma = True
-            ElseIf UPbStd(counter).RatioErrors12s = 2 Then
+            ElseIf UPbStd(Counter).RatioErrors12s = 2 Then
                 Box2_UPb_Options.OptionButton2_2sigma = True
             End If
             
-            If UPbStd(counter).RatioErrorsAbs = True Then
+            If UPbStd(Counter).RatioErrorsAbs = True Then
                 CheckBox1_Abs = True
             End If
             
-            Box2_UPb_Options.TextBox18Uppm = Val(UPbStd(counter).UraniumConc)
-            Box2_UPb_Options.TextBox21_UppmError = Val(UPbStd(counter).UraniumConcError)
-            Box2_UPb_Options.TextBox19_Thppm = Val(UPbStd(counter).ThoriumConc)
-            Box2_UPb_Options.TextBox22_ThppmError = Val(UPbStd(counter).ThoriumConcError)
+            Box2_UPb_Options.TextBox18Uppm = Val(UPbStd(Counter).UraniumConc)
+            Box2_UPb_Options.TextBox21_UppmError = Val(UPbStd(Counter).UraniumConcError)
+            Box2_UPb_Options.TextBox19_Thppm = Val(UPbStd(Counter).ThoriumConc)
+            Box2_UPb_Options.TextBox22_ThppmError = Val(UPbStd(Counter).ThoriumConcError)
             
-            If UPbStd(counter).ConcErrors12s = 1 Then
+            If UPbStd(Counter).ConcErrors12s = 1 Then
                 Box2_UPb_Options.OptionButton3 = True
-            ElseIf UPbStd(counter).ConcErrors12s = 2 Then
+            ElseIf UPbStd(Counter).ConcErrors12s = 2 Then
                 Box2_UPb_Options.OptionButton4 = True
             End If
                 
-            If UPbStd(counter).ConcErrorsAbs = True Then
+            If UPbStd(Counter).ConcErrorsAbs = True Then
                 CheckBox2 = True
             End If
 
-            counter = UBound(UPbStd)
+            Counter = UBound(UPbStd)
         End If
     Next
 
@@ -374,7 +374,7 @@ End Sub
 
 Private Sub UserForm_Initialize()
     
-    Dim counter As Integer 'Used to add itens to External Standard ComboBox
+    Dim Counter As Integer 'Used to add itens to External Standard ComboBox
     Dim a As Integer
     Dim Ctrls
     Dim StdNameCombo As String
@@ -506,7 +506,7 @@ End Sub
 Private Sub CommandButton5_Delete_Click()
 
     Dim StdFoundTW As Boolean
-    Dim counter As Integer
+    Dim Counter As Integer
     Dim UPbNameRng As Range
     Dim CellRow As Integer
     
@@ -544,6 +544,8 @@ Private Sub CommandButton5_Delete_Click()
 End Sub
 
 Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+    
+    Dim Response As Integer
     
     If CloseMode = vbFormControlMenu Then
         Box2_UPb_Options.Hide
