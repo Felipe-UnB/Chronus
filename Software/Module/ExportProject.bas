@@ -91,4 +91,58 @@ Public Sub ExportVisualBasicCode()
         On Error GoTo 0
     Next
     
+    If MsgBox("Also export Chronus.xlam?", vbYesNo, "Chronus.xlam") = vbYes Then
+        Call ExportChronusXlam
+    End If
+    
+End Sub
+
+Sub ExportChronusXlam()
+    
+    Dim VBProj As VBIDE.VBProject
+
+'    Set VBProj = Application.VBE.ActiveVBProject
+'
+'    VBProj.SaveAs ("D:\UnB\Projetos Software\Chronus\Software\Chronus.xlam")
+
+    'Declare Variables
+    Dim FSO As FileSystemObject
+    Dim sFile As String
+    Dim sSFolder As String
+    Dim sDFolder As String
+    Dim CopiedMsg As String
+    Dim DuplicateMsg As String
+    
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    CopiedMsg = "Specified file copied successfully!"
+    DuplicateMsg = "Specified file already exists in the destination folder. Shoul it be overwritten?"
+    
+    'This is Your File Name which you want to Copy
+    sFile = "Chronus.xlam"
+    
+    'Change to match the source folder path
+    sSFolder = "C:\Users\Felipe V\AppData\Roaming\Microsoft\AddIns\"
+    
+    'Change to match the destination folder path
+    sDFolder = "D:\UnB\Projetos Software\Chronus\Software\"
+  
+    'Checking If File Is Located in the Source Folder
+    If Not FSO.FileExists(sSFolder & sFile) Then
+        MsgBox "Specified File Not Found", vbInformation, "Not Found"
+        
+        'Copying If the Same File is Not Located in the Destination Folder
+        ElseIf Not FSO.FileExists(sDFolder & sFile) Then
+            FSO.CopyFile (sSFolder & sFile), sDFolder, True
+            MsgBox CopiedMsg, vbInformation, "Done!"
+            
+            Else
+                If MsgBox(DuplicateMsg, _
+                vbYesNo, "File already exists") = vbYes Then
+                    
+                    FSO.CopyFile (sSFolder & sFile), sDFolder, True
+                        MsgBox CopiedMsg, vbInformation, "Done!"
+                        
+                End If
+    End If
+
 End Sub
