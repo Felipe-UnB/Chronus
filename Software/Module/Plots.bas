@@ -294,14 +294,6 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
     
     End If
     
-    On Error Resume Next
-        Application.GoTo Plot_Sh.Range("A1")
-        If Err.Number = 0 Then
-            On Error GoTo 0
-                Call FormatPlot(Plot_Sh)
-        End If
-    On Error GoTo 0
-    
 End Sub
 Sub Plot_PlotAnalysis(Sh As Worksheet, Optional Plot64 As Boolean = True, Optional Plot74 As Boolean = True, _
 Optional Plot28 As Boolean = True, Optional Plot75 As Boolean = True, Optional Plot68 As Boolean = True, _
@@ -687,6 +679,17 @@ Sub LineUpMyCharts(Sh As Worksheet, Optional MainChart As Integer)
         End If
     Next
     
+    On Error GoTo 0
+    On Error Resume Next
+        Application.GoTo Plot_Sh.Range("A1")
+        If Err.Number = 0 Then
+            On Error GoTo 0
+                Call SampleNameTxtBox
+                    Call AddIgnoreSplButton
+                        Call FormatPlot(Plot_Sh)
+        End If
+    On Error GoTo 0
+    
 End Sub
 
 Sub Plot_CopyData(Source_Sh As Worksheet, Destination_Sh As Worksheet)
@@ -906,11 +909,85 @@ Sub CheckPlotSheet()
 
 End Sub
 
-Sub testeeeseses()
+Sub SampleNameTxtBox()
 
-    MsgBox TypeName(Application.Selection)
+    'Created 18122015
+    'This procedure creates a new shape in a plot sheet to highlight the name and id of the analysis being ploted.
+    
+    Dim SplNameLabel As Shape
+    Dim SplNameLen As Long
+    Dim AnalysisName As String
+    Dim AnalysisID As Long
+    Dim ShapeWidthSplName As Long
+    
+    AnalysisName = Plot_Sh.Range(Plot_AnalysisName)
+    SplNameLen = Len(AnalysisName)
+    AnalysisID = Plot_Sh.Range(Plot_IDCell)
+    
+    If Plot_Sh Is Nothing Then
+        MsgBox "Unable to add textbox with sample name."
+            Exit Sub
+    End If
+
+    Set SplNameLabel = Plot_Sh.Shapes.AddTextbox(msoTextOrientationHorizontal, 970, _
+        200, 100, 100)
+    
+    With SplNameLabel.TextFrame2
+        .TextRange.Characters.Text = AnalysisName
+        .TextRange.Font.Size = 36
+        .TextRange.ParagraphFormat.Alignment = msoAlignCenter
+        .VerticalAnchor = msoAnchorMiddle
+        .WordWrap = False
+        .AutoSize = msoAutoSizeShapeToFitText
+        
+    End With
 
 End Sub
+
+Sub AddIgnoreSplButton()
+
+    'Created 18122015
+    'To be continued
+
+    Dim IgnoreButtonForm As Button
+    Dim CallingProcedure As String
+    
+    Set Plot_Sh = ActiveSheet
+    
+    
+    Call PublicVariables
+    
+    If Plot_Sh Is Nothing Then
+        MsgBox "Unable to add Ignore button."
+            Exit Sub
+    End If
+
+    Set IgnoreButtonForm = Plot_Sh.Buttons.Add(1020, 100, 150, 50)
+    
+    IgnoreButtonForm.Characters.Text = "Ignore Analysis"
+    
+    With IgnoreButtonForm.Font
+        
+        .Name = "Calibri"
+        .FontStyle = "Bold"
+        .Size = 20
+        .Strikethrough = False
+        .Superscript = False
+        .Subscript = False
+        .OutlineFont = False
+        .Shadow = False
+        .Underline = xlUnderlineStyleNone
+        .ColorIndex = 1
+        
+    End With
+    
+'    CallingProcedure = "'" & TW.Name & "'!IgnoreAnalysis"
+'
+'    IgnoreButtonForm.OnAction = CallingProcedure
+'    MsgBox IgnoreButtonForm.OnAction
+    
+End Sub
+
 
 Sub ChangeChartTitleToSampleName()
 

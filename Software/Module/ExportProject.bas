@@ -25,7 +25,7 @@ Public Sub ExportVisualBasicCode()
     
     Set VBProj = Application.VBE.ActiveVBProject
     
-    directory = "D:\UnB\Projetos Software\Chronus\Software" & "\"
+    directory = "D:\UnB\Projetos-Software\Chronus\Software" & "\"
     count = 0
 
     If Not FSO.folderexists(directory) Then

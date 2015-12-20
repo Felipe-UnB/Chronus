@@ -2873,6 +2873,7 @@ Sub IdentifyFileType()
     For a = LBound(All_Names) To UBound(All_Names)
         All_Names(a) = Replace(All_Names(a), " ", "") 'Removes any spaces from the array elements (all analyses names)
     Next
+    
     For a = LBound(All_Names) To UBound(All_Names)
         For E = a + 1 To UBound(All_Names)
             If All_Names(a) = All_Names(E) Then
@@ -2946,10 +2947,10 @@ Sub IdentifyFileType()
     
     'The lines below will take the arrays of samples, standards and blanks found and test if some of them
     'must be ignored.
-    IgnoreAnalysis (BlkFound)
-    IgnoreAnalysis (SlpFound)
-    IgnoreAnalysis (IntStdFound)
-    IgnoreAnalysis (StdFound)
+    IgnoredAnalysis (BlkFound)
+    IgnoredAnalysis (SlpFound)
+    IgnoredAnalysis (IntStdFound)
+    IgnoredAnalysis (StdFound)
 
     If IsArrayEmpty(BlkFound) = True Then
         MsgBox "No blanks were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
@@ -2974,7 +2975,7 @@ Sub IdentifyFileType()
   
 End Sub
 
-Sub IgnoreAnalysis(Arr1 As Variant)
+Sub IgnoredAnalysis(Arr1 As Variant)
     
     'This procedures takes the array of samples standards and blanks analysis found in SmaList sheet and it does a test.
     'The symbol * next to the name of the analysis means that it must be ignored, so the analysis is removed from the
@@ -2987,11 +2988,19 @@ Sub IgnoreAnalysis(Arr1 As Variant)
     
     If IsArrayEmpty(Arr1) = False Then
         For Counter1 = LBound(Arr1) To UBound(Arr1)
-            If Left(SamList_Sh.Range(Arr1(Counter1)), 1) = "*" Then
+            If Left(SamList_Sh.Range(Arr1(Counter1)), 1) = IgnoreSymbol Then
                 DeleteElement = DeleteArrayElement(Arr1, Counter1, True)
             End If
         Next
     End If
+    
+End Sub
+
+Public Sub IgnoreAnalysis()
+
+    'Created 18122015
+    'This procedure ONLY WORKS IN PLOT SHEETS
+    
     
 End Sub
 
@@ -3148,12 +3157,6 @@ Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
     Dim c As Boolean
     Dim d As Integer
     Dim Counter As Integer
-    
-    'The * means that the user plotted data but, after closing the worksheet with the plots,
-    'he/she didn't recalculate the analysis.
-    If Right(ChoosenCycles, 1) = "*" Then
-        ChoosenCycles = Left(ChoosenCycles, Len(ChoosenCycles) - 1)
-    End If
     
     ChoosenCyclesArray = Split(ChoosenCycles, ",")
     NumberCycles = RawNumberCycles_UPb
