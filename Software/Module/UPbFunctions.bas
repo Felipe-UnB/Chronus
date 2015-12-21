@@ -1,6 +1,7 @@
 Attribute VB_Name = "UPbFunctions"
 Option Explicit
 
+
 Function IsUDTvariableInitialized(AnyVariable As Variant) As Boolean
     
     Dim Counter As Integer
@@ -252,7 +253,7 @@ Dim a As Double
     LineFitStdDev = Sqr(a / (rng1Count - 2))
         If LineFitStdDev = 0 Then
             MsgBox "It's not possible to calculate standard deviation for points of the line. All cells are empty or not populated with number"
-                Application.GoTo Rng1
+                Application.Goto Rng1
                     End
         End If
     
@@ -286,7 +287,7 @@ Function SumPrudDev(Rng1 As Range, Rng2 As Range)
 Dim cell As Integer
 Dim a As Integer 'Number of cells not empty in rng1
 Dim B As Integer 'Number of cells not empty in rng2
-Dim c As Double 'Average of rng1
+Dim C As Double 'Average of rng1
 Dim d As Double 'Average of rng2
 Dim E As Range 'Value of a specific cell in rng1
 Dim f As Range 'Value of a specific cell in rng2
@@ -300,7 +301,7 @@ Dim f As Range 'Value of a specific cell in rng2
     End If
         
     
-    c = WorksheetFunction.Average(Rng1)
+    C = WorksheetFunction.Average(Rng1)
     d = WorksheetFunction.Average(Rng2)
 
     cell = 1
@@ -312,7 +313,7 @@ Dim f As Range 'Value of a specific cell in rng2
         
         If IsEmpty(E) = False And IsEmpty(f) = False Then
             If WorksheetFunction.IsNumber(E) = True And WorksheetFunction.IsNumber(f) = True Then
-                SumPrudDev = SumPrudDev + ((E - c) * (f - d))
+                SumPrudDev = SumPrudDev + ((E - C) * (f - d))
             End If
         End If
         
@@ -718,7 +719,7 @@ Function TetaFactor(a As Integer)
                 
                 With SamList_Sh.Columns(SamList_ID)
                     Set FindIDObj = .Find(AnalysesList(a).sample)
-                    Application.GoTo .Range(FindIDObj.Address)
+                    Application.Goto .Range(FindIDObj.Address)
                 End With
                     
                     End

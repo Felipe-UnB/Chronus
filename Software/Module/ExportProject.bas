@@ -124,7 +124,7 @@ Sub ExportChronusXlam()
     sSFolder = "C:\Users\Felipe V\AppData\Roaming\Microsoft\AddIns\"
     
     'Change to match the destination folder path
-    sDFolder = "D:\UnB\Projetos Software\Chronus\Software\"
+    sDFolder = "D:\UnB\Projetos-Software\Chronus\Software\"
   
     'Checking If File Is Located in the Source Folder
     If Not FSO.FileExists(sSFolder & sFile) Then

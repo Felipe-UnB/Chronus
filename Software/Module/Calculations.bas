@@ -156,7 +156,7 @@ Sub ConvertUncertantiesTo(UncertantiesType As String, Sh As Worksheet)
         Case "Percentage" 'Convert to relative (percentage)
             If SearchStr <> 0 Then
                 
-                Application.ScreenUpdating = True: Application.GoTo Sh.Range("A1"): Application.ScreenUpdating = UpdtScreen
+                Application.ScreenUpdating = True: Application.Goto Sh.Range("A1"): Application.ScreenUpdating = UpdtScreen
                 
                     SearchStr = MsgBox("Data errors are absolute? Please, take a look at the table behind " & _
                     "this message, otherwise you might have to reduce all your data again.", vbYesNo, "Relative or absolute errors")
@@ -195,7 +195,7 @@ Sub ConvertUncertantiesTo(UncertantiesType As String, Sh As Worksheet)
         Case "Absolute"
             If SearchStr = 0 Then
                 
-                Application.ScreenUpdating = True: Application.GoTo Sh.Range("A1"): Application.ScreenUpdating = UpdtScreen
+                Application.ScreenUpdating = True: Application.Goto Sh.Range("A1"): Application.ScreenUpdating = UpdtScreen
                 
                     SearchStr = MsgBox("Data errors are in percentage? Please, take a look at the table behind " & _
                     "this message, otherwise you might have to reduce all your data again.", vbYesNo, "Relative or absolute errors")
@@ -251,7 +251,7 @@ Sub CalcAllSlpStd_BlkCorr()
     'of CalcAllSlpStdBlkCorr
     
     Dim a As Variant
-    Dim c As Integer
+    Dim C As Integer
     Dim d As Range
     Dim E As Variant
     Dim f As Variant
@@ -293,16 +293,16 @@ Sub CalcAllSlpStd_BlkCorr()
          
     ReDim Preserve SlpStd(1 To UBound(SlpFound) + UBound(IntStdFound) + 2) As Integer
     
-    c = 2
+    C = 2
 
     For Each a In SlpFound 'Samples IDs are copied to a different array (Blanks) which accepts only numbers (IDs)
-        SlpStd(c - 1) = SamList_Sh.Range(a).Offset(, 1)
-        c = c + 1
+        SlpStd(C - 1) = SamList_Sh.Range(a).Offset(, 1)
+        C = C + 1
     Next
     
     For Each a In IntStdFound 'Internal standards IDs are copied to a different array (SlpStd) which accepts only numbers (IDs)
-        SlpStd(c - 1) = SamList_Sh.Range(a).Offset(, 1)
-        c = c + 1
+        SlpStd(C - 1) = SamList_Sh.Range(a).Offset(, 1)
+        C = C + 1
     Next
     
     If Detector206_UPb = "Faraday Cup" Then
@@ -311,22 +311,22 @@ Sub CalcAllSlpStd_BlkCorr()
             H = 1
         Else
             MsgBox "Please, indicate if 206Pb was analyzed using Faraday cup or Ion counter."
-                Application.GoTo StartANDOptions_Sh.Range("A1")
+                Application.Goto StartANDOptions_Sh.Range("A1")
                     End
     End If
     
     'Now, each raw sample and standard (internal) data file will be opened and processed
     
-    c = HeaderRow
+    C = HeaderRow
     
     SlpStdBlkCorr_Sh.Cells.Clear
     
     For Each a In SlpStd
-        c = c + 1
+        C = C + 1
         
         'Below, a is the sample ID, c is a counter for the lines where data will be pasted
         'and h is the VtoCPS constant, if Detector206_UPb = "Faraday Cup".
-        Call CalcSlp_BlkCorr(a, H, True, c)
+        Call CalcSlp_BlkCorr(a, H, True, C)
                                     
     Next
     
@@ -335,24 +335,24 @@ Sub CalcAllSlpStd_BlkCorr()
     
     ReDim ExtStd(1 To UBound(StdFound) + 1) As Integer
     
-    c = 2
+    C = 2
     
     For Each a In StdFound 'External standards IDs are copied to a different array (SlpStd) which accepts only numbers (IDs)
-        ExtStd(c - 1) = SamList_Sh.Range(a).Offset(, 1)
-        c = c + 1
+        ExtStd(C - 1) = SamList_Sh.Range(a).Offset(, 1)
+        C = C + 1
     Next
     
     'Now, each external standard data file will be opened and processed
     
-    c = SlpStdBlkCorr_Sh.Range("A" & HeaderRow + 1).End(xlDown).Row
+    C = SlpStdBlkCorr_Sh.Range("A" & HeaderRow + 1).End(xlDown).Row
     
     For Each a In ExtStd
         
-        c = c + 1
+        C = C + 1
         
         'Below, a is the sample ID, c is a counter for the line where data will be pasted
         'and h is the VtoCPS constant, if Detector206_UPb = "Faraday Cup".
-        Call CalcExtStd_BlkCorr(a, H, True, c)
+        Call CalcExtStd_BlkCorr(a, H, True, C)
                                     
     Next
     
@@ -370,7 +370,7 @@ End Sub
 
 
 Sub CalcSlp_BlkCorr(ByVal a As Integer, ByVal H As Double, Optional ByVal CallCommonCalc = True, _
-Optional ByVal c As Integer, Optional ByVal CloseAnalysis = True)
+Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
 
     'About the procedure arguments, a is the sample ID, C is a counter for the lines where data will be pasted in
     'and H is the VtoCPS constant, if Detector206_UPb = "Faraday Cup", and CallCommonCalc (true or false) forces
@@ -431,8 +431,8 @@ Optional ByVal c As Integer, Optional ByVal CloseAnalysis = True)
     'CallCommonCalc is called.
     If CallCommonCalc = True Then
         With SlpStdBlkCorr_Sh
-            .Range(ColumnID & c) = PathsNamesIDsTimesCycles(ID, a) 'Copies the ID of the analysis to SlpStdBlkCorr_Sh
-            .Range(ColumnSlpName & c) = PathsNamesIDsTimesCycles(FileName, a) 'Copies the file name of the analysis to SlpStdBlkCorr_Sh
+            .Range(ColumnID & C) = PathsNamesIDsTimesCycles(ID, a) 'Copies the ID of the analysis to SlpStdBlkCorr_Sh
+            .Range(ColumnSlpName & C) = PathsNamesIDsTimesCycles(FileName, a) 'Copies the file name of the analysis to SlpStdBlkCorr_Sh
         End With
     End If
     
@@ -460,7 +460,7 @@ Optional ByVal c As Integer, Optional ByVal CloseAnalysis = True)
                 
                 If .Range(BlkColumnID & BlkCalc_HeaderLine + 1).End(xlDown) = "" Then
                     MsgBox ("You need at least two blanks to reduce your data.")
-                        Application.GoTo BlkCalc_Sh.Range("A1")
+                        Application.Goto BlkCalc_Sh.Range("A1")
                             End
                 End If
                 
@@ -596,7 +596,7 @@ Optional ByVal c As Integer, Optional ByVal CloseAnalysis = True)
                 Next
                 
                 If CallCommonCalc = True Then
-                    Call CommonCalcSlpExtStd_BlkCorr(WBSlp.Worksheets(1), c, SpotRaster_UPb.Value, Blk1, Blk2)
+                    Call CommonCalcSlpExtStd_BlkCorr(WBSlp.Worksheets(1), C, SpotRaster_UPb.Value, Blk1, Blk2)
                 End If
                                                                 
             End With
@@ -608,7 +608,7 @@ Optional ByVal c As Integer, Optional ByVal CloseAnalysis = True)
 End Sub
 
 Sub CalcExtStd_BlkCorr(ByVal a As Integer, ByVal H As Double, Optional ByVal CallCommonCalc = True, _
-Optional ByVal c As Integer, Optional ByVal CloseAnalysis = True)
+Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
 
     'About the procedure arguments, a is the sample ID, c is a counter for the lines where data will be pasted
     'and h is the VtoCPS constant, if Detector206_UPb = "Faraday Cup".
@@ -665,8 +665,8 @@ Optional ByVal c As Integer, Optional ByVal CloseAnalysis = True)
           
     If CallCommonCalc = True Then
         With SlpStdBlkCorr_Sh
-            .Range(ColumnID & c) = PathsNamesIDsTimesCycles(ID, a)
-            .Range(ColumnSlpName & c) = PathsNamesIDsTimesCycles(FileName, a)
+            .Range(ColumnID & C) = PathsNamesIDsTimesCycles(ID, a)
+            .Range(ColumnSlpName & C) = PathsNamesIDsTimesCycles(FileName, a)
         End With
     End If
           
@@ -694,7 +694,7 @@ Optional ByVal c As Integer, Optional ByVal CloseAnalysis = True)
                 
                 If .Range(BlkColumnID & BlkCalc_HeaderLine + 1).End(xlDown) = "" Then
                     MsgBox ("You need at least two blanks to reduce your data.")
-                        Application.GoTo BlkCalc_Sh.Range(BlkColumnID & BlkCalc_HeaderLine)
+                        Application.Goto BlkCalc_Sh.Range(BlkColumnID & BlkCalc_HeaderLine)
                             End
                 End If
                 
@@ -822,7 +822,7 @@ Optional ByVal c As Integer, Optional ByVal CloseAnalysis = True)
                     Next
 
                     If CallCommonCalc = True Then
-                        Call CommonCalcSlpExtStd_BlkCorr(WBSlp.Worksheets(1), c, SpotRaster_UPb.Value, Blk1)
+                        Call CommonCalcSlpExtStd_BlkCorr(WBSlp.Worksheets(1), C, SpotRaster_UPb.Value, Blk1)
                     End If
                     
                 End With
@@ -834,7 +834,7 @@ Optional ByVal c As Integer, Optional ByVal CloseAnalysis = True)
 End Sub
 
 
-Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, AcquisitionSpotRaster As String, ByVal Blk1 As Integer, Optional ByVal Blk2 As Integer)
+Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal C As Integer, AcquisitionSpotRaster As String, ByVal Blk1 As Integer, Optional ByVal Blk2 As Integer)
 
     'Sh is the worksheet with raw data and c is a counter for the lines where data will be pasted.
 
@@ -884,28 +884,28 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, Acquisition
                 Select Case AcquisitionSpotRaster
                     Case "Spot"
                         'Intercept of 68 trend
-                        SlpStdBlkCorr_Sh.Range(Column68 & c) = WorksheetFunction.Intercept(Y_ValuesRange, X_ValuesRange)
+                        SlpStdBlkCorr_Sh.Range(Column68 & C) = WorksheetFunction.Intercept(Y_ValuesRange, X_ValuesRange)
                             '68 intercept error multiplied by student´s t factor for 68% confidence
-                            SlpStdBlkCorr_Sh.Range(Column681Std & c) = LineFitInterceptError(Y_ValuesRange, X_ValuesRange) * _
+                            SlpStdBlkCorr_Sh.Range(Column681Std & C) = LineFitInterceptError(Y_ValuesRange, X_ValuesRange) * _
                                 WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 2)
                         
                         'R
-                        SlpStdBlkCorr_Sh.Range(Column68R & c) = WorksheetFunction.Pearson(Y_ValuesRange, X_ValuesRange)
+                        SlpStdBlkCorr_Sh.Range(Column68R & C) = WorksheetFunction.Pearson(Y_ValuesRange, X_ValuesRange)
                         'R2
-                        SlpStdBlkCorr_Sh.Range(Column68R2 & c) = WorksheetFunction.Power(SlpStdBlkCorr_Sh.Range(Column68R & c), 2)
+                        SlpStdBlkCorr_Sh.Range(Column68R2 & C) = WorksheetFunction.Power(SlpStdBlkCorr_Sh.Range(Column68R & C), 2)
                             
                     Case "Raster"
                         '68 average
-                        SlpStdBlkCorr_Sh.Range(Column68 & c) = WorksheetFunction.Average(Y_ValuesRange)
+                        SlpStdBlkCorr_Sh.Range(Column68 & C) = WorksheetFunction.Average(Y_ValuesRange)
                         
                             '68 average error propagation multiplied by student´s t factor for 68% confidence
-                            SlpStdBlkCorr_Sh.Range(Column681Std & c) = (WorksheetFunction.StDev_S(Y_ValuesRange) / Sqr(WorksheetFunction.count(Y_ValuesRange)) * _
+                            SlpStdBlkCorr_Sh.Range(Column681Std & C) = (WorksheetFunction.StDev_S(Y_ValuesRange) / Sqr(WorksheetFunction.count(Y_ValuesRange)) * _
                                 WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1))
                                                                         
                         'R
-                        SlpStdBlkCorr_Sh.Range(Column68R & c) = WorksheetFunction.Pearson(Y_ValuesRange, X_ValuesRange)
+                        SlpStdBlkCorr_Sh.Range(Column68R & C) = WorksheetFunction.Pearson(Y_ValuesRange, X_ValuesRange)
                         'R2
-                        SlpStdBlkCorr_Sh.Range(Column68R2 & c) = WorksheetFunction.Power(SlpStdBlkCorr_Sh.Range(Column68R & c), 2)
+                        SlpStdBlkCorr_Sh.Range(Column68R2 & C) = WorksheetFunction.Power(SlpStdBlkCorr_Sh.Range(Column68R & C), 2)
                  End Select
                 
                 'SlpStdBlkCorr_Sh.Range(Column281Std & c).Offset(, 1) = WorksheetFunction.Slope(Y_ValuesRange, X_ValuesRange)
@@ -922,29 +922,29 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, Acquisition
                 Y_ValuesRange.PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide
                     
                     'SlpStdBlkCorr_Sh.Range(Column76 & c) = WorksheetFunction.Average(Y_ValuesRange)                         'Average of 76 ratio
-                    SlpStdBlkCorr_Sh.Range(Column76 & c) = WorksheetFunction.Intercept(Y_ValuesRange, X_ValuesRange)
+                    SlpStdBlkCorr_Sh.Range(Column76 & C) = WorksheetFunction.Intercept(Y_ValuesRange, X_ValuesRange)
                                                                   
             '76 average error
             
             'SlpStdBlkCorr_Sh.Range(Column761Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange)
-            SlpStdBlkCorr_Sh.Range(Column761Std & c) = LineFitInterceptError(Y_ValuesRange, X_ValuesRange) * WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 2)
+            SlpStdBlkCorr_Sh.Range(Column761Std & C) = LineFitInterceptError(Y_ValuesRange, X_ValuesRange) * WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 2)
         
         'Ratio 75
-        SlpStdBlkCorr_Sh.Range(Column75 & c) = _
-        SlpStdBlkCorr_Sh.Range(Column68 & c) * SlpStdBlkCorr_Sh.Range(Column76 & c) * RatioUranium_UPb
+        SlpStdBlkCorr_Sh.Range(Column75 & C) = _
+        SlpStdBlkCorr_Sh.Range(Column68 & C) * SlpStdBlkCorr_Sh.Range(Column76 & C) * RatioUranium_UPb
         
 '        Debug.Assert SlpStdBlkCorr_Sh.Range(Column75 & c) <= 30
         
             '75 error
-            SlpStdBlkCorr_Sh.Range(Column751Std & c) = _
-                SlpStdBlkCorr_Sh.Range(Column75 & c) * _
-                Sqr((SlpStdBlkCorr_Sh.Range(Column681Std & c) / SlpStdBlkCorr_Sh.Range(Column68 & c)) ^ 2 + _
-                (SlpStdBlkCorr_Sh.Range(Column761Std & c) / SlpStdBlkCorr_Sh.Range(Column76 & c)) ^ 2)
+            SlpStdBlkCorr_Sh.Range(Column751Std & C) = _
+                SlpStdBlkCorr_Sh.Range(Column75 & C) * _
+                Sqr((SlpStdBlkCorr_Sh.Range(Column681Std & C) / SlpStdBlkCorr_Sh.Range(Column68 & C)) ^ 2 + _
+                (SlpStdBlkCorr_Sh.Range(Column761Std & C) / SlpStdBlkCorr_Sh.Range(Column76 & C)) ^ 2)
             
         'Rho
-            SlpStdBlkCorr_Sh.Range(Column7568Rho & c) = _
-            (SlpStdBlkCorr_Sh.Range(Column681Std & c) / SlpStdBlkCorr_Sh.Range(Column68 & c) / _
-            (SlpStdBlkCorr_Sh.Range(Column751Std & c) / SlpStdBlkCorr_Sh.Range(Column75 & c)))
+            SlpStdBlkCorr_Sh.Range(Column7568Rho & C) = _
+            (SlpStdBlkCorr_Sh.Range(Column681Std & C) / SlpStdBlkCorr_Sh.Range(Column68 & C) / _
+            (SlpStdBlkCorr_Sh.Range(Column751Std & C) / SlpStdBlkCorr_Sh.Range(Column75 & C)))
 
         '202 signal intensity
         ClearRange.ClearContents
@@ -956,22 +956,22 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, Acquisition
 
                     On Error Resume Next
                     
-                    SlpStdBlkCorr_Sh.Range(Column2 & c) = WorksheetFunction.Average(Y_ValuesRange) '202 average
+                    SlpStdBlkCorr_Sh.Range(Column2 & C) = WorksheetFunction.Average(Y_ValuesRange) '202 average
                     
                     If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column2 & c) = "n.a."
+                        SlpStdBlkCorr_Sh.Range(Column2 & C) = "n.a."
                     End If
             
             '202 average error propagation
                     
                     Err.Clear
                     
-                    SlpStdBlkCorr_Sh.Range(Column21Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                    SlpStdBlkCorr_Sh.Range(Column21Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
                         WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
                             Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
                     
-                    If SlpStdBlkCorr_Sh.Range(Column2 & c) = "n.a." Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column21Std & c) = "n.a."
+                    If SlpStdBlkCorr_Sh.Range(Column2 & C) = "n.a." Or Err.Number <> 0 Then
+                        SlpStdBlkCorr_Sh.Range(Column21Std & C) = "n.a."
                     End If
                     
                     On Error GoTo 0
@@ -987,22 +987,22 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, Acquisition
             
                     On Error Resume Next
                     
-                    SlpStdBlkCorr_Sh.Range(Column4 & c) = WorksheetFunction.Average(Y_ValuesRange) '204 average
+                    SlpStdBlkCorr_Sh.Range(Column4 & C) = WorksheetFunction.Average(Y_ValuesRange) '204 average
                     
                     If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column4 & c) = "n.a."
+                        SlpStdBlkCorr_Sh.Range(Column4 & C) = "n.a."
                     End If
             
             '204 average error propagation
                     
                     Err.Clear
                     
-                    SlpStdBlkCorr_Sh.Range(Column41Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                    SlpStdBlkCorr_Sh.Range(Column41Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
                         WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
                             Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
                     
-                    If SlpStdBlkCorr_Sh.Range(Column4 & c) = "n.a." Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column41Std & c) = "n.a."
+                    If SlpStdBlkCorr_Sh.Range(Column4 & C) = "n.a." Or Err.Number <> 0 Then
+                        SlpStdBlkCorr_Sh.Range(Column41Std & C) = "n.a."
                     End If
                     
                     Err.Clear
@@ -1022,22 +1022,22 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, Acquisition
             
                     On Error Resume Next
                     
-                    SlpStdBlkCorr_Sh.Range(Column6 & c) = WorksheetFunction.Average(Y_ValuesRange) '206 average
+                    SlpStdBlkCorr_Sh.Range(Column6 & C) = WorksheetFunction.Average(Y_ValuesRange) '206 average
                     
                     If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column6 & c) = "n.a."
+                        SlpStdBlkCorr_Sh.Range(Column6 & C) = "n.a."
                     End If
             
             '206 average error propagation
                     
                     Err.Clear
                     
-                    SlpStdBlkCorr_Sh.Range(Column61Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                    SlpStdBlkCorr_Sh.Range(Column61Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
                         WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
                             Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
                     
-                    If SlpStdBlkCorr_Sh.Range(Column6 & c) = "n.a." Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column61Std & c) = "n.a."
+                    If SlpStdBlkCorr_Sh.Range(Column6 & C) = "n.a." Or Err.Number <> 0 Then
+                        SlpStdBlkCorr_Sh.Range(Column61Std & C) = "n.a."
                     End If
                     
                     On Error GoTo 0
@@ -1058,22 +1058,22 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, Acquisition
             
                     On Error Resume Next
                     
-                    SlpStdBlkCorr_Sh.Range(Column7 & c) = WorksheetFunction.Average(Y_ValuesRange) '207 average
+                    SlpStdBlkCorr_Sh.Range(Column7 & C) = WorksheetFunction.Average(Y_ValuesRange) '207 average
                     
                     If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column7 & c) = "n.a."
+                        SlpStdBlkCorr_Sh.Range(Column7 & C) = "n.a."
                     End If
             
             '207 average error propagation
             
                     Err.Clear
                     
-                    SlpStdBlkCorr_Sh.Range(Column71Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                    SlpStdBlkCorr_Sh.Range(Column71Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
                         WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
                             Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
                     
-                    If SlpStdBlkCorr_Sh.Range(Column7 & c) = "n.a." Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column71Std & c) = "n.a."
+                    If SlpStdBlkCorr_Sh.Range(Column7 & C) = "n.a." Or Err.Number <> 0 Then
+                        SlpStdBlkCorr_Sh.Range(Column71Std & C) = "n.a."
                     End If
                     
                     On Error GoTo 0
@@ -1088,23 +1088,23 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, Acquisition
                         
                         On Error Resume Next
                         
-                        SlpStdBlkCorr_Sh.Range(Column8 & c) = WorksheetFunction.Average(Y_ValuesRange)
+                        SlpStdBlkCorr_Sh.Range(Column8 & C) = WorksheetFunction.Average(Y_ValuesRange)
                         
                         If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                            SlpStdBlkCorr_Sh.Range(Column8 & c) = "n.a."
+                            SlpStdBlkCorr_Sh.Range(Column8 & C) = "n.a."
                         End If
                 
                 '208 average error propagation
                         
                         Err.Clear
                         
-                        SlpStdBlkCorr_Sh.Range(Column81Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                        SlpStdBlkCorr_Sh.Range(Column81Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
                             WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
                                 Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
                             
                         
-                        If SlpStdBlkCorr_Sh.Range(Column8 & c) = "n.a." Or Err.Number <> 0 Then
-                            SlpStdBlkCorr_Sh.Range(Column81Std & c) = "n.a."
+                        If SlpStdBlkCorr_Sh.Range(Column8 & C) = "n.a." Or Err.Number <> 0 Then
+                            SlpStdBlkCorr_Sh.Range(Column81Std & C) = "n.a."
                         End If
                         
                         On Error GoTo 0
@@ -1125,22 +1125,22 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, Acquisition
                 
                         On Error Resume Next
                         
-                        SlpStdBlkCorr_Sh.Range(Column32 & c) = WorksheetFunction.Average(Y_ValuesRange) '232 average
+                        SlpStdBlkCorr_Sh.Range(Column32 & C) = WorksheetFunction.Average(Y_ValuesRange) '232 average
                         
                         If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                            SlpStdBlkCorr_Sh.Range(Column32 & c) = "n.a."
+                            SlpStdBlkCorr_Sh.Range(Column32 & C) = "n.a."
                         End If
                 
                 '232 average error propagation
                         
                         Err.Clear
                         
-                        SlpStdBlkCorr_Sh.Range(Column321Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                        SlpStdBlkCorr_Sh.Range(Column321Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
                             WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
                                 Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
                         
-                        If SlpStdBlkCorr_Sh.Range(Column32 & c) = "n.a." Or Err.Number <> 0 Then
-                            SlpStdBlkCorr_Sh.Range(Column321Std & c) = "n.a."
+                        If SlpStdBlkCorr_Sh.Range(Column32 & C) = "n.a." Or Err.Number <> 0 Then
+                            SlpStdBlkCorr_Sh.Range(Column321Std & C) = "n.a."
                         End If
                         
                         On Error GoTo 0
@@ -1153,32 +1153,32 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, Acquisition
         
             .Range(RawU238Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
                 Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
-                    SlpStdBlkCorr_Sh.Range(Column38 & c) = WorksheetFunction.Average(Y_ValuesRange) '238 average
+                    SlpStdBlkCorr_Sh.Range(Column38 & C) = WorksheetFunction.Average(Y_ValuesRange) '238 average
 
             
             '238 average error propagation
-            SlpStdBlkCorr_Sh.Range(Column381Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+            SlpStdBlkCorr_Sh.Range(Column381Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
                 WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
                     Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
             
                     On Error Resume Next
                     
-                    SlpStdBlkCorr_Sh.Range(Column38 & c) = WorksheetFunction.Average(Y_ValuesRange) '238 average
+                    SlpStdBlkCorr_Sh.Range(Column38 & C) = WorksheetFunction.Average(Y_ValuesRange) '238 average
                     
                     If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column38 & c) = "n.a."
+                        SlpStdBlkCorr_Sh.Range(Column38 & C) = "n.a."
                     End If
             
             '238 average error propagation
                     
                     Err.Clear
                     
-                    SlpStdBlkCorr_Sh.Range(Column381Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                    SlpStdBlkCorr_Sh.Range(Column381Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
                         WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
                             Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
                     
-                    If SlpStdBlkCorr_Sh.Range(Column38 & c) = "n.a." Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column381Std & c) = "n.a."
+                    If SlpStdBlkCorr_Sh.Range(Column38 & C) = "n.a." Or Err.Number <> 0 Then
+                        SlpStdBlkCorr_Sh.Range(Column381Std & C) = "n.a."
                     End If
                     
                     On Error GoTo 0
@@ -1209,22 +1209,22 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, Acquisition
             
                     On Error Resume Next
                     
-                    SlpStdBlkCorr_Sh.Range(Column64 & c) = WorksheetFunction.Average(Y_ValuesRange) '64 average
+                    SlpStdBlkCorr_Sh.Range(Column64 & C) = WorksheetFunction.Average(Y_ValuesRange) '64 average
                     
                     If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column64 & c) = "n.a."
+                        SlpStdBlkCorr_Sh.Range(Column64 & C) = "n.a."
                     End If
             
             '64 average error propagation
                     
                     Err.Clear
                     
-                    SlpStdBlkCorr_Sh.Range(Column641Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                    SlpStdBlkCorr_Sh.Range(Column641Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
                         WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
                             Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
                     
-                    If SlpStdBlkCorr_Sh.Range(Column64 & c) = "n.a." Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column641Std & c) = "n.a."
+                    If SlpStdBlkCorr_Sh.Range(Column64 & C) = "n.a." Or Err.Number <> 0 Then
+                        SlpStdBlkCorr_Sh.Range(Column641Std & C) = "n.a."
                     End If
                     
                     
@@ -1255,22 +1255,22 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, Acquisition
             
                     On Error Resume Next
                     
-                    SlpStdBlkCorr_Sh.Range(Column74 & c) = WorksheetFunction.Average(Y_ValuesRange) '74 average
+                    SlpStdBlkCorr_Sh.Range(Column74 & C) = WorksheetFunction.Average(Y_ValuesRange) '74 average
                     
                     If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column74 & c) = "n.a."
+                        SlpStdBlkCorr_Sh.Range(Column74 & C) = "n.a."
                     End If
             
             '74 average error propagation
                     
                     Err.Clear
                     
-                    SlpStdBlkCorr_Sh.Range(Column741Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                    SlpStdBlkCorr_Sh.Range(Column741Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
                         WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
                             Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
                     
-                    If SlpStdBlkCorr_Sh.Range(Column74 & c) = "n.a." Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column741Std & c) = "n.a."
+                    If SlpStdBlkCorr_Sh.Range(Column74 & C) = "n.a." Or Err.Number <> 0 Then
+                        SlpStdBlkCorr_Sh.Range(Column741Std & C) = "n.a."
                     End If
                     
                     On Error GoTo 0
@@ -1294,22 +1294,22 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal c As Integer, Acquisition
                 
                         On Error Resume Next
                         
-                        SlpStdBlkCorr_Sh.Range(Column28 & c) = WorksheetFunction.Average(Y_ValuesRange) '28 average
+                        SlpStdBlkCorr_Sh.Range(Column28 & C) = WorksheetFunction.Average(Y_ValuesRange) '28 average
                         
                         If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                            SlpStdBlkCorr_Sh.Range(Column28 & c) = "n.a."
+                            SlpStdBlkCorr_Sh.Range(Column28 & C) = "n.a."
                         End If
                 
                 '28 average error propagation
                         
                         Err.Clear
                         
-                        SlpStdBlkCorr_Sh.Range(Column281Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                        SlpStdBlkCorr_Sh.Range(Column281Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
                             WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
                                 Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
                         
-                        If SlpStdBlkCorr_Sh.Range(Column28 & c) = "n.a." Or Err.Number <> 0 Then
-                            SlpStdBlkCorr_Sh.Range(Column281Std & c) = "n.a."
+                        If SlpStdBlkCorr_Sh.Range(Column28 & C) = "n.a." Or Err.Number <> 0 Then
+                            SlpStdBlkCorr_Sh.Range(Column281Std & C) = "n.a."
                         End If
                         
                         On Error GoTo 0
@@ -1324,7 +1324,7 @@ Sub CalcBlank()
     'to BlkCalc sheet
     
     Dim a As Variant
-    Dim c As Integer
+    Dim C As Integer
     Dim B As Workbook 'The workbook opened
     Dim d As Single
     Dim E As Double
@@ -1356,18 +1356,18 @@ Sub CalcBlank()
                           
     ReDim Preserve Blanks(1 To UBound(BlkFound) + 1) As Integer
     
-    c = 2
+    C = 2
 
     For Each a In BlkFound 'Blanks IDs are copied to a different array (Blanks) which accepts only numbers (IDs)
-        Blanks(c - 1) = SamList_Sh.Range(a).Offset(, 1)
-        c = c + 1
+        Blanks(C - 1) = SamList_Sh.Range(a).Offset(, 1)
+        C = C + 1
     Next
             
     'Now, each raw blank data file will be opened and processed
-    c = 1
+    C = 1
         
     For Each a In Blanks
-        c = c + 1
+        C = C + 1
             
             On Error Resume Next
                 Set B = Workbooks.Open(PathsNamesIDsTimesCycles(RawDataFilesPaths, a)) 'ActiveWorkbook
@@ -1389,9 +1389,9 @@ Sub CalcBlank()
                 
                 'On Error GoTo ErrHandler
                     
-                    .Range(BlkSlpName & c) = PathsNamesIDsTimesCycles(FileName, a)
+                    .Range(BlkSlpName & C) = PathsNamesIDsTimesCycles(FileName, a)
                     
-                    .Range(BlkColumnID & c) = a
+                    .Range(BlkColumnID & C) = a
                     
                     '202-----------------------------------------------------------------------------------
                     Set SelectedRange = B.Sheets(1).Range(RawHg202Range)
@@ -1399,7 +1399,7 @@ Sub CalcBlank()
                     
                     E = WorksheetFunction.Average(SelectedRange)
                     
-                        If Not E < 0 Then .Range(BlkColumn2 & c) = E Else: .Range(BlkColumn2 & c) = 0
+                        If Not E < 0 Then .Range(BlkColumn2 & C) = E Else: .Range(BlkColumn2 & C) = 0
                             
                         'Below it is the standard error (standard deviation divided by square root of  number os analyses)
                         'multiplied by student's t factor of the assigned confidence
@@ -1407,14 +1407,14 @@ Sub CalcBlank()
                             WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
                                 Sqr(CountCells)
                                 
-                            If Not E < 0 Then .Range(BlkColumn21Std & c) = E Else: .Range(BlkColumn21Std & c) = 0
+                            If Not E < 0 Then .Range(BlkColumn21Std & C) = E Else: .Range(BlkColumn21Std & C) = 0
                     
                     '204-----------------------------------------------------------------------------------
                     Set SelectedRange = B.Sheets(1).Range(RawPb204Range)
                     CountCells = WorksheetFunction.count(SelectedRange)
                     
                     E = WorksheetFunction.Average(SelectedRange)
-                        If Not E < 0 Then .Range(BlkColumn4 & c) = E Else: .Range(BlkColumn4 & c) = 0
+                        If Not E < 0 Then .Range(BlkColumn4 & C) = E Else: .Range(BlkColumn4 & C) = 0
                     
                         'Below it is the standard error (standard deviation divided by square root of  number os analyses)
                         'multiplied by student's t factor of the assigned confidence
@@ -1422,7 +1422,7 @@ Sub CalcBlank()
                             WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
                                 Sqr(CountCells)
                                 
-                            If Not E < 0 Then .Range(BlkColumn41Std & c) = E Else: .Range(BlkColumn41Std & c) = 0
+                            If Not E < 0 Then .Range(BlkColumn41Std & C) = E Else: .Range(BlkColumn41Std & C) = 0
                     
                     '206-----------------------------------------------------------------------------------
                     If Detector206_UPb = "Faraday Cup" Then
@@ -1431,18 +1431,18 @@ Sub CalcBlank()
                             d = 1
                         Else
                             MsgBox "Please, indicate if 206Pb was analyzed using Faraday cup or Ion counter."
-                                Application.GoTo StartANDOptions_Sh.Range("A1")
+                                Application.Goto StartANDOptions_Sh.Range("A1")
                                     End
                     End If
                                         
                     Set SelectedRange = B.Sheets(1).Range(RawPb206Range)
                     CountCells = WorksheetFunction.count(SelectedRange)
 
-                        .Range(BlkColumn6 & c) = WorksheetFunction.Average(SelectedRange) * d
+                        .Range(BlkColumn6 & C) = WorksheetFunction.Average(SelectedRange) * d
                         
                             'Below it is the standard error (standard deviation divided by square root of  number os analyses)
                             'multiplied by student's t factor of the assigned confidence
-                            .Range(BlkColumn61Std & c) = WorksheetFunction.StDev_S(SelectedRange) * d * _
+                            .Range(BlkColumn61Std & C) = WorksheetFunction.StDev_S(SelectedRange) * d * _
                                 WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
                                     Sqr(CountCells)
                                         
@@ -1452,7 +1452,7 @@ Sub CalcBlank()
 
                         E = WorksheetFunction.Average(SelectedRange)
                         
-                            If Not E < 0 Then .Range(BlkColumn7 & c) = E Else: .Range(BlkColumn7 & c) = 0
+                            If Not E < 0 Then .Range(BlkColumn7 & C) = E Else: .Range(BlkColumn7 & C) = 0
                 
                             'Below it is the standard error (standard deviation divided by square root of  number os analyses)
                             'multiplied by student's t factor of the assigned confidence
@@ -1460,18 +1460,18 @@ Sub CalcBlank()
                             WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
                                 Sqr(CountCells)
                                 
-                            If Not E < 0 Then .Range(BlkColumn71Std & c) = E Else: .Range(BlkColumn71Std & c) = 0
+                            If Not E < 0 Then .Range(BlkColumn71Std & C) = E Else: .Range(BlkColumn71Std & C) = 0
                     
                     '208-----------------------------------------------------------------------------------
                     If Isotope208analyzed = True Then
                         Set SelectedRange = B.Sheets(1).Range(RawPb208Range)
                         CountCells = WorksheetFunction.count(SelectedRange)
                         
-                            .Range(BlkColumn8 & c) = WorksheetFunction.Average(SelectedRange) * mVtoCPS_UPb
+                            .Range(BlkColumn8 & C) = WorksheetFunction.Average(SelectedRange) * mVtoCPS_UPb
                             
                                 'Below it is the standard error (standard deviation divided by square root of  number os analyses)
                                 'multiplied by student's t factor of the assigned confidence
-                                .Range(BlkColumn81Std & c) = WorksheetFunction.StDev_S(SelectedRange) * mVtoCPS_UPb * _
+                                .Range(BlkColumn81Std & C) = WorksheetFunction.StDev_S(SelectedRange) * mVtoCPS_UPb * _
                                     WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
                                         Sqr(CountCells)
                     End If
@@ -1482,9 +1482,9 @@ Sub CalcBlank()
                                     
                             'Below it is the standard error (standard deviation divided by square root of  number os analyses)
                             'multiplied by student's t factor of the assigned confidence
-                            .Range(BlkColumn32 & c) = WorksheetFunction.Average(SelectedRange) * mVtoCPS_UPb
+                            .Range(BlkColumn32 & C) = WorksheetFunction.Average(SelectedRange) * mVtoCPS_UPb
         
-                                .Range(BlkColumn321Std & c) = WorksheetFunction.StDev_S(SelectedRange) * mVtoCPS_UPb * _
+                                .Range(BlkColumn321Std & C) = WorksheetFunction.StDev_S(SelectedRange) * mVtoCPS_UPb * _
                                     WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
                                         Sqr(CountCells) 'Standard error
                     End If
@@ -1492,17 +1492,17 @@ Sub CalcBlank()
                     Set SelectedRange = B.Sheets(1).Range(RawU238Range)
                     CountCells = WorksheetFunction.count(SelectedRange)
                     
-                        .Range(BlkColumn38 & c) = WorksheetFunction.Average(SelectedRange) * mVtoCPS_UPb
+                        .Range(BlkColumn38 & C) = WorksheetFunction.Average(SelectedRange) * mVtoCPS_UPb
  
                             'Below it is the standard error (standard deviation divided by square root of  number os analyses)
                             'multiplied by student's t factor of the assigned confidence
-                            .Range(BlkColumn381Std & c) = WorksheetFunction.StDev_S(SelectedRange) * mVtoCPS_UPb * _
+                            .Range(BlkColumn381Std & C) = WorksheetFunction.StDev_S(SelectedRange) * mVtoCPS_UPb * _
                                 WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
                                     Sqr(CountCells) 'Standard error
                     
-                    .Range(BlkColumn4Comm & c) = .Range(BlkColumn4 & c) - .Range(BlkColumn2 & c) / RatioMercury_UPb
+                    .Range(BlkColumn4Comm & C) = .Range(BlkColumn4 & C) - .Range(BlkColumn2 & C) / RatioMercury_UPb
                     
-                        .Range(BlkColumn4Comm1Std & c) = Sqr(.Range(BlkColumn21Std & c) ^ 2 + .Range(BlkColumn41Std & c) ^ 2)
+                        .Range(BlkColumn4Comm1Std & C) = Sqr(.Range(BlkColumn21Std & C) ^ 2 + .Range(BlkColumn41Std & C) ^ 2)
                     
                 End With
                                             
@@ -1566,7 +1566,7 @@ Sub CalcAllSlp_StdCorr()
     
     If SlpStdCorr_Sh.Range(StdCorr_ColumnID & StdCorr_HeaderRow + 1).End(xlDown) = "" Then
         MsgBox "There are no analyses in SlpStdBlkCorr sheet. Please, check it."
-            Application.GoTo SlpStdBlkCorr_Sh.Range("A1")
+            Application.Goto SlpStdBlkCorr_Sh.Range("A1")
                 End
         Else
             Set SamplesID = SlpStdCorr_Sh.Range(StdCorr_ColumnID & StdCorr_HeaderRow + 1, SlpStdCorr_Sh.Range(StdCorr_ColumnID & StdCorr_HeaderRow + 1).End(xlDown))
@@ -1581,7 +1581,7 @@ Sub CalcAllSlp_StdCorr()
 End Sub
 
 
-Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double)
+Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double)
     
     'This program calculates the sample ratios corrected by the external standard, as well the errors.
     'A is the sample ID, C is the row where data should be pasted in SlpStdCorr_Sh and Teta is the
@@ -1701,8 +1701,8 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
     End If
     
     With SlpStdCorr_Sh
-        .Range(StdCorr_ColumnID & c) = PathsNamesIDsTimesCycles(ID, a)
-        .Range(StdCorr_SlpName & c) = PathsNamesIDsTimesCycles(FileName, a)
+        .Range(StdCorr_ColumnID & C) = PathsNamesIDsTimesCycles(ID, a)
+        .Range(StdCorr_SlpName & C) = PathsNamesIDsTimesCycles(FileName, a)
     End With
     
     Counter = 1
@@ -1737,7 +1737,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
 
         If .Range(ColumnID & HeaderRow + 1).End(xlDown) = "" Then
             MsgBox ("There is no data in SlpStdBlkCorr sheet. Please, check it.")
-                Application.GoTo SlpStdBlkCorr_Sh.Range("A1")
+                Application.Goto SlpStdBlkCorr_Sh.Range("A1")
                     End
         End If
 
@@ -1761,7 +1761,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
 
         If .Range(BlkColumnID & BlkCalc_HeaderLine + 1).End(xlDown) = "" Then
             MsgBox ("You need at least two blanks to reduce your data.")
-                Application.GoTo BlkCalc_Sh.Range("A1")
+                Application.Goto BlkCalc_Sh.Range("A1")
                     End
         End If
 
@@ -1789,7 +1789,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
 
         If .Range(ColumnID & HeaderRow + 1) = "" Then
             MsgBox ("There is no data in SlpStdBlkCorr sheet. Please, check it.")
-                Application.GoTo SlpStdBlkCorr_Sh.Range("A1")
+                Application.Goto SlpStdBlkCorr_Sh.Range("A1")
                     End
         End If
 
@@ -2144,7 +2144,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
         'Ratio 68 corrected by standard
         Set P = SlpStdBlkCorr_Sh.Range(Column68 & Slp)
         
-            Set P2 = .Range(StdCorr_Column68 & c)
+            Set P2 = .Range(StdCorr_Column68 & C)
         
         On Error Resume Next
             P2 = P * ExtStd68 / _
@@ -2168,7 +2168,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
         Set Q = SlpStdBlkCorr_Sh.Range(Column681Std & Slp)
 
             On Error Resume Next
-            .Range(StdCorr_Column681Std & c) = P2 * _
+            .Range(StdCorr_Column681Std & C) = P2 * _
                 ExtStd68Reproducibility * _
                     Sqr( _
                         (Q / P) ^ 2 + _
@@ -2179,7 +2179,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
                         (ExtStd681Std / ExtStd68) ^ 2)
                          
                 If Err.Number <> 0 Then
-                    .Range(StdCorr_Column681Std & c) = "n.a."
+                    .Range(StdCorr_Column681Std & C) = "n.a."
                 End If
                 
                     Err.Clear
@@ -2190,15 +2190,15 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
             'Application.SendKeys "^g ^a {DEL}"
 
         'R
-        .Range(StdCorr_Column68R & c) = SlpStdBlkCorr_Sh.Range(Column68R & Slp)
+        .Range(StdCorr_Column68R & C) = SlpStdBlkCorr_Sh.Range(Column68R & Slp)
                 
         'R2
-        .Range(StdCorr_Column68R2 & c) = SlpStdBlkCorr_Sh.Range(Column68R2 & Slp)
+        .Range(StdCorr_Column68R2 & C) = SlpStdBlkCorr_Sh.Range(Column68R2 & Slp)
                                 
         'Ratio 76 corrected by standard
         Set P = SlpStdBlkCorr_Sh.Range(Column76 & Slp)
             
-        Set P2 = .Range(StdCorr_Column76 & c)
+        Set P2 = .Range(StdCorr_Column76 & C)
             
             On Error Resume Next
             P2 = P * (ExtStd76 / _
@@ -2217,7 +2217,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
         Set Q = SlpStdBlkCorr_Sh.Range(Column761Std & Slp)
             
             On Error Resume Next
-            .Range(StdCorr_Column761Std & c) = P2 * _
+            .Range(StdCorr_Column761Std & C) = P2 * _
                 ExtStd76Reproducibility * _
                     Sqr( _
                         (Q / P) ^ 2 + _
@@ -2237,7 +2237,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
             'Debug.Print ExtStd761Std / ExtStd76
 
                 If Err.Number <> 0 Then
-                    .Range(StdCorr_Column761Std & c) = "n.a."
+                    .Range(StdCorr_Column761Std & C) = "n.a."
                 End If
                 
                     Err.Clear
@@ -2247,7 +2247,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
         'Ratio 75 corrected by standard
         Set P = SlpStdBlkCorr_Sh.Range(Column75 & Slp)
         
-            Set P2 = .Range(StdCorr_Column75 & c)
+            Set P2 = .Range(StdCorr_Column75 & C)
             
             On Error Resume Next
             P2 = P * ExtStd75 / _
@@ -2267,14 +2267,14 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
 '        P2.Select
             
         '75 error propagation
-        Set Q = SlpStdCorr_Sh.Range(StdCorr_Column681Std & c)
-            Set QQ = SlpStdCorr_Sh.Range(StdCorr_Column761Std & c)
+        Set Q = SlpStdCorr_Sh.Range(StdCorr_Column681Std & C)
+            Set QQ = SlpStdCorr_Sh.Range(StdCorr_Column761Std & C)
         
-        Set P = SlpStdCorr_Sh.Range(StdCorr_Column68 & c)
-            Set PP = SlpStdCorr_Sh.Range(StdCorr_Column76 & c)
+        Set P = SlpStdCorr_Sh.Range(StdCorr_Column68 & C)
+            Set PP = SlpStdCorr_Sh.Range(StdCorr_Column76 & C)
             
             On Error Resume Next
-            .Range(StdCorr_Column751Std & c) = P2 * _
+            .Range(StdCorr_Column751Std & C) = P2 * _
                 ExtStd75Reproducibility * _
                     Sqr( _
                         (Q / P) ^ 2 + _
@@ -2282,7 +2282,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
                         (ExtStd751Std / ExtStd75) ^ 2)
             
                 If Err.Number <> 0 Then
-                    .Range(StdCorr_Column751Std & c) = "n.a."
+                    .Range(StdCorr_Column751Std & C) = "n.a."
                 End If
                 
                     Err.Clear
@@ -2291,12 +2291,12 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
                         
         'Rho
             On Error Resume Next
-            SlpStdCorr_Sh.Range(StdCorr_Column7568Rho & c) = _
-                (SlpStdCorr_Sh.Range(StdCorr_Column681Std & c) / SlpStdCorr_Sh.Range(StdCorr_Column68 & c)) / _
-                (SlpStdCorr_Sh.Range(StdCorr_Column751Std & c) / SlpStdCorr_Sh.Range(StdCorr_Column75 & c))
+            SlpStdCorr_Sh.Range(StdCorr_Column7568Rho & C) = _
+                (SlpStdCorr_Sh.Range(StdCorr_Column681Std & C) / SlpStdCorr_Sh.Range(StdCorr_Column68 & C)) / _
+                (SlpStdCorr_Sh.Range(StdCorr_Column751Std & C) / SlpStdCorr_Sh.Range(StdCorr_Column75 & C))
                 
                 If Err.Number <> 0 Then
-                    SlpStdCorr_Sh.Range(StdCorr_Column7568Rho & c) = "n.a."
+                    SlpStdCorr_Sh.Range(StdCorr_Column7568Rho & C) = "n.a."
                 End If
                 
                     Err.Clear
@@ -2304,7 +2304,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
             On Error GoTo 0
 
         '202 isotope
-        Set P = .Range(StdCorr_Column2 & c)
+        Set P = .Range(StdCorr_Column2 & C)
         
             Set P2 = SlpStdBlkCorr_Sh.Range(Column2 & Slp)
         
@@ -2314,13 +2314,13 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
         Set Q = SlpStdBlkCorr_Sh.Range(Column21Std & Slp)
 
             On Error Resume Next
-            .Range(StdCorr_Column21Std & c) = P * Sqr( _
+            .Range(StdCorr_Column21Std & C) = P * Sqr( _
             (Q / P2) ^ 2 + _
             (Blk21Std_Blk1 / Blk2_Blk1) ^ 2 + _
             (Blk21Std_Blk2 / Blk2_Blk2) ^ 2)
             
                 If Err.Number <> 0 Then
-                    .Range(StdCorr_Column21Std & c) = "n.a."
+                    .Range(StdCorr_Column21Std & C) = "n.a."
                 End If
                 
                     Err.Clear
@@ -2328,7 +2328,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
             On Error GoTo 0
             
         '204 isotope
-        Set P = .Range(StdCorr_Column4 & c)
+        Set P = .Range(StdCorr_Column4 & C)
         
             Set P2 = SlpStdBlkCorr_Sh.Range(Column4 & Slp)
             
@@ -2338,13 +2338,13 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
         Set Q = SlpStdBlkCorr_Sh.Range(Column41Std & Slp)
             
             On Error Resume Next
-            .Range(StdCorr_Column41Std & c) = P * Sqr( _
+            .Range(StdCorr_Column41Std & C) = P * Sqr( _
             (Q / P2) ^ 2 + _
             (Blk41Std_Blk1 / Blk4_Blk1) ^ 2 + _
             (Blk41Std_Blk2 / Blk4_Blk2) ^ 2)
             
                 If Err.Number <> 0 Then
-                    .Range(StdCorr_Column41Std & c) = "n.a."
+                    .Range(StdCorr_Column41Std & C) = "n.a."
                 End If
                 
                     Err.Clear
@@ -2352,7 +2352,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
             On Error GoTo 0
             
         'Ratio 64 corrected by standard
-        Set P = .Range(StdCorr_Column64 & c)
+        Set P = .Range(StdCorr_Column64 & C)
         
             Set P2 = SlpStdBlkCorr_Sh.Range(Column64 & Slp)
             
@@ -2362,7 +2362,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
         Set Q = SlpStdBlkCorr_Sh.Range(Column641Std & Slp)
             
             On Error Resume Next
-            .Range(StdCorr_Column641Std & c) = P * Sqr( _
+            .Range(StdCorr_Column641Std & C) = P * Sqr( _
             (Q / P2) ^ 2 + _
             (Blk61Std_Blk1 / Blk6_Blk1) ^ 2 + _
             (Blk61Std_Blk2 / Blk6_Blk2) ^ 2 + _
@@ -2370,7 +2370,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
             (Blk41Std_Blk2 / Blk4_Blk2) ^ 2)
             
                 If Err.Number <> 0 Then
-                    .Range(StdCorr_Column641Std & c) = "n.a."
+                    .Range(StdCorr_Column641Std & C) = "n.a."
                 End If
                 
                     Err.Clear
@@ -2378,7 +2378,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
             On Error GoTo 0
             
         'Ratio 74 corrected by standard
-        Set P = .Range(StdCorr_Column74 & c)
+        Set P = .Range(StdCorr_Column74 & C)
             
             Set P2 = SlpStdBlkCorr_Sh.Range(Column74 & Slp)
         
@@ -2388,7 +2388,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
         Set Q = SlpStdBlkCorr_Sh.Range(Column741Std & Slp)
             
             On Error Resume Next
-            .Range(StdCorr_Column741Std & c) = P * Sqr( _
+            .Range(StdCorr_Column741Std & C) = P * Sqr( _
             (Q / P2) ^ 2 + _
             (Blk71Std_Blk1 / Blk7_Blk1) ^ 2 + _
             (Blk71Std_Blk2 / Blk7_Blk2) ^ 2 + _
@@ -2396,7 +2396,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
             (Blk41Std_Blk2 / Blk4_Blk2) ^ 2)
             
                 If Err.Number <> 0 Then
-                    .Range(StdCorr_Column741Std & c) = "n.a."
+                    .Range(StdCorr_Column741Std & C) = "n.a."
                 End If
                 
                     Err.Clear
@@ -2408,14 +2408,14 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
         
         'Ratio 28
         If Isotope232analyzed = True Then
-            Set P = .Range(StdCorr_Column28 & c)
+            Set P = .Range(StdCorr_Column28 & C)
             
                 Set P2 = SlpStdBlkCorr_Sh.Range(Column28 & Slp)
             
                     P = P2
                     
             '28 error propagation
-            Set Q = .Range(StdCorr_Column281Std & c)
+            Set Q = .Range(StdCorr_Column281Std & C)
             
                 Q = SlpStdBlkCorr_Sh.Range(Column281Std & Slp)
         End If
@@ -2429,14 +2429,14 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
             'Tools.References command in the VBE to enable a reference to isoplot.
             
             '206* (%) - Common 206Pb based on Stacey & Kramers single stage model implemented by Ludwig
-            Set P = .Range(StdCorr_ColumnF206 & c)
-            Set Q = .Range(StdCorr_Column64 & c)
+            Set P = .Range(StdCorr_ColumnF206 & C)
+            Set Q = .Range(StdCorr_Column64 & C)
             
                 If Q = "n.a." Then
                     P = "n.a."
                 Else
                     On Error Resume Next
-                        P = 100 * (SingleStagePbR(agepb6u8(.Range(StdCorr_Column68 & c)), 1) / Q)
+                        P = 100 * (SingleStagePbR(agepb6u8(.Range(StdCorr_Column68 & C)), 1) / Q)
                             If Err.Number <> 0 Then
                                 P = "n.a."
                             End If
@@ -2444,8 +2444,8 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
                 End If
                 
             'Age 68
-            Set P = .Range(StdCorr_Column68AgeMa & c)
-            Set Q = .Range(StdCorr_Column68 & c)
+            Set P = .Range(StdCorr_Column68AgeMa & C)
+            Set Q = .Range(StdCorr_Column68 & C)
 
                 If Q = "n.a." Then
                     P = "n.a."
@@ -2459,9 +2459,9 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
                 End If
 
             'Age 68 1 std
-            Set P = .Range(StdCorr_Column68AgeMa1std & c)
-            Set Q = .Range(StdCorr_Column681Std & c)
-            Set P2 = .Range(StdCorr_Column68 & c)
+            Set P = .Range(StdCorr_Column68AgeMa1std & C)
+            Set Q = .Range(StdCorr_Column681Std & C)
+            Set P2 = .Range(StdCorr_Column68 & C)
 
                 If Q = "n.a." Then
                     P = "n.a."
@@ -2476,8 +2476,8 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
 
 
             'Age 75
-            Set P = .Range(StdCorr_Column75AgeMa & c)
-            Set Q = .Range(StdCorr_Column75 & c)
+            Set P = .Range(StdCorr_Column75AgeMa & C)
+            Set Q = .Range(StdCorr_Column75 & C)
 
                 If Q = "n.a." Then
                     P = "n.a."
@@ -2491,9 +2491,9 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
                 End If
 
             'Age 75 1 std
-            Set P = .Range(StdCorr_Column75AgeMa1std & c)
-            Set Q = .Range(StdCorr_Column751Std & c)
-            Set P2 = .Range(StdCorr_Column75 & c)
+            Set P = .Range(StdCorr_Column75AgeMa1std & C)
+            Set Q = .Range(StdCorr_Column751Std & C)
+            Set P2 = .Range(StdCorr_Column75 & C)
 
                 If Q = "n.a." Then
                     P = "n.a."
@@ -2507,8 +2507,8 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
                 End If
 
             'Age 76
-            Set P = .Range(StdCorr_Column76AgeMa & c)
-            Set Q = .Range(StdCorr_Column76 & c)
+            Set P = .Range(StdCorr_Column76AgeMa & C)
+            Set Q = .Range(StdCorr_Column76 & C)
 
                 If Q = "n.a." Then
                     P = "n.a."
@@ -2522,9 +2522,9 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
                 End If
 
             'Age 76 1 std
-            Set P = .Range(StdCorr_Column76AgeMa1std & c)
-            Set Q = .Range(StdCorr_Column761Std & c)
-            Set P2 = .Range(StdCorr_Column76 & c)
+            Set P = .Range(StdCorr_Column76AgeMa1std & C)
+            Set Q = .Range(StdCorr_Column761Std & C)
+            Set P2 = .Range(StdCorr_Column76 & C)
 
                 If Q = "n.a." Then
                     P = "n.a."
@@ -2540,22 +2540,22 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal c As Integer, ByVal Teta As Double
             '68 and 76 age concordance
             On Error Resume Next
                 
-                .Range(StdCorr_Column6876Conc & c) = _
+                .Range(StdCorr_Column6876Conc & C) = _
                     100 * _
-                    (1 - (.Range(StdCorr_Column68AgeMa & c) / _
-                    .Range(StdCorr_Column76AgeMa & c)))
+                    (1 - (.Range(StdCorr_Column68AgeMa & C) / _
+                    .Range(StdCorr_Column76AgeMa & C)))
                             
                 If Err.Number <> 0 Then
-                    .Range(StdCorr_Column6876Conc & c) = "n.a."
+                    .Range(StdCorr_Column6876Conc & C) = "n.a."
                 End If
                 
-                .Range(StdCorr_Column6875Conc & c) = _
+                .Range(StdCorr_Column6875Conc & C) = _
                     100 * _
-                    (1 - (.Range(StdCorr_Column68AgeMa & c) / _
-                    .Range(StdCorr_Column75AgeMa & c)))
+                    (1 - (.Range(StdCorr_Column68AgeMa & C) / _
+                    .Range(StdCorr_Column75AgeMa & C)))
                             
                 If Err.Number <> 0 Then
-                    .Range(StdCorr_Column6875Conc & c) = "n.a."
+                    .Range(StdCorr_Column6875Conc & C) = "n.a."
                 End If
                 
             On Error GoTo 0
@@ -2867,7 +2867,7 @@ Sub ExternalReproSamples()
     
     Dim ExtStd() As Integer 'Array with external standards IDs only
     Dim a As Variant
-    Dim c As Long
+    Dim C As Long
     Dim d As Long
     Dim f As Variant
     Dim Counter As Long
@@ -2925,11 +2925,11 @@ Sub ExternalReproSamples()
 
     ReDim ExtStd(1 To UBound(StdFound) + 1) As Integer
     
-    c = 2
+    C = 2
 
         For Each a In StdFound 'External standards IDs are copied to a different array (SlpStd) which accepts only numbers (IDs)
-            ExtStd(c - 1) = SamList_Sh.Range(a).Offset(, 1)
-            c = c + 1
+            ExtStd(C - 1) = SamList_Sh.Range(a).Offset(, 1)
+            C = C + 1
         Next
         
     Counter = 1
@@ -2973,7 +2973,7 @@ Sub ExternalReproSamples()
         
         Set IDsRange = .Range(.Range(ColumnID & HeaderRow + 1), .Range(ColumnID & HeaderRow + 1).End(xlDown))
         
-        c = 1
+        C = 1
         d = FirstNewRow
         
             ExtStd68Repro.ClearContents
@@ -3001,7 +3001,7 @@ Sub ExternalReproSamples()
                 
                 If .Range(BlkColumnID & BlkCalc_HeaderLine + 1).End(xlDown) = "" Then
                     MsgBox ("You need at least two blanks to reduce your data.")
-                        Application.GoTo BlkCalc_Sh.Range(BlkColumnID & BlkCalc_HeaderLine)
+                        Application.Goto BlkCalc_Sh.Range(BlkColumnID & BlkCalc_HeaderLine)
                             End
                 End If
                 
@@ -3016,9 +3016,9 @@ Sub ExternalReproSamples()
             End With
 
              
-             For c = 1 To WorksheetFunction.count(IDsRange)
+             For C = 1 To WorksheetFunction.count(IDsRange)
                 
-                If a = IDsRange.Item(c) Then
+                If a = IDsRange.Item(C) Then
 
                     Set Std68 = .Range(Ratio68ColumnNew & LastRow + d)
                     Set Std681Std = .Range(Ratio681StdColumnNew & LastRow + d)
@@ -3027,9 +3027,9 @@ Sub ExternalReproSamples()
                     Set Std76 = .Range(Ratio76ColumnNew & LastRow + d)
                     Set Std761Std = .Range(Ratio761StdColumnNew & LastRow + d)
                     
-                        Std68 = .Range(Column68 & IDsRange.Item(c).Row)
-                        Std75 = .Range(Column75 & IDsRange.Item(c).Row)
-                        Std76 = .Range(Column76 & IDsRange.Item(c).Row)
+                        Std68 = .Range(Column68 & IDsRange.Item(C).Row)
+                        Std75 = .Range(Column75 & IDsRange.Item(C).Row)
+                        Std76 = .Range(Column76 & IDsRange.Item(C).Row)
 
                     'Primary standard 68 uncertainty evaluation
                     With BlkCalc_Sh 'REPETION OF THE LINES BELOW
@@ -3039,12 +3039,12 @@ Sub ExternalReproSamples()
                          Blk71Std = .Range(BlkColumn71Std & Blk1Row)
                     End With
             
-                        If .Range(Column6 & IDsRange.Item(c).Row) / Abs(Blk6) > CutOffRatio Or Blk6 < 0 Then
+                        If .Range(Column6 & IDsRange.Item(C).Row) / Abs(Blk6) > CutOffRatio Or Blk6 < 0 Then
                             Blk61Std = 0
                         End If
                                                     
                             Std681Std = Std68 * Sqr( _
-                                (.Range(Column681Std & IDsRange.Item(c).Row) / Std68) ^ 2 + _
+                                (.Range(Column681Std & IDsRange.Item(C).Row) / Std68) ^ 2 + _
                                 (Blk61Std / Blk6) ^ 2 + _
                                 (ExtStd681Std / ExtStd68) ^ 2)
                                                     
@@ -3056,29 +3056,29 @@ Sub ExternalReproSamples()
                          Blk71Std = .Range(BlkColumn71Std & Blk1Row)
                     End With
                                                     
-                        If .Range(Column6 & IDsRange.Item(c).Row) / Abs(Blk6) > CutOffRatio Or Blk6 < 0 Then
+                        If .Range(Column6 & IDsRange.Item(C).Row) / Abs(Blk6) > CutOffRatio Or Blk6 < 0 Then
                             Blk61Std = 0
                         End If
                             
-                        If .Range(Column7 & IDsRange.Item(c).Row) / Abs(Blk7) > CutOffRatio Or Blk7 < 0 Then
+                        If .Range(Column7 & IDsRange.Item(C).Row) / Abs(Blk7) > CutOffRatio Or Blk7 < 0 Then
                             Blk71Std = 0
                         End If
                             
                         Std761Std = Std76 * Sqr( _
-                            (.Range(Column761Std & IDsRange.Item(c).Row) / Std76) ^ 2 + _
+                            (.Range(Column761Std & IDsRange.Item(C).Row) / Std76) ^ 2 + _
                             (Blk61Std / Blk6) ^ 2 + _
                             (Blk71Std / Blk7) ^ 2 + _
                             (ExtStd761Std / ExtStd76) ^ 2)
                         
                     'Primary standard 75 uncertainty evaluation
                         Std751Std = Std75 * Sqr( _
-                            (.Range(Column751Std & IDsRange.Item(c).Row) / Std75) ^ 2 + _
+                            (.Range(Column751Std & IDsRange.Item(C).Row) / Std75) ^ 2 + _
                             (Std681Std / Std68) ^ 2 + _
                             (Std761Std / Std76) ^ 2 + _
                             (ExtStd751Std / ExtStd75) ^ 2)
                         
                     
-                    c = WorksheetFunction.count(IDsRange)
+                    C = WorksheetFunction.count(IDsRange)
                 
                 End If
                                             

@@ -95,7 +95,7 @@ End Sub
 Private Sub CommandButton1_Ok_Click()
     
     Dim MsgBoxAlert As Variant 'Message box for for many checks done below
-    Dim a As Integer, c As Variant
+    Dim a As Integer, C As Variant
     Dim AddressRawDataFile As Variant 'Array of variables with address in Box2_UPb_Options
     Dim CellsPopulated() As Single 'Array of the number of cells with values in each variable
     'of AddressRawDataFile (Below)
@@ -124,8 +124,8 @@ Private Sub CommandButton1_Ok_Click()
     End If
 
     'Check if all the refedit controls were used to select some address
-    For Each c In AddressRawDataFile
-        If c = "" Then
+    For Each C In AddressRawDataFile
+        If C = "" Then
             MsgBoxAlert = MsgBox("Please, set all the addresses in Address tab.", vbOKOnly)
                 
             On Error Resume Next
@@ -137,7 +137,7 @@ Private Sub CommandButton1_Ok_Click()
                                     End
                     End If
             On Error GoTo 0
-                    c.SetFocus
+                    C.SetFocus
                         Exit Sub
         End If
     Next

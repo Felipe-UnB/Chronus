@@ -132,7 +132,7 @@ End Sub
 Public Sub UserForm_Initialize()
         
     Dim ProblemMsgBox As Variant 'Message box displayed if something seems to be wrong in StandardsUPb sheet.
-    Dim c As Variant 'Used to add itens to External Standard ComboBox
+    Dim C As Variant 'Used to add itens to External Standard ComboBox
     Dim P As Variant
 
     If mwbk Is Nothing Then
@@ -205,7 +205,7 @@ Private Sub CommandButton3_Ok_Click()
     
     Dim MsgAlert As String
     Dim MsgBoxAlert As Variant 'Message box for for many checks done below
-    Dim c As Variant 'Variable used in a for each structure
+    Dim C As Variant 'Variable used in a for each structure
     Dim AddressRawDataFile As Variant 'Array of variables with address in Box2_UPb_Options
     Dim Counter As Integer
     Dim StdName As Integer
@@ -230,9 +230,9 @@ Private Sub CommandButton3_Ok_Click()
     End If
     
     'All of the above variables must not be = ""
-    For Each c In AddressRawDataFile
+    For Each C In AddressRawDataFile
         'on error resume Next
-        If c.Value = "" Then
+        If C.Value = "" Then
             MsgBoxAlert = MsgBox("There are one or more addresses missing in Start-AND-Options sheet. " & _
             "Please, check it.", vbOKOnly, "Missing Address")
                 Call SetAddressess
@@ -468,7 +468,7 @@ Private Sub CommandButton3_Ok_Click()
         Else
             Application.ScreenUpdating = ScreenUpd
                 Call UnloadAll
-                    Application.GoTo SamList_Sh.Range("A1")
+                    Application.Goto SamList_Sh.Range("A1")
         End If
 
     mwbk.Save

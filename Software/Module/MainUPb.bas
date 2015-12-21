@@ -991,7 +991,7 @@ Sub CreateWorkbook()
     
         Application.ScreenUpdating = ScreenUpd
     
-    Application.GoTo StartANDOptions_Sh.Range("A1")
+    Application.Goto StartANDOptions_Sh.Range("A1")
     
 End Sub
 Public Sub PublicVariables()
@@ -1550,7 +1550,7 @@ Sub CheckRawData()
     'all the isotopes have the same number of cycles;
 
     Dim MsgBoxAlert As Variant 'Message box for for many checks done below
-    Dim c As Variant
+    Dim C As Variant
     Dim d As Range
     Dim E As Integer
     Dim f As Range
@@ -1654,7 +1654,7 @@ Sub CheckRawData()
                 
                 If Result = 0 Then
                     MsgBox (result2 & " is missing in " & OpenedWorkbook.Name & ". Please, check it. You may have selected the wrong range. ")
-                        Application.GoTo OpenedWorkbook.Worksheets(1).Range("A1")
+                        Application.Goto OpenedWorkbook.Worksheets(1).Range("A1")
                             Call UnloadAll
                                 End
                 End If
@@ -1662,12 +1662,12 @@ Sub CheckRawData()
             Next
         
             'Check if all the ranges have the same number of cells with values (the ranges must be of the same size)
-            For Each c In AddressRawDataFile
+            For Each C In AddressRawDataFile
                 
-                E = WorksheetFunction.count(OpenedWorkbook.Worksheets(1).Range(c))
+                E = WorksheetFunction.count(OpenedWorkbook.Worksheets(1).Range(C))
                     If E <> CyclesNumber Then
                         MsgBox ("Some cycles seem to be missing in " & OpenedWorkbook.Name & ". Please, check this file and then retry.")
-                            Application.GoTo OpenedWorkbook.Worksheets(1).Range("A1")
+                            Application.Goto OpenedWorkbook.Worksheets(1).Range("A1")
                                 Call UnloadAll
                                     End
                     End If
@@ -2245,7 +2245,7 @@ Sub WriteCycles(CyclesRange As Range, PasteRow As Integer)
     Dim cell2 As Range
     Dim a As Range 'Range of cycles time in raw data file (complete path)
     Dim B As Range 'Cell address of the cycle time from the sample being verified
-    Dim c As Integer 'Correct cycle number, after removing d
+    Dim C As Integer 'Correct cycle number, after removing d
     Dim d As Integer 'Integer with the difference between the row of the first cycle time in raw data file and row 1. This is
                      'necessary because the Cycles are written from 1 to n.
     Dim RangeItem As Integer
@@ -2275,10 +2275,10 @@ Sub WriteCycles(CyclesRange As Range, PasteRow As Integer)
     For Each cell2 In CyclesRange
         
         'MsgBox RangeItem & "item  selected"
-        c = cell2.Row - d
+        C = cell2.Row - d
                 
         If Not IsEmpty(cell2) = True Then 'If there isn't information in a specific cell, we have to skip it.
-            B = B & c & "," 'Adds the cycle number plus comma in cells from column E
+            B = B & C & "," 'Adds the cycle number plus comma in cells from column E
         End If
         
     RangeItem = RangeItem + 1
@@ -2297,7 +2297,7 @@ Sub CreateStdListMap()
     'standards and blanks IDs related to each samples are written too.
 
     Dim a As Variant
-    Dim c As Integer
+    Dim C As Integer
     Dim ca As Integer 'ca and cb are counters used to populate After and Before arrays
     Dim cb As Integer
     Dim Before() As IDsTimesDifference 'Array with IDs and time differences between samples and blanks or external standards analysed BEFORE samples
@@ -2327,16 +2327,16 @@ Sub CreateStdListMap()
         Call IdentifyFileType
     End If
     
-    c = SamList_HeadersLine2 'Integer used to set the correct row to paste IDs as defined below
+    C = SamList_HeadersLine2 'Integer used to set the correct row to paste IDs as defined below
     
     'Below, IDs from standards will be copied to column F in SamList_Sh and to Samples array
     ReDim Preserve ExtStandards(1 To UBound(StdFound) + 1) As Integer 'It's necessary to add 2 because the arrays from FindStrings function are dimensioned from 0 to n
     
     'Internal standards are treated like normal samples, so samples and internal standards IDs are copeid to column F in SamList_Sh
     For Each a In StdFound 'Every ID from samples will be placed in column F
-        SamList_Sh.Cells(c + 1, Range(a).Offset(, 4).Column) = SamList_Sh.Range(a).Offset(, 1)
-            ExtStandards(c - 1) = SamList_Sh.Range(a).Offset(, 1)
-        c = c + 1
+        SamList_Sh.Cells(C + 1, Range(a).Offset(, 4).Column) = SamList_Sh.Range(a).Offset(, 1)
+            ExtStandards(C - 1) = SamList_Sh.Range(a).Offset(, 1)
+        C = C + 1
     Next
         
     'The code line below sorts the column F (samples and internals standards IDs) in ascending order
@@ -2347,17 +2347,17 @@ Sub CreateStdListMap()
     'Below, IDs from blanks will be copied to Blanks array
     ReDim Preserve Blanks(1 To UBound(BlkFound) + 1) As Integer 'It's necessary to add 1 because the arrays from FindStrings function are dimensioned from 0 to n
 
-    c = 2
+    C = 2
     
     For Each a In BlkFound
-        Blanks(c - 1) = SamList_Sh.Range(a).Offset(, 1) 'Blanks IDs are copied to a different array (Blanks) which accepts only numbers (IDs)
-        c = c + 1
+        Blanks(C - 1) = SamList_Sh.Range(a).Offset(, 1) 'Blanks IDs are copied to a different array (Blanks) which accepts only numbers (IDs)
+        C = C + 1
     Next
 
     'Below, IDs from external standards will be copied to ExtStandards array
     ReDim Preserve ExtStandards(1 To UBound(StdFound) + 1) As Integer 'It's necessary to add 1 because the arrays from FindStrings function are dimensioned from 0 to n
 
-    c = 2
+    C = 2
                         
     Call SetPathsNamesIDsTimesCycles
     
@@ -2451,7 +2451,7 @@ Sub CreateSamListMap()
     'standards and blanks IDs related to each samples are written too.
 
     Dim a As Variant
-    Dim c As Integer
+    Dim C As Integer
     Dim ca As Integer 'ca and cb are counters used to populate After and Before arrays
     Dim cb As Integer
     Dim Before() As IDsTimesDifference 'Array with IDs and time differences between samples and blanks or external standards analysed BEFORE samples
@@ -2483,23 +2483,23 @@ Sub CreateSamListMap()
     
     StdSlpColumn = "H" & SamList_FirstLine 'update
     
-    c = SamList_HeadersLine2 'Integer used to set the correct row to paste IDs as defined below
+    C = SamList_HeadersLine2 'Integer used to set the correct row to paste IDs as defined below
     
     'Below, IDs from samples and internal standards will be copied to column F in SamList_Sh and to Samples array
     ReDim Preserve Samples(1 To UBound(SlpFound) + UBound(IntStdFound) + 2) As Integer 'It's necessary to add 2 because the arrays from FindStrings function are dimensioned from 0 to n
     
     'Internal standards are treated like normal samples, so samples and internal standards IDs are copeid to column F in SamList_Sh
     For Each a In SlpFound 'Every ID from samples will be placed in column F
-        SamList_Sh.Cells(c + 1, Range(a).Offset(, 6).Column) = SamList_Sh.Range(a).Offset(, 1)
-            Samples(c - 1) = SamList_Sh.Range(a).Offset(, 1)
-        c = c + 1
+        SamList_Sh.Cells(C + 1, Range(a).Offset(, 6).Column) = SamList_Sh.Range(a).Offset(, 1)
+            Samples(C - 1) = SamList_Sh.Range(a).Offset(, 1)
+        C = C + 1
     Next
     
     If InternalStandardCheck_UPb = True Then
         For Each a In IntStdFound 'Every ID of internal standard will be placed in column F
-            SamList_Sh.Cells(c + 1, Range(a).Offset(, 6).Column) = SamList_Sh.Range(a).Offset(, 1)
-                Samples(c - 1) = SamList_Sh.Range(a).Offset(, 1)
-            c = c + 1
+            SamList_Sh.Cells(C + 1, Range(a).Offset(, 6).Column) = SamList_Sh.Range(a).Offset(, 1)
+                Samples(C - 1) = SamList_Sh.Range(a).Offset(, 1)
+            C = C + 1
         Next
     End If
     
@@ -2510,21 +2510,21 @@ Sub CreateSamListMap()
     'Below, IDs from blanks will be copied to Blanks array
     ReDim Preserve Blanks(1 To UBound(BlkFound) + 1) As Integer 'It's necessary to add 1 because the arrays from FindStrings function are dimensioned from 0 to n
 
-    c = SamList_HeadersLine2
+    C = SamList_HeadersLine2
     
     For Each a In BlkFound
-        Blanks(c - 1) = SamList_Sh.Range(a).Offset(, 1) 'Blanks IDs are copied to a different array (Blanks) which accepts only numbers (IDs)
-        c = c + 1
+        Blanks(C - 1) = SamList_Sh.Range(a).Offset(, 1) 'Blanks IDs are copied to a different array (Blanks) which accepts only numbers (IDs)
+        C = C + 1
     Next
 
     'Below, IDs from external standards will be copied to ExtStandards array
     ReDim Preserve ExtStandards(1 To UBound(StdFound) + 1) As Integer 'It's necessary to add 1 because the arrays from FindStrings function are dimensioned from 0 to n
 
-    c = SamList_HeadersLine2
+    C = SamList_HeadersLine2
     
     For Each a In StdFound 'External standardsd IDs are copied to a different array (Blanks) which accepts only numbers (IDs)
-        ExtStandards(c - 1) = SamList_Sh.Range(a).Offset(, 1)
-        c = c + 1
+        ExtStandards(C - 1) = SamList_Sh.Range(a).Offset(, 1)
+        C = C + 1
     Next
                     
     Call SetPathsNamesIDsTimesCycles
@@ -2743,16 +2743,16 @@ Sub SetPathsNamesIDsTimesCycles()
     'must not be empty. So, we check these conditions below.
         
         If IsEmpty(SamList_Sh.Range(SamList_FilePath & a + 1)) = True Then
-            Application.GoTo SamList_Sh.Range(SamList_FilePath & a + 1)
+            Application.Goto SamList_Sh.Range(SamList_FilePath & a + 1)
             GoTo ErrHandler
             ElseIf IsEmpty(SamList_Sh.Range(SamList_ID & a + 1)) = True Or WorksheetFunction.IsNumber(SamList_Sh.Range(SamList_ID & a + 1)) = False Then
-                Application.GoTo SamList_Sh.Range(SamList_ID & a + 1)
+                Application.Goto SamList_Sh.Range(SamList_ID & a + 1)
                 GoTo ErrHandler
                 ElseIf IsEmpty(SamList_Sh.Range(SamList_FirstCycleTime & a + 1)) = True Or WorksheetFunction.IsNumber(SamList_Sh.Range(SamList_FirstCycleTime & a + 1)) = False Then
-                    Application.GoTo SamList_Sh.Range(SamList_FirstCycleTime & a + 1)
+                    Application.Goto SamList_Sh.Range(SamList_FirstCycleTime & a + 1)
                     GoTo ErrHandler
                     ElseIf IsEmpty(SamList_Sh.Range("E" & a + 1)) = True Then
-                        Application.GoTo SamList_Sh.Range(SamList_Cycles & a + 1)
+                        Application.Goto SamList_Sh.Range(SamList_Cycles & a + 1)
                         GoTo ErrHandler
 
         End If
@@ -2838,7 +2838,7 @@ Sub IdentifyFileType()
     Dim FileNamesStart As Range
     Dim FileNamesEnd As Range
     Dim a As Integer
-    Dim c As Variant
+    Dim C As Variant
     Dim Message1 As Integer
     Dim Message2 As Object
     Dim d(1 To 4) As String
@@ -2863,11 +2863,11 @@ Sub IdentifyFileType()
     Slp_Names = Split(SamplesNames_UPb, ",") 'Splits the string with n names in a array with n elements
     IntStd_Names = Split(InternalStandard_UPb, ",") 'Splits the string with n names in a array with n elements
     
-    c = ConcatenateArrays(All_Names, Blk_Names)
-        c = ConcatenateArrays(All_Names, ExtStd_Names)
-            c = ConcatenateArrays(All_Names, Slp_Names)
+    C = ConcatenateArrays(All_Names, Blk_Names)
+        C = ConcatenateArrays(All_Names, ExtStd_Names)
+            C = ConcatenateArrays(All_Names, Slp_Names)
                 If InternalStandardCheck_UPb = True Then
-                    c = ConcatenateArrays(All_Names, IntStd_Names)
+                    C = ConcatenateArrays(All_Names, IntStd_Names)
                 End If
     
     For a = LBound(All_Names) To UBound(All_Names)
@@ -2878,7 +2878,7 @@ Sub IdentifyFileType()
         For E = a + 1 To UBound(All_Names)
             If All_Names(a) = All_Names(E) Then
                 MsgBox "Names of samples, blanks and standards are duplicated. Please, check them and then retry."
-                    Application.GoTo SamplesNames_UPb
+                    Application.Goto SamplesNames_UPb
                         Call UnloadAll
                             End
             End If
@@ -2898,7 +2898,7 @@ Sub IdentifyFileType()
             'By using "FindStrings", cell addresses in column B of samples are found.
             'By using concatenateArrays, arrays with cell address of each samples are
             'concatenated into only one array.
-            c = ConcatenateArrays( _
+            C = ConcatenateArrays( _
             BlkFound, FindStrings(Blk_Names(a), _
             FileNamesStart, FileNamesEnd))
         Next
@@ -2911,7 +2911,7 @@ Sub IdentifyFileType()
             
             For a = LBound(Slp_Names) To UBound(Slp_Names)
         
-                c = ConcatenateArrays( _
+                C = ConcatenateArrays( _
                 SlpFound, FindStrings(Slp_Names(a), _
                 FileNamesStart, FileNamesEnd))
             Next
@@ -2924,7 +2924,7 @@ Sub IdentifyFileType()
                        Next
                        
                        For a = LBound(IntStd_Names) To UBound(IntStd_Names)
-                           c = ConcatenateArrays( _
+                           C = ConcatenateArrays( _
                            IntStdFound, FindStrings(IntStd_Names(a), _
                            FileNamesStart, FileNamesEnd))
                        Next
@@ -2940,7 +2940,7 @@ Sub IdentifyFileType()
                    Next
                    
                    For a = LBound(ExtStd_Names) To UBound(ExtStd_Names)
-                       c = ConcatenateArrays( _
+                       C = ConcatenateArrays( _
                        StdFound, FindStrings(ExtStd_Names(a), _
                        FileNamesStart, FileNamesEnd))
                    Next
@@ -2954,22 +2954,22 @@ Sub IdentifyFileType()
 
     If IsArrayEmpty(BlkFound) = True Then
         MsgBox "No blanks were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
-            Application.GoTo BlankName_UPb
+            Application.Goto BlankName_UPb
                 Call UnloadAll: End
                 
         ElseIf IsArrayEmpty(SlpFound) = True Then
             MsgBox "No samples were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
-                Application.GoTo SamplesNames_UPb
+                Application.Goto SamplesNames_UPb
                     Call UnloadAll: End
     
             ElseIf IsArrayEmpty(StdFound) = True Then
                 MsgBox "No external standards were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
-                    Application.GoTo ExternalStandardName_UPb
+                    Application.Goto ExternalStandardName_UPb
                         Call UnloadAll: End
               
                 ElseIf InternalStandardCheck_UPb = True And IsArrayEmpty(IntStdFound) = True Then
                     MsgBox "No Internal standards were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
-                        Application.GoTo InternalStandard_UPb
+                        Application.Goto InternalStandard_UPb
                             Call UnloadAll: End
     End If
   
@@ -3037,19 +3037,19 @@ Public Sub LoadSamListMap()
     'must no be empty. So, we check these conditions below.
         
         If IsEmpty(SamList_Sh.Range("H" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("H" & a)) = False Then
-            Application.GoTo SamList_Sh.Range("H" & a)
+            Application.Goto SamList_Sh.Range("H" & a)
             GoTo ErrHandler
             ElseIf IsEmpty(SamList_Sh.Range("I" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("I" & a)) = False Then
-                Application.GoTo SamList_Sh.Range("I" & a)
+                Application.Goto SamList_Sh.Range("I" & a)
                 GoTo ErrHandler
                 ElseIf IsEmpty(SamList_Sh.Range("J" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("J" & a)) = False Then
-                    Application.GoTo SamList_Sh.Range("J" & a)
+                    Application.Goto SamList_Sh.Range("J" & a)
                     GoTo ErrHandler
                     ElseIf IsEmpty(SamList_Sh.Range("K" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("K" & a)) = False Then
-                        Application.GoTo SamList_Sh.Range("K" & a)
+                        Application.Goto SamList_Sh.Range("K" & a)
                         GoTo ErrHandler
                         ElseIf IsEmpty(SamList_Sh.Range("L" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("L" & a)) = False Then
-                            Application.GoTo SamList_Sh.Range("L" & a)
+                            Application.Goto SamList_Sh.Range("L" & a)
                             GoTo ErrHandler
         
         End If
@@ -3110,10 +3110,10 @@ Public Sub LoadStdListMap()
     'must no be empty. So, we check these conditions below.
         
         If IsEmpty(SamList_Sh.Range("F" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("F" & a)) = False Then
-            Application.GoTo SamList_Sh.Range("F" & a)
+            Application.Goto SamList_Sh.Range("F" & a)
             GoTo ErrHandler
             ElseIf IsEmpty(SamList_Sh.Range("G" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("G" & a)) = False Then
-                Application.GoTo SamList_Sh.Range("I" & a)
+                Application.Goto SamList_Sh.Range("I" & a)
                 GoTo ErrHandler
         End If
         
@@ -3154,7 +3154,7 @@ Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
     Dim NumberCycles As Integer
     Dim a As Variant
     Dim B As Variant
-    Dim c As Boolean
+    Dim C As Boolean
     Dim d As Integer
     Dim Counter As Integer
     
@@ -3164,7 +3164,7 @@ Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
             MsgBox "It's impossible to evaluate an analysis with only one cycle. " _
                 & "Please, check the cycles that must be considered for " & WB.Name & ". Look at column E."
                     WB.Close savechanges:=False
-                        Application.GoTo SamList_Sh.Range("A1")
+                        Application.Goto SamList_Sh.Range("A1")
                             End
         End If
         
@@ -3177,23 +3177,23 @@ Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
     Next
         
     For Each a In AllCycles 'ChoosenCyclesArray
-        c = False
+        C = False
         
             For Each B In ChoosenCyclesArray
                 If Val(B) > UBound(AllCycles) Then
                     MsgBox "You have choosen an cycle for " & WB.Name & " that doesn't exist. Please, check it."
                         WB.Close savechanges:=False
-                            Application.GoTo SamList_Sh.Range("A1")
+                            Application.Goto SamList_Sh.Range("A1")
                                 End
                 End If
                     
                 
                 If a = Val(B) Then
-                    c = True: GoTo 1
+                    C = True: GoTo 1
                 End If
             Next
         
-        If c = False Then
+        If C = False Then
             WB.Worksheets(1).Range(RawCyclesTimeRange).Item(a).EntireRow.ClearContents
         End If
 1    Next

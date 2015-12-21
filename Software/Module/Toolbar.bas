@@ -1,6 +1,25 @@
 Attribute VB_Name = "Toolbar"
 Option Explicit
 
+    Private Declare PtrSafe Function ShellExecute Lib "shell32.dll" _
+    Alias "ShellExecuteA" (ByVal hWnd As Long, _
+    ByVal lpOperation As String, ByVal lpFile As String, _
+    ByVal lpParameters As String, ByVal lpDirectory As String, _
+    ByVal nShowCmd As Long) As Long
+    
+    Const SE_ERR_FNF = 2&
+    Const SE_ERR_PNF = 3&
+    Const SE_ERR_ACCESSDENIED = 5&
+    Const SE_ERR_OOM = 8&
+    Const SE_ERR_DLLNOTFOUND = 32&
+    Const SE_ERR_SHARE = 26&
+    Const SE_ERR_ASSOCINCOMPLETE = 27&
+    Const SE_ERR_DDETIMEOUT = 28&
+    Const SE_ERR_DDEFAIL = 29&
+    Const SE_ERR_DDEBUSY = 30&
+    Const SE_ERR_NOASSOC = 31&
+    Const ERROR_BAD_FORMAT = 11&
+    
     Public oToolbar As CommandBar
     Public StartButton As CommandBarButton
     Public Bt As CommandBarButton 'generic CommandBarButton
@@ -20,6 +39,7 @@ Option Explicit
     Public RestoreData As CommandBarButton
     Public CreateaFinalReport As CommandBarButton
     Public ChartTitleAsSampleName As CommandBarButton
+    Public QuestionHelp As CommandBarButton
     
     Const MyToolbar As String = "UPb Data Reduction" ' Give the toolbar a name
 
@@ -59,6 +79,7 @@ Sub AddToolbar()
     Set FilterData = oToolbar.Controls.Add(Type:=msoControlButton)
     Set CreateaFinalReport = oToolbar.Controls.Add(Type:=msoControlButton)
     Set ChartTitleAsSampleName = oToolbar.Controls.Add(Type:=msoControlButton)
+    Set QuestionHelp = oToolbar.Controls.Add(Type:=msoControlButton)
 
     ' And set some of the button's properties
         With StartButton
@@ -238,6 +259,16 @@ Sub AddToolbar()
             .OnAction = "Button_ChartTitleAsSampleName"
             .Style = msoButtonIcon
             .FaceId = 1058
+                    
+        End With
+        
+        With QuestionHelp
+            
+            .DescriptionText = "Opens the support website."
+            .Caption = "Chronus support"
+            .OnAction = "Button_QuestionHelp"
+            .Style = msoButtonIcon
+            .FaceId = 926
                     
         End With
 
@@ -567,6 +598,61 @@ Sub Button_ChartTitleAsSampleName()
     Call ChangeChartTitleToSampleName
 
     Call UnloadAll: End
+    
+End Sub
+
+Sub Button_QuestionHelp()
+
+    'Created 21122015
+    'Based on Walkenbach (2010) OpenURL function, at page 681, and https://support.microsoft.com/en-us/kb/170918
+    'It uses the ShellExecute API function declared at the beginning of this module (based on the microsoft support
+    'page previously cited
+    
+    'This program will try to open the Chronus support website on GitHub.
+    
+    Dim WebAddress As String
+    Dim URL As String
+    Dim Result As Long
+    Dim ErrMsg As String
+
+    WebAddress = "https://github.com/Felipe-UnB/Chronus/issues/new"
+
+    Result = ShellExecute(0&, vbNullString, WebAddress, _
+    vbNullString, vbNullString, vbNormalFocus)
+    
+    If Result <= 32 Then
+        Select Case Result
+            Case SE_ERR_FNF
+                ErrMsg = "File not found"
+            Case SE_ERR_PNF
+                ErrMsg = "Path not found"
+            Case SE_ERR_ACCESSDENIED
+                ErrMsg = "Access denied"
+            Case SE_ERR_OOM
+                ErrMsg = "Out of memory"
+            Case SE_ERR_DLLNOTFOUND
+                ErrMsg = "DLL not found"
+            Case SE_ERR_SHARE
+                ErrMsg = "A sharing violation occurred"
+            Case SE_ERR_ASSOCINCOMPLETE
+                ErrMsg = "Incomplete or invalid file association"
+            Case SE_ERR_DDETIMEOUT
+                ErrMsg = "DDE Time out"
+            Case SE_ERR_DDEFAIL
+                ErrMsg = "DDE transaction failed"
+            Case SE_ERR_DDEBUSY
+                ErrMsg = "DDE busy"
+            Case SE_ERR_NOASSOC
+                ErrMsg = "No association for file extension"
+            Case ERROR_BAD_FORMAT
+                ErrMsg = "Invalid EXE file or error in EXE image"
+            Case Else
+                ErrMsg = "Unknown error"
+        End Select
+        
+        MsgBox "It was not possible to open the support website. (" & ErrMsg & ")"
+        
+    End If
     
 End Sub
 

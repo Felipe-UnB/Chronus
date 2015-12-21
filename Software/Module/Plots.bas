@@ -13,7 +13,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
     Dim SlpStd() As Integer 'Array with samples and INTERNAL standards (treated as samples) IDs only
     Dim ExtStd() As Integer 'Array with external standards IDs only
     Dim Blk() As Integer 'Array with blanks IDs only
-    Dim c As Integer
+    Dim C As Integer
     Dim a As Variant
     Dim H As Double
     Dim FindIDObj As Object
@@ -53,7 +53,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
             H = 1
         Else
             MsgBox "Please, indicate if 206Pb was analyzed using Faraday cup or Ion counter."
-                Application.GoTo (StartANDOptions_Sh.Range("A1"))
+                Application.Goto (StartANDOptions_Sh.Range("A1"))
                     End
     End If
 
@@ -71,38 +71,38 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
     ReDim ExtStd(1 To UBound(StdFound) + 1) As Integer
     ReDim Blk(1 To UBound(BlkFound) + 1) As Integer
     
-    c = 1
+    C = 1
 
         'Samples IDs are copied to a different array (SlpStd) which accepts only numbers (IDs)
         For Each a In SlpFound
-            SlpStd(c) = SamList_Sh.Range(a).Offset(, 1)
-            c = c + 1
+            SlpStd(C) = SamList_Sh.Range(a).Offset(, 1)
+            C = C + 1
         Next
         
         'Internal standards IDs are copied to a different array (SlpStd) which accepts only numbers (IDs)
         For Each a In IntStdFound
-            SlpStd(c) = SamList_Sh.Range(a).Offset(, 1)
-            c = c + 1
+            SlpStd(C) = SamList_Sh.Range(a).Offset(, 1)
+            C = C + 1
         Next
             
-    c = 1
+    C = 1
     
         'External standards IDs are copied to a different array (SlpStd) which accepts only numbers (IDs)
         For Each a In StdFound
-            ExtStd(c) = SamList_Sh.Range(a).Offset(, 1)
-            c = c + 1
+            ExtStd(C) = SamList_Sh.Range(a).Offset(, 1)
+            C = C + 1
         Next
         
-    c = 1
+    C = 1
     
         'Blanks IDs are copied to a different array (SlpStd) which accepts only numbers (IDs)
         For Each a In BlkFound
-            Blk(c) = SamList_Sh.Range(a).Offset(, 1)
-            c = c + 1
+            Blk(C) = SamList_Sh.Range(a).Offset(, 1)
+            C = C + 1
         Next
     
     'The name of the worksheet where data will be plotted should be the same as the analysis
-    Application.GoTo SamList_Sh.Range("A1") 'This line is just necessary to activate the Samlist_Sh
+    Application.Goto SamList_Sh.Range("A1") 'This line is just necessary to activate the Samlist_Sh
     With SamList_Sh.Columns(SamList_Sh.Range(SamList_ID & ":" & SamList_ID).Column)
         Set FindIDObj = .Find(ID)
             
@@ -681,7 +681,7 @@ Sub LineUpMyCharts(Sh As Worksheet, Optional MainChart As Integer)
     
     On Error GoTo 0
     On Error Resume Next
-        Application.GoTo Plot_Sh.Range("A1")
+        Application.Goto Plot_Sh.Range("A1")
         If Err.Number = 0 Then
             On Error GoTo 0
                 Call SampleNameTxtBox
@@ -697,7 +697,7 @@ Sub Plot_CopyData(Source_Sh As Worksheet, Destination_Sh As Worksheet)
     'This procedure copies isotopes signal from the Source_Sh (analyses data files) to the Destination_Sh (Plot_sh and
     'Plot_ShHidden.
     
-    Application.GoTo Source_Sh.Range("A1")
+    Application.Goto Source_Sh.Range("A1")
 
     With Source_Sh
             .Range(RawCyclesTimeRange).Copy Destination_Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1)
