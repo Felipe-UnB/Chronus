@@ -21,6 +21,8 @@ Private Sub Workbook_Open()
         Set StartANDOptions_TW_Sh = TW.Worksheets("Start-AND-Options")
             Set ShowPresentation = StartANDOptions_TW_Sh.Range("B58")
             
+    Call CheckAccessVBPM
+    
     Call CheckIsoplotReference
         
 '    If Application.Version <> "14.0" Then 'Chronus was developed in this version
@@ -53,31 +55,5 @@ Private Sub Workbook_Open()
 
 End Sub
 
-Sub CheckIsoplotReference()
 
-    'Check if Isoplot is installed and loaded.
-
-    Dim i As Long
-    Dim IsoplotFound As Boolean
-    
-    IsoplotFound = False
-    
-    For i = 1 To Application.VBE.ActiveVBProject.References.count
-        
-        If Application.VBE.ActiveVBProject.References(i).Name = "Isoplot4" Then
-            IsoplotFound = True
-                
-                i = Application.VBE.ActiveVBProject.References.count
-        End If
-        
-    Next i
-        
-    If IsoplotFound = False Then
-        MsgBox "Chronus - U-Pb data reduction. " & _
-        "Please, install isoplot before Chronus.", vbOKOnly
-            Call UnloadAll
-                End
-    End If
-    
-End Sub
 
