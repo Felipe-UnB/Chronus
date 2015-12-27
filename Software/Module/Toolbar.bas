@@ -435,8 +435,10 @@ Sub Button_NextID()
     Application.ScreenUpdating = False
 
     Call PublicVariables
+    
+    Set Plot_Sh = ActiveSheet 'This line is necessary because Plot_sh is not set before this procedure
 
-    Call CheckPlotSheet
+    Call CheckPlotSheet(Plot_Sh)
 
     'Plot_Sh.Range(Plot_IDCell) is the range in Plot_Sh with the ID of the plotted analysis.
     If Not IsEmpty(Plot_Sh.Range(Plot_IDCell)) = True And IsNumeric(Plot_Sh.Range(Plot_IDCell)) = True Then
@@ -479,8 +481,10 @@ Sub Button_PreviousID()
     Application.ScreenUpdating = False
 
     Call PublicVariables
-
-    Call CheckPlotSheet
+    
+    Set Plot_Sh = ActiveSheet 'This line is necessary because Plot_sh is not set before this procedure
+    
+    Call CheckPlotSheet(Plot_Sh)
 
     'Plot_Sh.Range(Plot_IDCell) is the range in Plot_Sh with the ID of the plotted analysis.
     If Not IsEmpty(Plot_Sh.Range(Plot_IDCell)) = True And IsNumeric(Plot_Sh.Range(Plot_IDCell)) = True Then

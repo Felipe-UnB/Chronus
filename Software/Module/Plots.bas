@@ -53,7 +53,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
             H = 1
         Else
             MsgBox "Please, indicate if 206Pb was analyzed using Faraday cup or Ion counter."
-                Application.Goto (StartANDOptions_Sh.Range("A1"))
+                Application.GoTo (StartANDOptions_Sh.Range("A1"))
                     End
     End If
 
@@ -102,7 +102,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
         Next
     
     'The name of the worksheet where data will be plotted should be the same as the analysis
-    Application.Goto SamList_Sh.Range("A1") 'This line is just necessary to activate the Samlist_Sh
+    Application.GoTo SamList_Sh.Range("A1") 'This line is just necessary to activate the Samlist_Sh
     With SamList_Sh.Columns(SamList_Sh.Range(SamList_ID & ":" & SamList_ID).Column)
         Set FindIDObj = .Find(ID)
             
@@ -681,7 +681,7 @@ Sub LineUpMyCharts(Sh As Worksheet, Optional MainChart As Integer)
     
     On Error GoTo 0
     On Error Resume Next
-        Application.Goto Plot_Sh.Range("A1")
+        Application.GoTo Plot_Sh.Range("A1")
         If Err.Number = 0 Then
             On Error GoTo 0
                 Call SampleNameTxtBox
@@ -697,7 +697,7 @@ Sub Plot_CopyData(Source_Sh As Worksheet, Destination_Sh As Worksheet)
     'This procedure copies isotopes signal from the Source_Sh (analyses data files) to the Destination_Sh (Plot_sh and
     'Plot_ShHidden.
     
-    Application.Goto Source_Sh.Range("A1")
+    Application.GoTo Source_Sh.Range("A1")
 
     With Source_Sh
             .Range(RawCyclesTimeRange).Copy Destination_Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1)
@@ -802,7 +802,7 @@ Sub Plot_OrdinaryCalculations(Sh As Worksheet)
 
 End Sub
 
-Sub Plot_ClosePlot(Sh As Worksheet, Optional ShowRecalcMsg As Boolean = True)
+Sub Plot_ClosePlot(Plot_Sh As Worksheet, Optional ShowRecalcMsg As Boolean = True)
 
     'This procedure calls the WriteCycles procedure to save the selected cycles of the analyis,
     'the FormatSamList and then deletes the plot_sh and the plot_shhidden.
@@ -814,11 +814,11 @@ Sub Plot_ClosePlot(Sh As Worksheet, Optional ShowRecalcMsg As Boolean = True)
         Call PublicVariables
     End If
     
-    Call CheckPlotSheet
+    Call CheckPlotSheet(Plot_Sh)
 
-    AnalysisID = Sh.Range(Plot_IDCell)
+    AnalysisID = Plot_Sh.Range(Plot_IDCell)
     
-    Set Plot_CyclesTimeRange = Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1, Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb)
+    Set Plot_CyclesTimeRange = Plot_Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1, Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb)
     
     Set FindIDObj = SamList_Sh.Columns(SamList_Sh.Range(SamList_ID & ":" & SamList_ID).Column).Find(AnalysisID)
 
@@ -871,7 +871,7 @@ Sub RestoreOriginalPlotData(Sh)
         Call PublicVariables
     End If
     
-    Call CheckPlotSheet 'check if the activesshet is a valid plot sheet
+    Call CheckPlotSheet(Plot_Sh) 'check if the activesshet is a valid plot sheet
     
     Set SourceRange = Plot_ShHidden.Range(Plot_FirstColumn & Plot_HeaderRow + 1, Plot_LastColumn & Plot_HeaderRow + RawNumberCycles_UPb)
     Set DestinationRange = Plot_Sh.Range(Plot_FirstColumn & Plot_HeaderRow + 1)
@@ -882,13 +882,11 @@ Sub RestoreOriginalPlotData(Sh)
     
 End Sub
 
-Sub CheckPlotSheet()
+Sub CheckPlotSheet(Plot_Sh As Worksheet)
 
     If SamList_Sh Is Nothing Then
         Call PublicVariables
     End If
-
-    Set Plot_Sh = ActiveSheet
     
     'The lines below will check if the activesshet is a valid plot sheet. This is done trying to set Plot_ShHidden to
     'a sheet that has a similar name to a valid plot sheet. The only difference is that it has the string "Hidden".
@@ -929,7 +927,7 @@ Sub SampleNameTxtBox()
             Exit Sub
     End If
 
-    Set SplNameLabel = Plot_Sh.Shapes.AddTextbox(msoTextOrientationHorizontal, 970, _
+    Set SplNameLabel = Plot_Sh.Shapes.AddTextbox(msoTextOrientationHorizontal, 800, _
         200, 100, 100)
     
     With SplNameLabel.TextFrame2
@@ -951,9 +949,6 @@ Sub AddIgnoreSplButton()
 
     Dim IgnoreButtonForm As Button
     Dim CallingProcedure As String
-    
-    Set Plot_Sh = ActiveSheet
-    
     
     Call PublicVariables
     
