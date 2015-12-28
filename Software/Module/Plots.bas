@@ -53,7 +53,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
             H = 1
         Else
             MsgBox "Please, indicate if 206Pb was analyzed using Faraday cup or Ion counter."
-                Application.Goto (StartANDOptions_Sh.Range("A1"))
+                Application.GoTo (StartANDOptions_Sh.Range("A1"))
                     End
     End If
 
@@ -102,7 +102,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
         Next
     
     'The name of the worksheet where data will be plotted should be the same as the analysis
-    Application.Goto SamList_Sh.Range("A1") 'This line is just necessary to activate the Samlist_Sh
+    Application.GoTo SamList_Sh.Range("A1") 'This line is just necessary to activate the Samlist_Sh
     With SamList_Sh.Columns(SamList_Sh.Range(SamList_ID & ":" & SamList_ID).Column)
         Set FindIDObj = .Find(ID)
             
@@ -681,7 +681,7 @@ Sub LineUpMyCharts(Sh As Worksheet, Optional MainChart As Integer)
     
     On Error GoTo 0
     On Error Resume Next
-        Application.Goto Plot_Sh.Range("A1")
+        Application.GoTo Plot_Sh.Range("A1")
         If Err.Number = 0 Then
             On Error GoTo 0
                 Call SampleNameTxtBox
@@ -697,7 +697,7 @@ Sub Plot_CopyData(Source_Sh As Worksheet, Destination_Sh As Worksheet)
     'This procedure copies isotopes signal from the Source_Sh (analyses data files) to the Destination_Sh (Plot_sh and
     'Plot_ShHidden.
     
-    Application.Goto Source_Sh.Range("A1")
+    Application.GoTo Source_Sh.Range("A1")
 
     With Source_Sh
             .Range(RawCyclesTimeRange).Copy Destination_Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1)
@@ -860,7 +860,7 @@ Sub Plot_ClosePlot(Plot_Sh As Worksheet, Optional ShowRecalcMsg As Boolean = Tru
     
 End Sub
 
-Sub RestoreOriginalPlotData(Sh)
+Sub RestoreOriginalPlotData(Plot_Sh As Worksheet)
    
     Dim SourceRange As Range
     Dim DestinationRange As Range

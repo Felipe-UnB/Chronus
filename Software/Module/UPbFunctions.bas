@@ -253,7 +253,7 @@ Dim a As Double
     LineFitStdDev = Sqr(a / (rng1Count - 2))
         If LineFitStdDev = 0 Then
             MsgBox "It's not possible to calculate standard deviation for points of the line. All cells are empty or not populated with number"
-                Application.Goto Rng1
+                Application.GoTo Rng1
                     End
         End If
     
@@ -719,7 +719,7 @@ Function TetaFactor(a As Integer)
                 
                 With SamList_Sh.Columns(SamList_ID)
                     Set FindIDObj = .Find(AnalysesList(a).sample)
-                    Application.Goto .Range(FindIDObj.Address)
+                    Application.GoTo .Range(FindIDObj.Address)
                 End With
                     
                     End

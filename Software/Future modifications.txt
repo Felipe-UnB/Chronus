@@ -1,0 +1,6 @@
+Given a version number 
+Major modifications
+Minor modifications
+Patches
+	When the final report is being created, if the background of any of the analyses is filled, an error is raised.
+
