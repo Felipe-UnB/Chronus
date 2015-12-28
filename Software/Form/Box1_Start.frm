@@ -468,7 +468,7 @@ Private Sub CommandButton3_Ok_Click()
         Else
             Application.ScreenUpdating = ScreenUpd
                 Call UnloadAll
-                    Application.GoTo SamList_Sh.Range("A1")
+                    Application.Goto SamList_Sh.Range("A1")
         End If
 
     mwbk.Save

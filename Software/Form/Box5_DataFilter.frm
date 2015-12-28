@@ -293,6 +293,7 @@ Private Sub Ok_Click()
     Dim Count3 As Long
     Dim Count4 As Long
     Dim Count5 As Long
+    Dim AnalysesTotal As Long 'Number of analyses
     
     Box5_DataFilter.Hide
     
@@ -336,11 +337,15 @@ Private Sub Ok_Click()
                 MsgBox ("The filter can not be applied, there are cells missing in SlpStdCorr_Sh.")
                     Call UnloadAll
                         End
+        Else
+            
+            AnalysesTotal = Count1
+            
         End If
             'Procedures below will check Ratio Error75, Rho and f206 based on criteria indicated by user.
                  
     
-    Call FilterAnalysis
+    Call FilterAnalysis(AnalysesTotal)
 
         Call AutoSelectAnalyses
 
@@ -551,7 +556,7 @@ Private Sub TextBox1_KeyPress(ByVal KeyAscii As MSForms.ReturnInteger)
     
 End Sub
 
-Sub FilterAnalysis()
+Sub FilterAnalysis(AnalysesTotal As Long)
 
     Dim SearchStr As Long
     Dim Convert75Percent As Double
@@ -563,35 +568,66 @@ Sub FilterAnalysis()
     Dim RemoveCells() As Long
     Dim RemoveCellsRange As Range
     
+    Dim Countf206 As Long
+    Dim CountError75 As Long
+    Dim CountRho As Long
+    Dim CountConcordance As Long
+    Dim CountBadResults As Long
+    
+    Dim FailedAnalyses As Long
+    
         SearchStr = InStr(SlpStdCorr_Sh.Range(StdCorr_Column751Std & StdCorr_HeaderRow), "%")
         
         For Each CellInRange In Error75Range
             
-            If SearchStr = 0 Then
-                Convert75Percent = 100 * (CellInRange / CellInRange.Offset(, -1))
-            Else
-                Convert75Percent = CellInRange
-            End If
+            On Error Resume Next
             
-            If IsNumeric(CellInRange) = False Or Convert75Percent > Error75 Or CellInRange < 0 Then
-                'CellInRange.EentireRow.Font.Strikethrough = True
-                Call FailAnalysisFilter(CellInRange)
-            End If
+                If SearchStr = 0 Then
+                    Convert75Percent = 100 * (CellInRange / CellInRange.Offset(, -1))
+                Else
+                    Convert75Percent = CellInRange
+                End If
+                
+                If IsNumeric(CellInRange) = False Then
+                
+                    CountBadResults = CountBadResults + 1
+                    
+                ElseIf Convert75Percent > Error75 Or CellInRange < 0 Then
+                
+                    Call FailAnalysisFilter(CellInRange)
+                        CountError75 = CountError75 + 1
+                End If
+            
+            On Error GoTo 0
             
         Next
         
             For Each CellInRange In RhoRange
             
-                If IsNumeric(CellInRange) = False Or CellInRange < Rho Or CellInRange < 0 Then
+                If IsNumeric(CellInRange) = False Then
+                
+                    CountBadResults = CountBadResults + 1
+                    
+                ElseIf CellInRange < Rho Or CellInRange < 0 Then
+                
                     Call FailAnalysisFilter(CellInRange)
+                        CountRho = CountRho + 1
+                        
                 End If
 
             Next
             
                  For Each CellInRange In f206Range
                  
-                    If IsNumeric(CellInRange) = False Or CellInRange > f206 Or CellInRange < 0 Then
+                    If IsNumeric(CellInRange) = False Then
+                    
+                        CountBadResults = CountBadResults + 1
+                    
+                    ElseIf CellInRange > f206 Or CellInRange < 0 Then
+                        
                         Call FailAnalysisFilter(CellInRange)
+                            Countf206 = Countf206 + 1
+                    
                     End If
                 
                 Next
@@ -600,96 +636,157 @@ Sub FilterAnalysis()
         'The procecures below are resposinble for this.
             
         If IgneousRock = True Then 'If it's an igneous rock.
-            For Each CellInRange In Age68Range
-                    
-                    If IsNumeric(CellInRange) = True And CellInRange <= Age68Limit Then
+            
+            On Error Resume Next
+            
+                For Each CellInRange In Age68Range
                         
-                        On Error Resume Next
+                        If IsNumeric(CellInRange) = True Then
+                        
+                            If CellInRange <= Age68Limit Then
+                                    
+                                Conc6875 = SlpStdCorr_Sh.Range(StdCorr_Column6875Conc & CellInRange.Row)
                             
-                            Conc6875 = SlpStdCorr_Sh.Range(StdCorr_Column6875Conc & CellInRange.Row)
-                        
-                            If Err.Number = 0 Then
-                                Select Case Conc6875 '68-75 concordance was chosen
-                                    
-                                    Case Is < MinValue
-                                        Call FailAnalysisFilter(CellInRange)
-                                    
-                                    Case Is >= MaxValue
-                                        Call FailAnalysisFilter(CellInRange)
+                                If Err.Number = 0 Then
                                 
-                                End Select
-                            Else
-                                Call FailAnalysisFilter(CellInRange)
-                            End If
-                        
-                        On Error GoTo 0
-                        
-                    End If
+                                    Select Case Conc6875 '68-75 concordance was chosen
+                                        
+                                        Case Is < MinValue
+                                            Call FailAnalysisFilter(CellInRange)
+                                                CountConcordance = CountConcordance + 1
+                                        
+                                        Case Is >= MaxValue
+                                            Call FailAnalysisFilter(CellInRange)
+                                                CountConcordance = CountConcordance + 1
+                                                
+                                    End Select
                                     
-                    If IsNumeric(CellInRange) = True And CellInRange > Age68Limit Then
-                        
-                        On Error Resume Next
-                        
-                            Conc6876 = SlpStdCorr_Sh.Range(StdCorr_Column6876Conc & CellInRange.Row)
+                                Else
+                                
+                                    Call FailAnalysisFilter(CellInRange)
+                                        CountBadResults = CountBadResults + 1
+                                        
+                                End If
+                                                                        
+                            Else
+                                
+                                Conc6876 = SlpStdCorr_Sh.Range(StdCorr_Column6876Conc & CellInRange.Row)
+                                
+                                If Err.Number = 0 Then
+                                
+                                    Select Case Conc6876 '68/76 concordance was chosen
+                                        
+                                        Case Is < MinValue
+                                            Call FailAnalysisFilter(CellInRange)
+                                                CountConcordance = CountConcordance + 1
+                                        
+                                        Case Is >= MaxValue
+                                            Call FailAnalysisFilter(CellInRange)
+                                                CountConcordance = CountConcordance + 1
+                                    
+                                    End Select
+                                    
+                                Else
+                                
+                                    Call FailAnalysisFilter(CellInRange)
+                                        CountBadResults = CountBadResults + 1
+                                
+                                End If
                             
-                            If Err.Number = 0 Then
-                                Select Case Conc6876 '68/76 concordance was chosen
-                                    
-                                    Case Is < MinValue
-                                        Call FailAnalysisFilter(CellInRange)
-                                    
-                                    Case Is >= MaxValue
-                                        Call FailAnalysisFilter(CellInRange)
-                                
-                                End Select
-                            Else
-                                Call FailAnalysisFilter(CellInRange)
                             End If
+                            
+                        Else
+                        
+                            Call FailAnalysisFilter(CellInRange)
+                                CountBadResults = CountBadResults + 1
+                                    
+                        End If
                     
-                    End If
-10          Next
+                    Err.Clear
+                    
+                Next
+                
+            On Error GoTo 0
         
     ElseIf SedimentaryRock = True Then
-            For Each CellInRange In Age68Range
-                    If IsNumeric(CellInRange) = True And CellInRange <= Age68Limit Then
-                        
-                        Conc6875 = SlpStdCorr_Sh.Range(StdCorr_Column6875Conc & CellInRange.Row)
-
-                        Select Case Conc6875 '68-75 concordance was chosen
-                            
-                            Case Is < MinValue
-                                Call FailAnalysisFilter(CellInRange)
-                        
-                            Case Is >= MaxValue
-                                Call FailAnalysisFilter(CellInRange)
-                        
-                        End Select
+            
+            On Error Resume Next
+            
+                For Each CellInRange In Age68Range
                     
-                    End If
-                    
-                    If IsNumeric(CellInRange) = True And CellInRange > Age68Limit Then
-
-                        Conc6876 = SlpStdCorr_Sh.Range(StdCorr_Column6876Conc & CellInRange.Row)
+                        If IsNumeric(CellInRange) = True Then
                         
-                        Select Case Conc6876 '68/76 concordance was chosen
+                            If CellInRange <= Age68Limit Then
+                                
+                                Conc6875 = SlpStdCorr_Sh.Range(StdCorr_Column6875Conc & CellInRange.Row)
+                                
+                                If Err.Number = 0 Then
+                                
+                                    Select Case Conc6875 '68-75 concordance was chosen
+                                        
+                                        Case Is < MinValue
+                                            Call FailAnalysisFilter(CellInRange)
+                                                CountConcordance = CountConcordance + 1
+                                    
+                                        Case Is >= MaxValue
+                                            Call FailAnalysisFilter(CellInRange)
+                                                CountConcordance = CountConcordance + 1
+                                                
+                                    End Select
+                                                  
+                                Else
+                                
+                                    CountBadResults = CountBadResults + 1
+                                        
+                                End If
+                                                  
+                            Else
+        
+                                Conc6876 = SlpStdCorr_Sh.Range(StdCorr_Column6876Conc & CellInRange.Row)
+                                
+                                If Err.Number = 0 Then
+                                    
+                                    Select Case Conc6876 '68/76 concordance was chosen
+                                        
+                                        Case Is < MinValue
+                                            Call FailAnalysisFilter(CellInRange)
+                                                CountConcordance = CountConcordance + 1
+                                        
+                                        Case Is >= MaxValue
+                                            Call FailAnalysisFilter(CellInRange)
+                                                CountConcordance = CountConcordance + 1
+                                                
+                                    End Select
+                                    
+                                Else
+                                    
+                                    CountBadResults = CountBadResults + 1
+                                        
+                                End If
+                                    
+                            End If
                             
-                            Case Is < MinValue
-                                Call FailAnalysisFilter(CellInRange)
-                            
-                            Case Is >= MaxValue
-                                Call FailAnalysisFilter(CellInRange)
+                        Else
                         
-                        End Select
+                            CountBadResults = CountBadResults + 1
+                        
+                        End If
                     
-                    End If
-20          Next
+                    Err.Clear
+                    
+                Next
+        
+            On Error GoTo 0
             
         End If
         
         ReDim RemoveCells(1 To 1) As Long
         Count1 = 1
         
-        'CONTINUAR - Quando as celulas são as últimas, o range automaticamente aumenta para inseri-las.
+        'These following two blocks of code will send the bad analyses to the end of the list (first block) and
+        'then delete the empty rows
+        
+        'Block1
         For Each CellInRange In Range75
             If CellInRange.Font.Strikethrough = True Then
                 
@@ -711,6 +808,7 @@ Sub FilterAnalysis()
             End If
         Next
         
+        'Block 2
         Count1 = 1
         Count2 = 0
         
@@ -728,6 +826,10 @@ Sub FilterAnalysis()
             Next
         End If
         
+        FailedAnalyses = UBound(RemoveCells) - 1
+        
+        Call ShowDataFilterResult(AnalysesTotal, FailedAnalyses, Countf206, CountError75, CountRho, CountConcordance)
+
 End Sub
 
 Private Sub FailAnalysisFilter(CellRange As Range)
@@ -737,6 +839,42 @@ Private Sub FailAnalysisFilter(CellRange As Range)
         '.TintAndShade = 0
         .Strikethrough = True
     End With
+
+End Sub
+
+Private Sub ShowDataFilterResult( _
+    AnalysesTotal As Long, _
+    FailedAnalyses As Long, _
+    Countf206 As Long, _
+    CountError75 As Long, _
+    CountRho As Long, _
+    CountConcordance As Long)
+    
+    'The arguments of this procedure are the number of analysis that failed the respective tests
+    
+    Dim Countf206Percent As Long
+    Dim CountError75Percent As Long
+    Dim CountRhoPercent As Long
+    Dim CountConcordancePercent As Long
+    
+    Countf206Percent = 100 * Countf206 / FailedAnalyses
+    CountError75Percent = 100 * CountError75 / FailedAnalyses
+    CountRhoPercent = 100 * CountRho / FailedAnalyses
+    CountConcordancePercent = 100 * CountConcordance / FailedAnalyses
+    
+    Load Box8_DataFilterResult
+    
+    With Box8_DataFilterResult
+        .Label2_Concordance = CountConcordance & " (" & CountConcordancePercent & "%)"
+        .Label2_Error75 = CountError75 & " (" & CountError75Percent & "%)"
+        .Label2_F206 = Countf206 & " (" & Countf206Percent & "%)"
+        .Label2_Rho = CountRho & " (" & CountRhoPercent & "%)"
+        .Label2_Total = AnalysesTotal & " (" & FailedAnalyses & " failed)"
+        
+        .Show
+    End With
+            
+    
 
 End Sub
 
