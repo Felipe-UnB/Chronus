@@ -1,6 +1,22 @@
-Given a version number 
-Major modifications
-Minor modifications
-Patches
-	When the final report is being created, if the background of any of the analyses is filled, an error is raised.
+"Given a version number MAJOR.MINOR.PATCH, increment the:
+1. MAJOR version when you make incompatible API changes,
+2. MINOR version when you add functionality in a backwards-compatible manner, and
+3. PATCH version when you make backwards-compatible bug fixes."
 
+Description from Semantic Versioning 2.0.0 by Tom Preston-Werner
+
+Description of Chronus modifications
+	Major
+	
+	Minor
+		The order of analyses is changed when the final report is created. This must be corrected so the order is preserved.
+	
+		There is prototype for a new watch window for the data reduction process that should be implemented. In the first 
+		attempt, there were some decrease of the program efficiency.
+		
+	Patches
+		When the final report is being created, if the background of any of the analyses is filled, an error is raised.
+		
+		The folder with the raw data files is asked twice in the beginning of the process with no clear reason.
+		
+		
