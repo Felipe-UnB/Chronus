@@ -14,6 +14,10 @@ Description of Chronus modifications
 		There is prototype for a new watch window for the data reduction process that should be implemented. In the first 
 		attempt, there were some decrease of the program efficiency.
 		
+		With the objective to compile the results os standard through the year, a new tool was designed to search standards'
+		results in SlpStdCorr sheets. This tool must be redesigned to allow the search for more information in SlpStdCorr
+		and SlpStdBlkCorr sheet.
+		
 	Patches
 		When the final report is being created, if the background of any of the analyses is filled, an error is raised.
 		
