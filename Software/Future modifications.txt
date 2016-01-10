@@ -18,6 +18,8 @@ Description of Chronus modifications
 		results in SlpStdCorr sheets. This tool must be redesigned to allow the search for more information in SlpStdCorr
 		and SlpStdBlkCorr sheet.
 		
+		Create a way to plot the ages calculated using ArcGIS.
+		
 	Patches
 		When the final report is being created, if the background of any of the analyses is filled, an error is raised.
 		
