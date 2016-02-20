@@ -8,7 +8,12 @@ Public Const Comp_AnalysisID As String = "C"
 Public Const Comp_HeaderRow As Long = 1
 Public CounterRow As Long
 
-Sub MainProgram()
+Sub CompileAnalyses()
+
+    'This procedure will allow the user to open multiple results (.xlsx) and copy the
+    'selected analyses to a single file.
+    
+    'Only results at SlpStdCorr sheets can be copied.
 
     Application.ScreenUpdating = False
     Application.DisplayAlerts = False
@@ -21,7 +26,9 @@ Sub MainProgram()
     Application.DisplayAlerts = True
 End Sub
 
-Sub CreateWorkbookForStandards()
+Sub CreateWorkbookForAnalyses()
+
+    'Creates a new workbook, with the SplStdCorr sheet to store the compiled results.
     
     Dim NewWorkbook As Workbook
     
@@ -34,6 +41,7 @@ Sub CreateWorkbookForStandards()
         
         Call FormatSlpStdCorr(True, False)
         
+        'The lines below will add two columns (for samples' names and analyses' date)
         .Range("A1").Columns.EntireColumn.Insert (xlShiftToRight)
         .Range("A1").Columns.EntireColumn.Insert (xlShiftToRight)
         
@@ -54,6 +62,10 @@ Sub CreateWorkbookForStandards()
 End Sub
 
 Sub StandardCompilation()
+
+    'This procedure checks all files in the selected folder. For those with the
+    'DesiredExtension, they are opened and then the CopyStandard procedure is
+    'called.
 
     Dim FSO As Scripting.FileSystemObject
     Dim WorkbooksFolder As Object 'Scripting.Folder
@@ -78,13 +90,11 @@ Sub StandardCompilation()
         End If
     On Error GoTo 0
 
-    InputBoxStandardName = InputBox("What is the name of the standard?", "Standard Name")
+    InputBoxStandardName = InputBox("What is the name of the analysis?", "Analysis Name")
         
         If InputBoxStandardName = False Or Len(InputBoxStandardName) = 0 Then
-            MsgBox "The program will stop."
+            MsgBox "No name provided."
                 End
-'        Else
-'            StandardName = InputBoxStandardName
         End If
 
     CounterRow = StdCorr_HeaderRow + 1
@@ -97,8 +107,6 @@ Sub StandardCompilation()
                 Set CellToPaste = SlpStdCorr_Sh.Range(Comp_AnalysisID & CounterRow)
             
             Call CopyStandard(InputBoxStandardName, OpenedWorkbook, CellToPaste)
-                
-                'CounterRow = CounterRow + 1
             
             OpenedWorkbook.Close (False)
             
@@ -108,7 +116,7 @@ Sub StandardCompilation()
 
 End Sub
 
-Sub SelectFolderCompilation()
+Function SelectFolderCompilation() As String
 
     'A slightly different version of the original SelectFolder procedure to let the user just select the folder where the workbooks with
     'standard results are
@@ -119,7 +127,6 @@ Sub SelectFolderCompilation()
     Dim strDialogTitle As String
     Dim SelectDialog As FileDialog
     Dim SelectionDone As Integer
-    'Dim StandardFolderPath As String  - I pretend to use this variable to check if the usar has chosen some folder and not just hit the "Select a Folder" button
         
     Set SelectDialog = Application.FileDialog(msoFileDialogFolderPicker)
     
@@ -146,8 +153,10 @@ Sub SelectFolderCompilation()
         
         On Error GoTo 0
     End With
+    
+    SelectFolderCompilation = FolderAddress
   
-End Sub
+End Function
 
 Sub CopyStandard(StandardName As String, WB As Workbook, CellToPaste As Range)
 
@@ -183,18 +192,6 @@ Sub CopyStandard(StandardName As String, WB As Workbook, CellToPaste As Range)
                                 SlpStdCorr_Sh.Range(Comp_SampleNameColumn & CellToPaste.Row + Counter) = WB.Name
                                 
                         Counter = Counter + 1
-'                        On Error Resume Next
-'                            With WB.Worksheets(SamList_Sh_Name)
-'
-'                                Set FindDate = .Range(SamList_FileName & 1).EntireColumn.Find(FindStandard.Value)
-'
-'                                    If Err.Number = 0 Then
-'                                        Set AnalysisDateRange = .Range(SamList_FirstCycleTime & FindDate.Row)
-'                                            AnalysisDateRange.Copy
-'                                                SlpStdCorr_Sh.Range(Comp_AnalysisDateColumn & CellToPaste.Row).PasteSpecial (xlPasteValuesAndNumberFormats)
-'                                    End If
-'                            End With
-'                        On Error GoTo 0
             
                         With Ws.Range(StdCorr_SlpName & 1, Ws.Range(StdCorr_SlpName & 1).End(xlDown))
                             Set FindStandard = .FindNext(FindStandard)
@@ -208,5 +205,26 @@ Sub CopyStandard(StandardName As String, WB As Workbook, CellToPaste As Range)
     
     CounterRow = CounterRow + Counter
     
+End Sub
+
+Sub ComboBoxSheetsNames()
+
+    'This program will populate comboxes from Box1_Start
+    'and Box2_UPb_Options will standards informations
+    'stored in add-in workbook.
+
+    Dim StandardsNamesHeader As Range 'Cell with standard names header.
+    Dim Counter As Integer 'Used to add itens to External Standard ComboBox
+    Dim SheetsNames(1 To 3) As String
+    
+    'The lines below will add values to the array SheetsNames
+    SheetsNames(1) = BlkCalc_Sh_Name
+    SheetsNames(2) = SlpStdBlkCorr_Sh_Name
+    SheetsNames(3) = SlpStdCorr_Sh_Name
+
+    For Counter = 1 To UBound(SheetsNames)
+        Box9_CompileResults.ComboBox1_Sheets.AddItem (SheetsNames(Counter))
+    Next
+
 End Sub
 
