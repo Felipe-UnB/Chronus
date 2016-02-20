@@ -15,6 +15,25 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+Private Sub CommandButton3_Ok_Click()
+
+        
+    If Len(TextBox1_AnalysesNames) = 0 Then
+        MsgBox "No name provided."
+            TextBox1_AnalysesNames.SetFocus
+                Exit Sub
+    End If
+    
+    If ComboBox1_Sheets = "" Then
+        MsgBox "The sheet to search in was not selected.", vbOKOnly
+            ComboBox1_Sheets.SetFocus
+                Exit Sub
+    End If
+    
+    Call CompileAnalyses
+
+End Sub
+
 Private Sub CommandButton4_Click()
 
     FolderAddress = SelectFolderCompilation
@@ -22,6 +41,14 @@ Private Sub CommandButton4_Click()
 End Sub
 
 Private Sub Label14_Click()
+
+End Sub
+
+Private Sub TextBox8_BlankName_Change()
+
+End Sub
+
+Private Sub TextBox1_AnalysesNames_Change()
 
 End Sub
 

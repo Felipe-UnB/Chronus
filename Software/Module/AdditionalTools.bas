@@ -7,6 +7,7 @@ Public Const Comp_AnalysisDateColumn As String = "B"
 Public Const Comp_AnalysisID As String = "C"
 Public Const Comp_HeaderRow As Long = 1
 Public CounterRow As Long
+Dim NewSheet As Worksheet
 
 Sub CompileAnalyses()
 
@@ -18,8 +19,7 @@ Sub CompileAnalyses()
     Application.ScreenUpdating = False
     Application.DisplayAlerts = False
         
-        Call SelectFolderCompilation
-        Call CreateWorkbookForStandards
+        Call CreateWorkbookForAnalyses
         Call StandardCompilation
         
     Application.ScreenUpdating = True
@@ -29,18 +29,32 @@ End Sub
 Sub CreateWorkbookForAnalyses()
 
     'Creates a new workbook, with the SplStdCorr sheet to store the compiled results.
+    'Updated 19022015 - Different sheets are created depending on the user choice for
+    'the type of sheet to be examined.
     
     Dim NewWorkbook As Workbook
     
     Set NewWorkbook = Application.Workbooks.Add
-    Set SlpStdCorr_Sh = NewWorkbook.Worksheets(1)
+    Set NewSheet = NewWorkbook.Worksheets(1)
     
-    With SlpStdCorr_Sh
+    With NewSheet
         
-        .Name = SlpStdCorr_Sh_Name
-        
-        Call FormatSlpStdCorr(True, False)
-        
+        Select Case ComboBox1_Sheets
+            
+            Case BlkCalc_Sh_Name
+                .Name = BlkCalc_Sh_Name
+                    Call FormatBlkCalc(True)
+            
+            Case SlpStdBlkCorr_Sh_Name
+                .Name = SlpStdBlkCorr_Sh_Name
+                    Call FormatSlpStdBlkCorr(True)
+            
+            Case SlpStdCorr_Sh_Name
+                .Name = SlpStdCorr_Sh_Name
+                    Call FormatSlpStdCorr(True, False)
+                    
+        End Select
+                
         'The lines below will add two columns (for samples' names and analyses' date)
         .Range("A1").Columns.EntireColumn.Insert (xlShiftToRight)
         .Range("A1").Columns.EntireColumn.Insert (xlShiftToRight)
@@ -74,7 +88,6 @@ Sub StandardCompilation()
     Dim DesiredExtension As String 'String to be removed from the name of the sample
     Dim OpenedWorkbook As Workbook
     Dim StandardName As String
-    Dim InputBoxStandardName As String
     Dim CellToPaste As Range
  
     DesiredExtension = "xlsx"
@@ -90,13 +103,6 @@ Sub StandardCompilation()
         End If
     On Error GoTo 0
 
-    InputBoxStandardName = InputBox("What is the name of the analysis?", "Analysis Name")
-        
-        If InputBoxStandardName = False Or Len(InputBoxStandardName) = 0 Then
-            MsgBox "No name provided."
-                End
-        End If
-
     CounterRow = StdCorr_HeaderRow + 1
 
     For Each File In WorkbooksFolder.Files
@@ -104,7 +110,7 @@ Sub StandardCompilation()
         If FSO.getExtensionName(File.path) = DesiredExtension Then
             
             Set OpenedWorkbook = Workbooks.Open(File.path)
-                Set CellToPaste = SlpStdCorr_Sh.Range(Comp_AnalysisID & CounterRow)
+                Set CellToPaste = NewSheet.Range(Comp_AnalysisID & CounterRow)
             
             Call CopyStandard(InputBoxStandardName, OpenedWorkbook, CellToPaste)
             
