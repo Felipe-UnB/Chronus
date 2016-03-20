@@ -24,8 +24,8 @@ Option Explicit
     Public StartButton As CommandBarButton
     Public Bt As CommandBarButton 'generic CommandBarButton
     Public OpenFiles As CommandBarButton
-    Public SlpStdBlkCorr_Calc As CommandBarButton
-    Public SlpStdCorr_Calc As CommandBarButton
+'    Public SlpStdBlkCorr_Calc As CommandBarButton
+'    Public SlpStdCorr_Calc As CommandBarButton
     Public ConvertToPercent As CommandBarButton
     Public ConvertToAbsolute As CommandBarButton
     Public StartOptions As CommandBarButton
@@ -64,8 +64,8 @@ Sub AddToolbar()
     ' Now add a button to the new toolbar
     Set StartOptions = oToolbar.Controls.Add(Type:=msoControlButton)
     Set StartButton = oToolbar.Controls.Add(Type:=msoControlButton)
-    Set SlpStdBlkCorr_Calc = oToolbar.Controls.Add(Type:=msoControlButton)
-    Set SlpStdCorr_Calc = oToolbar.Controls.Add(Type:=msoControlButton)
+'    Set SlpStdBlkCorr_Calc = oToolbar.Controls.Add(Type:=msoControlButton)
+'    Set SlpStdCorr_Calc = oToolbar.Controls.Add(Type:=msoControlButton)
     Set ConvertToPercent = oToolbar.Controls.Add(Type:=msoControlButton)
     Set ConvertToAbsolute = oToolbar.Controls.Add(Type:=msoControlButton)
     Set FormatSheets = oToolbar.Controls.Add(Type:=msoControlButton)
@@ -111,25 +111,25 @@ Sub AddToolbar()
 
         End With
 
-        With SlpStdBlkCorr_Calc
-
-            .DescriptionText = "Calculates samples and standards (internal and external) blank corrected ratios and errors."
-            .Caption = "Correct data for blank"
-            .OnAction = "Button3_CalcAllSlpStd_BlkCorr" 'Procedure that will be executed when this button is clicked
-            .Style = msoButtonIcon
-            .FaceId = 1771
-
-        End With
-
-        With SlpStdCorr_Calc
-
-            .DescriptionText = "Correct all samples and internal standards by external standard."
-            .Caption = "Correct all sample by standard"
-            .OnAction = "Button4_CalcAllSlp_StdCorr"
-            .Style = msoButtonIcon
-            .FaceId = 2112
-
-        End With
+'        With SlpStdBlkCorr_Calc
+'
+'            .DescriptionText = "Calculates samples and standards (internal and external) blank corrected ratios and errors."
+'            .Caption = "Correct data for blank"
+'            .OnAction = "Button3_CalcAllSlpStd_BlkCorr" 'Procedure that will be executed when this button is clicked
+'            .Style = msoButtonIcon
+'            .FaceId = 1771
+'
+'        End With
+'
+'        With SlpStdCorr_Calc
+'
+'            .DescriptionText = "Correct all samples and internal standards by external standard."
+'            .Caption = "Correct all sample by standard"
+'            .OnAction = "Button4_CalcAllSlp_StdCorr"
+'            .Style = msoButtonIcon
+'            .FaceId = 2112
+'
+'        End With
 
         With ConvertToPercent
 
@@ -297,8 +297,9 @@ Sub Button1_FullDataReduction()
      'You 'd put your real working code here to do whatever
      'it is that you want to do
 
-    Call FullDataReduction
-
+    'Call FullDataReduction
+    Box7_FullReduction.Show 'New interface to control what is being done
+    
     Call UnloadAll: End
 
 End Sub
@@ -311,33 +312,33 @@ Sub Button2_OpenFilesByIDs()
 
 End Sub
 
-Sub Button3_CalcAllSlpStd_BlkCorr()
-
-    Application.ScreenUpdating = False
-
-    Call ConvertAbsolute
-        Call CalcAllSlpStd_BlkCorr
-            Call FormatMainSh
-
-    Call UnloadAll: End
-
-    Application.ScreenUpdating = True
-
-End Sub
-
-Sub Button4_CalcAllSlp_StdCorr()
-
-    Application.ScreenUpdating = False
-
-    Call ConvertAbsolute
-        Call CalcAllSlp_StdCorr
-            Call FormatMainSh
-
-    Call UnloadAll: End
-
-    Application.ScreenUpdating = True
-
-End Sub
+'Sub Button3_CalcAllSlpStd_BlkCorr()
+'
+'    Application.ScreenUpdating = False
+'
+'    Call ConvertAbsolute
+'        Call CalcAllSlpStd_BlkCorr
+'            Call FormatMainSh
+'
+'    Call UnloadAll: End
+'
+'    Application.ScreenUpdating = True
+'
+'End Sub
+'
+'Sub Button4_CalcAllSlp_StdCorr()
+'
+'    Application.ScreenUpdating = False
+'
+'    Call ConvertAbsolute
+'        Call CalcAllSlp_StdCorr
+'            Call FormatMainSh
+'
+'    Call UnloadAll: End
+'
+'    Application.ScreenUpdating = True
+'
+'End Sub
 
 Sub Button_ConvertToPercent()
 

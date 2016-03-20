@@ -99,7 +99,8 @@ Private Sub CommandButton2_TestAll_Click()
     
     If MsgBox("Would you like to start the complete data reduction process, in order to the " & _
     "standard deviation test be effective? ", vbYesNo) = vbYes Then
-            Call FullDataReduction
+            'Call FullDataReduction
+            Call FullDataReductionNew
     End If
 
     Call UnloadAll

@@ -458,13 +458,36 @@ Private Sub CommandButton3_Ok_Click()
     
     Call FormatMainSh
     
+'    ScreenUpd = Application.ScreenUpdating
+'
+'        If ScreenUpd = False Then Application.DisplayAlerts = True
+'
+'        If MsgBox("Would you like to start the reduction process?", vbYesNo) = vbYes Then
+'            Application.ScreenUpdating = ScreenUpd
+'                Call FullDataReduction
+'        Else
+'            Application.ScreenUpdating = ScreenUpd
+'                Call UnloadAll
+'                    Application.GoTo SamList_Sh.Range("A1")
+'        End If
+
     ScreenUpd = Application.ScreenUpdating
                             
         If ScreenUpd = False Then Application.DisplayAlerts = True
         
         If MsgBox("Would you like to start the reduction process?", vbYesNo) = vbYes Then
             Application.ScreenUpdating = ScreenUpd
-                Call FullDataReduction
+                
+                CheckBoxProgram0 = True
+                CheckBoxProgram1 = True
+                CheckBoxProgram2 = True
+                CheckBoxProgram3 = True
+                CheckBoxProgram4 = True
+                CheckBoxProgram5 = True
+                CheckBoxProgram6 = True
+                CheckBoxProgram7 = True
+
+                Box7_FullReduction.Show
         Else
             Application.ScreenUpdating = ScreenUpd
                 Call UnloadAll
