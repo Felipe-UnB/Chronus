@@ -3292,7 +3292,7 @@ Sub CopyToCovarSheet(RngArray As Variant)
     
 End Sub
 
-Sub MatchValidRangeItems(ByVal Rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As Range, Sh As Worksheet, CalcFirstCell As Range) 'UPDATE DESCRIPTION
+Sub MatchValidRangeItems(ByVal rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As Range, Sh As Worksheet, CalcFirstCell As Range) 'UPDATE DESCRIPTION
 
     'This procedure will take all the items from both ranges and check if the pairs
     'are valid. By valid I mean they are numeric and not equal to 0. This is
@@ -3320,21 +3320,21 @@ Sub MatchValidRangeItems(ByVal Rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As
     
     ReDim NotValidPairItem(1 To 1) As Integer
     
-    If Rng1.Areas.count <> 1 Or Rng2.Areas.count <> 1 Or Rng3.Areas.count <> 1 Then
+    If rng1.Areas.count <> 1 Or Rng2.Areas.count <> 1 Or Rng3.Areas.count <> 1 Then
         MsgBox "Rng1, Rng2 and Rng3 have more than 1 area. Function MatchValidRangeItems failed.", vbOKOnly
             End
     End If
     
-    If Rng1.Rows.count <> Rng2.Rows.count Or Rng1.Rows.count <> Rng3.Rows.count Then
+    If rng1.Rows.count <> Rng2.Rows.count Or rng1.Rows.count <> Rng3.Rows.count Then
         MsgBox "Rng1, Rng2 and Rng3 doesn't have the same number of rows. Function MatchValidRangeItems failed.", vbOKOnly
             End
     End If
     
-    NumRows = Rng1.Rows.count
+    NumRows = rng1.Rows.count
     
     'The lines below will clear the ranges where the three ranges will be pasted
     CalcFirstCell.Columns.ClearContents: CalcFirstCell.Offset(, 1).Columns.ClearContents: CalcFirstCell.Offset(, 2).Columns.ClearContents
-        Rng1.Copy Destination:=CalcFirstCell
+        rng1.Copy Destination:=CalcFirstCell
             Rng2.Copy Destination:=CalcFirstCell.Offset(, 1)
                 Rng3.Copy Destination:=CalcFirstCell.Offset(, 2)
         

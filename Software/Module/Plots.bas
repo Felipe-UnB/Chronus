@@ -1,5 +1,23 @@
 Attribute VB_Name = "Plots"
 Option Explicit
+    
+    'Variable available in the Plots module scope
+    
+    Dim ChartDataX As Range
+    
+    Dim ChartDataY_RawSignal2 As Range
+    Dim ChartDataY_RawSignal4 As Range
+    Dim ChartDataY_RawSignal6 As Range
+    Dim ChartDataY_RawSignal7 As Range
+    Dim ChartDataY_RawSignal8 As Range
+    Dim ChartDataY_RawSignal32 As Range
+    Dim ChartDataY_RawSignal38 As Range
+    Dim ChartDataY_64 As Range
+    Dim ChartDataY_74 As Range
+    Dim ChartDataY_28 As Range
+    Dim ChartDataY_75 As Range
+    Dim ChartDataY_68 As Range
+    Dim ChartDataY_76 As Range
 
 Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean = False)
 
@@ -189,7 +207,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
     
     
     If FindItemInArray(ID, SlpStd) = True Or FindItemInArray(ID, ExtStd) = True Then 'True means that the program is dealing with a sample, internal or external standard analysis
-            
+                        
         If FindItemInArray(ID, SlpStd) = True Then
             Call CalcSlp_BlkCorr(ID, H, False, , False)
         
@@ -304,22 +322,6 @@ Optional Plot76 As Boolean = True, Optional PlotRawSignal As Boolean = True)
     'The six optional variables are used to set if which ratios should be plotted.
     
     'Updated 29092015 - Boolean variables were included so it is possible to choose which ratios should be plotted.
-        
-    Dim ChartDataX As Range
-    
-    Dim ChartDataY_RawSignal2 As Range
-    Dim ChartDataY_RawSignal4 As Range
-    Dim ChartDataY_RawSignal6 As Range
-    Dim ChartDataY_RawSignal7 As Range
-    Dim ChartDataY_RawSignal8 As Range
-    Dim ChartDataY_RawSignal32 As Range
-    Dim ChartDataY_RawSignal38 As Range
-    Dim ChartDataY_64 As Range
-    Dim ChartDataY_74 As Range
-    Dim ChartDataY_28 As Range
-    Dim ChartDataY_75 As Range
-    Dim ChartDataY_68 As Range
-    Dim ChartDataY_76 As Range
     
     Dim ChartShape_RawSignal As Shape
     Dim ChartShape_64 As Shape
@@ -614,6 +616,61 @@ Optional Plot76 As Boolean = True, Optional PlotRawSignal As Boolean = True)
         End With
     Next
     
+
+End Sub
+
+Sub ResultsPreview()
+
+'    Public Const Plot_HeaderRow As Integer = 1
+'    Public Const Plot_IDCell As String = "Q" & Plot_HeaderRow
+'    Public Const Plot_AnalysisName As String = "R" & Plot_HeaderRow
+'
+'    Public Const Plot_ColumnCyclesTime As String = "A"
+'    Public Const Plot_Column2 As String = "B"
+'    Public Const Plot_Column4 As String = "C"
+'    Public Const Plot_Column6 As String = "D"
+'    Public Const Plot_Column7 As String = "E"
+'    Public Const Plot_Column8 As String = "F"
+'    Public Const Plot_Column32 As String = "G"
+'    Public Const Plot_Column38 As String = "H"
+'    Public Const Plot_Column64 As String = "I"
+'    Public Const Plot_Column74 As String = "J"
+'    Public Const Plot_Column28 As String = "K"
+'    Public Const Plot_Column75 As String = "L"
+'    Public Const Plot_Column68 As String = "M"
+'    Public Const Plot_Column76 As String = "N"
+'
+'    Public Const Plot_FirstColumn As String = "A"
+'    Public Const Plot_LastColumn As String = "N"
+'
+'    Public Plot_CyclesTimeRange As Range
+'
+'    Plot_HeaderRow & RawNumberCycles_UPb
+'
+'   Plot_ShHidden
+
+'        Call MatchValidRangeItems(.Range(RawPb207Range), .Range(RawPb206Range), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
+'        Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
+'        Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
+'        Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
+
+            Set ChartDataY_RawSignal2 = .Range(Plot_Column2 & Plot_HeaderRow + 1, Plot_Column2 & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set ChartDataY_RawSignal4 = .Range(Plot_Column4 & Plot_HeaderRow + 1, Plot_Column4 & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set ChartDataY_RawSignal6 = .Range(Plot_Column6 & Plot_HeaderRow + 1, Plot_Column6 & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set ChartDataY_RawSignal7 = .Range(Plot_Column7 & Plot_HeaderRow + 1, Plot_Column7 & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set ChartDataY_RawSignal8 = .Range(Plot_Column8 & Plot_HeaderRow + 1, Plot_Column8 & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set ChartDataY_RawSignal32 = .Range(Plot_Column32 & Plot_HeaderRow + 1, Plot_Column32 & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set ChartDataY_RawSignal38 = .Range(Plot_Column38 & Plot_HeaderRow + 1, Plot_Column38 & Plot_HeaderRow + RawNumberCycles_UPb)
+            
+            Set ChartDataY_68 = .Range(Plot_Column68 & Plot_HeaderRow + 1, Plot_Column68 & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set ChartDataY_76 = .Range(Plot_Column76 & Plot_HeaderRow + 1, Plot_Column76 & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set ChartDataY_64 = .Range(Plot_Column64 & Plot_HeaderRow + 1, Plot_Column64 & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set ChartDataY_74 = .Range(Plot_Column74 & Plot_HeaderRow + 1, Plot_Column74 & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set ChartDataY_28 = .Range(Plot_Column28 & Plot_HeaderRow + 1, Plot_Column28 & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set ChartDataY_75 = .Range(Plot_Column75 & Plot_HeaderRow + 1, Plot_Column75 & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set ChartDataX = .Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1, Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb)
+
+
 
 End Sub
 

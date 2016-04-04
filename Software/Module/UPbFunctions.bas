@@ -66,7 +66,7 @@ Function FindItemInArray(ByVal ItemToFind As Variant, ArrayToBeSearched As Varia
 End Function
 
 
-Function LineFitSlopeError(Rng1 As Range, Rng2 As Range)
+Function LineFitSlopeError(rng1 As Range, Rng2 As Range)
     
     'This function calculates the standard deviation (sometimes called standard error) of the intercept
     'of the line fit (errors of parameter A, from A + Bx; Taylor, 1997, Error Analysis). It supposes that
@@ -86,7 +86,7 @@ Dim SumXiSquared As Double 'sum of Xi^2, from i = 1 to n
 Dim SumXi As Double 'sum of Xi, from i =1 to n
 
     
-    rng1Count = Rng1.Rows.count
+    rng1Count = rng1.Rows.count
     rng2Count = Rng2.Rows.count
     
     If Not rng1Count = rng2Count Then 'Both ranges must be of the same size!
@@ -100,7 +100,7 @@ Dim SumXi As Double 'sum of Xi, from i =1 to n
     
     While Not cell > rng1Count 'Loop through all values in the selected range
         
-        Set E = Rng1.Item(cell): Set f = Rng2.Item(cell)
+        Set E = rng1.Item(cell): Set f = Rng2.Item(cell)
         
         If IsEmpty(E) = False And IsEmpty(f) = False Then
             If WorksheetFunction.IsNumber(E) = True And WorksheetFunction.IsNumber(f) = True Then
@@ -115,7 +115,7 @@ Dim SumXi As Double 'sum of Xi, from i =1 to n
         cell = cell + 1
     Wend
     
-    LineFitSlopeError = Sqr(LineFitStdDev(Rng1, Rng2) * rng1Count / (rng1Count * SumXiSquared - (SumXi) ^ 2))
+    LineFitSlopeError = Sqr(LineFitStdDev(rng1, Rng2) * rng1Count / (rng1Count * SumXiSquared - (SumXi) ^ 2))
 
 End Function
 
@@ -197,7 +197,7 @@ Dim SumXi As Double 'sum of Xi, from i =1 to n
 
 End Function
 
-Function LineFitStdDev(Rng1 As Range, Rng2 As Range)
+Function LineFitStdDev(rng1 As Range, Rng2 As Range)
 
     'This function calculates the sum of deviations between Yi (measured) and Yi,pred (Yi predicted
     'using the intercept and slope estimated by least squares fit), and then divide the sum by N - 2, where
@@ -221,7 +221,7 @@ Dim f As Range 'Value of a specific cell in rng2
 Dim a As Double
 
     
-    rng1Count = Rng1.Rows.count: rng2Count = Rng2.Rows.count
+    rng1Count = rng1.Rows.count: rng2Count = Rng2.Rows.count
 
         If Not rng1Count = rng2Count Then 'Both ranges must be of the same size!
             MsgBox ("rng1 and rng2 must be of equal size!")
@@ -230,14 +230,14 @@ Dim a As Double
         End If
 
 
-    lineSlope = WorksheetFunction.Slope(Rng1, Rng2)
-    lineIntercept = WorksheetFunction.Intercept(Rng1, Rng2)
+    lineSlope = WorksheetFunction.Slope(rng1, Rng2)
+    lineIntercept = WorksheetFunction.Intercept(rng1, Rng2)
         
     cell = 1: LineFitStdDev = 0: a = 0
     
     While Not cell > rng1Count 'Loop through all values in the selected range
         
-        Set E = Rng1.Item(cell): Set f = Rng2.Item(cell)
+        Set E = rng1.Item(cell): Set f = Rng2.Item(cell)
         
         If IsEmpty(E) = False And IsEmpty(f) = False Then
             If WorksheetFunction.IsNumber(E) = True And WorksheetFunction.IsNumber(f) = True Then
@@ -253,7 +253,7 @@ Dim a As Double
     LineFitStdDev = Sqr(a / (rng1Count - 2))
         If LineFitStdDev = 0 Then
             MsgBox "It's not possible to calculate standard deviation for points of the line. All cells are empty or not populated with number"
-                Application.GoTo Rng1
+                Application.GoTo rng1
                     End
         End If
     
@@ -280,7 +280,7 @@ Next cell
     End If
 End Function
 
-Function SumPrudDev(Rng1 As Range, Rng2 As Range)
+Function SumPrudDev(rng1 As Range, Rng2 As Range)
 
 'Calculates the sum of the product of deviations between (Xi,Average X) and (Yi, Average Y).
 
@@ -292,7 +292,7 @@ Dim d As Double 'Average of rng2
 Dim E As Range 'Value of a specific cell in rng1
 Dim f As Range 'Value of a specific cell in rng2
     
-    a = Rng1.Rows.count: B = Rng2.Rows.count
+    a = rng1.Rows.count: B = Rng2.Rows.count
         
     If Not a = B Then 'Both ranges must be of the same size!
         MsgBox ("rng1 and rng2 must be of equal size!")
@@ -301,14 +301,14 @@ Dim f As Range 'Value of a specific cell in rng2
     End If
         
     
-    C = WorksheetFunction.Average(Rng1)
+    C = WorksheetFunction.Average(rng1)
     d = WorksheetFunction.Average(Rng2)
 
     cell = 1
     
     While Not cell = a 'Loop through all values in the selected range
         
-        Set E = Rng1.Item(cell)
+        Set E = rng1.Item(cell)
         Set f = Rng2.Item(cell)
         
         If IsEmpty(E) = False And IsEmpty(f) = False Then
@@ -809,7 +809,7 @@ Function IsInArray(arr As Variant, valueToFind As Variant) As Boolean
 
 End Function
 
-Function NonEmptyCellsRange(Rng As Range, RngFirstCell As Range, Sh As Worksheet, Optional OnlyNumericCells As Boolean = False) As Range
+Function NonEmptyCellsRange(Rng As Range, rngFirstcell As Range, Sh As Worksheet, Optional OnlyNumericCells As Boolean = False) As Range
 
     'This function takes the rng range, eliminates the empty cells and
     'returns a new range with only non empty cells. The optional argument
@@ -891,7 +891,7 @@ Function NonEmptyCellsRange(Rng As Range, RngFirstCell As Range, Sh As Worksheet
                     
                 Next
                 
-            Set NonEmptyCellsRange = Sh.Range(RngFirstCell, RngFirstCell.Offset(NumElements(ItemsNewRange, 1) - 1))
+            Set NonEmptyCellsRange = Sh.Range(rngFirstcell, rngFirstcell.Offset(NumElements(ItemsNewRange, 1) - 1))
             
 '            NonEmptyCellsRange.Select
         Else
