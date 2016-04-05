@@ -407,8 +407,9 @@ Option Explicit
     Public Const Plot_Column68 As String = "M"
     Public Const Plot_Column76 As String = "N"
     
+    Public Const Plot_ResultsPreview = "S3:X5"
     Public Const Plot_FirstColumn As String = "A"
-    Public Const Plot_LastColumn As String = "N"
+    Public Const Plot_LastColumn As String = "N" 'Must not intersect the Plot_ResultsPreview range
     
     Public Plot_CyclesTimeRange As Range
 

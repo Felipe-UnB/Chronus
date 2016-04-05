@@ -99,7 +99,7 @@ Sub FormatPlot(TargetSh As Worksheet)
     If mwbk Is Nothing Then
         Call PublicVariables
     End If
-        
+
     Application.GoTo TargetSh.Range("A1")
     
     'Code to set the ranges for the isotopes signal in the sheet where they will be plotted
@@ -120,6 +120,16 @@ Sub FormatPlot(TargetSh As Worksheet)
         .Range(Plot_Column74 & Plot_HeaderRow) = "207/204"
         .Range(Plot_Column28 & Plot_HeaderRow) = "232/238"
         
+        'The following lines must be changed if the Plot_ResultsPreview constant be changed
+        .Range("S4").FormulaR1C1 = "68"
+        .Range("S5").FormulaR1C1 = "76"
+        .Range("T3").FormulaR1C1 = "Ratios"
+        .Range("U3").FormulaR1C1 = "1s (abs)"
+        .Range("V3").FormulaR1C1 = "1s (%)"
+        .Range("W3").FormulaR1C1 = "R"
+        .Range("X3").FormulaR1C1 = "R2"
+        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+                
         .Range(Plot_ColumnCyclesTime & Plot_HeaderRow, .Range(Plot_ColumnCyclesTime & Plot_HeaderRow).End(xlToRight)).Font.Bold = True
         .Range(Plot_IDCell).Offset(, -1).Font.Bold = True
         .Range(Plot_AnalysisName).Font.Bold = True
@@ -136,6 +146,35 @@ Sub FormatPlot(TargetSh As Worksheet)
         
         .Cells.Columns.AutoFit
         .Cells.HorizontalAlignment = xlCenter
+        
+        With .Range(Plot_ResultsPreview)
+            .Borders(xlDiagonalDown).LineStyle = xlNone
+            .Borders(xlDiagonalUp).LineStyle = xlNone
+            .Borders(xlEdgeLeft).LineStyle = xlContinuous
+            .Borders(xlEdgeTop).LineStyle = xlContinuous
+            .Borders(xlEdgeBottom).LineStyle = xlContinuous
+            .Borders(xlEdgeRight).LineStyle = xlContinuous
+            .Borders(xlInsideVertical).LineStyle = xlContinuous
+            .Borders(xlInsideHorizontal).LineStyle = xlContinuous
+            .Borders(xlDiagonalDown).LineStyle = xlNone
+            .Borders(xlDiagonalUp).LineStyle = xlNone
+            .Borders(xlEdgeLeft).LineStyle = xlContinuous
+            .Borders(xlEdgeTop).LineStyle = xlContinuous
+            .Borders(xlEdgeBottom).LineStyle = xlContinuous
+            .Borders(xlEdgeRight).LineStyle = xlContinuous
+            .Borders(xlInsideVertical).LineStyle = xlContinuous
+            .Borders(xlInsideHorizontal).LineStyle = xlContinuous
+        
+    
+            With .Interior
+                .Pattern = xlSolid
+                .PatternColorIndex = xlAutomatic
+                .Color = 65535
+                .TintAndShade = 0
+                .PatternTintAndShade = 0
+            End With
+            
+        End With
         
     End With
             

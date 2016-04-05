@@ -40,15 +40,7 @@ Private Sub CommandButton4_Click()
     
 End Sub
 
-Private Sub Label14_Click()
-
-End Sub
-
 Private Sub TextBox8_BlankName_Change()
-
-End Sub
-
-Private Sub TextBox1_AnalysesNames_Change()
 
 End Sub
 

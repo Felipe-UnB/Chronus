@@ -313,6 +313,34 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
     End If
     
 End Sub
+
+Sub testAddCode()
+
+    Call AddCodePlotSh(ActiveSheet)
+    
+End Sub
+
+Sub AddCodePlotSh(Plot_Sh As Worksheet)
+
+    'Created 05042016
+    'This procedure will add automatically an event handler for the plot sheets: every time the user delete
+    'a cycle, the whole line will be cleared
+    
+    'TO BE CONTINUED
+
+    Dim Code As String
+    Dim NextLine As Long
+
+    Code = "Private Sub Worksheet_Change(ByVal Target As Range)" & vbCrLf
+    Code = Code & "MsgBox ""your code here""" & vbCrLf
+    Code = Code & "End Sub"
+
+    With ActiveWorkbook.VBProject.VBComponents(Plot_Sh.Name).CodeModule
+        NextLine = .CountOfLines + 1
+        .InsertLines NextLine, Code
+    End With
+End Sub
+
 Sub Plot_PlotAnalysis(Sh As Worksheet, Optional Plot64 As Boolean = True, Optional Plot74 As Boolean = True, _
 Optional Plot28 As Boolean = True, Optional Plot75 As Boolean = True, Optional Plot68 As Boolean = True, _
 Optional Plot76 As Boolean = True, Optional PlotRawSignal As Boolean = True)
@@ -619,58 +647,125 @@ Optional Plot76 As Boolean = True, Optional PlotRawSignal As Boolean = True)
 
 End Sub
 
-Sub ResultsPreview()
+Sub ResultsPreviewCalculation()
+    
+    'Created 05042016
+    'This program will update the results in the preview box (yellow area in the plot sheets)
 
-'    Public Const Plot_HeaderRow As Integer = 1
-'    Public Const Plot_IDCell As String = "Q" & Plot_HeaderRow
-'    Public Const Plot_AnalysisName As String = "R" & Plot_HeaderRow
-'
-'    Public Const Plot_ColumnCyclesTime As String = "A"
-'    Public Const Plot_Column2 As String = "B"
-'    Public Const Plot_Column4 As String = "C"
-'    Public Const Plot_Column6 As String = "D"
-'    Public Const Plot_Column7 As String = "E"
-'    Public Const Plot_Column8 As String = "F"
-'    Public Const Plot_Column32 As String = "G"
-'    Public Const Plot_Column38 As String = "H"
-'    Public Const Plot_Column64 As String = "I"
-'    Public Const Plot_Column74 As String = "J"
-'    Public Const Plot_Column28 As String = "K"
-'    Public Const Plot_Column75 As String = "L"
-'    Public Const Plot_Column68 As String = "M"
-'    Public Const Plot_Column76 As String = "N"
-'
-'    Public Const Plot_FirstColumn As String = "A"
-'    Public Const Plot_LastColumn As String = "N"
-'
-'    Public Plot_CyclesTimeRange As Range
-'
-'    Plot_HeaderRow & RawNumberCycles_UPb
-'
-'   Plot_ShHidden
+    Dim ChartDataX As Range
+'    Dim ChartDataY_RawSignal2 As Range
+'    Dim ChartDataY_RawSignal4 As Range
+'    Dim ChartDataY_RawSignal6 As Range
+'    Dim ChartDataY_RawSignal7 As Range
+'    Dim ChartDataY_RawSignal8 As Range
+'    Dim ChartDataY_RawSignal32 As Range
+'    Dim ChartDataY_RawSignal38 As Range
+    Dim ChartDataY_68 As Range
+    Dim ChartDataY_76 As Range
+'    Dim ChartDataY_64 As Range
+'    Dim ChartDataY_74 As Range
+'    Dim ChartDataY_28 As Range
+'    Dim ChartDataY_75 As Range
+    
+    Dim Preview_Ratio68 As Range
+    Dim Preview_Ratio68ErrorAbs As Range
+    Dim Preview_Ratio68ErrorRelative As Range
+    Dim Preview_Ratio68R As Range
+    Dim Preview_Ratio68R2 As Range
+    
+    Dim Preview_Ratio76 As Range
+    Dim Preview_Ratio76ErrorAbs As Range
+    Dim Preview_Ratio76ErrorRelative As Range
+    Dim Preview_Ratio76R As Range
+    Dim Preview_Ratio76R2 As Range
+    
+    If SpotRaster_UPb Is Nothing Then
+        Call PublicVariables
+    End If
+    
+    If Plot_Sh Is Nothing Then
+        MsgBox "Plot_Sh not set!"
+            End
+    End If
+        
+    With Plot_Sh
+    
+        Set ChartDataX = .Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1, Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb)
 
-'        Call MatchValidRangeItems(.Range(RawPb207Range), .Range(RawPb206Range), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
-'        Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
-'        Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
-'        Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
+'        Set ChartDataY_RawSignal2 = .Range(Plot_Column2 & Plot_HeaderRow + 1, Plot_Column2 & Plot_HeaderRow + RawNumberCycles_UPb)
+'        Set ChartDataY_RawSignal4 = .Range(Plot_Column4 & Plot_HeaderRow + 1, Plot_Column4 & Plot_HeaderRow + RawNumberCycles_UPb)
+'        Set ChartDataY_RawSignal6 = .Range(Plot_Column6 & Plot_HeaderRow + 1, Plot_Column6 & Plot_HeaderRow + RawNumberCycles_UPb)
+'        Set ChartDataY_RawSignal7 = .Range(Plot_Column7 & Plot_HeaderRow + 1, Plot_Column7 & Plot_HeaderRow + RawNumberCycles_UPb)
+'        Set ChartDataY_RawSignal8 = .Range(Plot_Column8 & Plot_HeaderRow + 1, Plot_Column8 & Plot_HeaderRow + RawNumberCycles_UPb)
+'        Set ChartDataY_RawSignal32 = .Range(Plot_Column32 & Plot_HeaderRow + 1, Plot_Column32 & Plot_HeaderRow + RawNumberCycles_UPb)
+'        Set ChartDataY_RawSignal38 = .Range(Plot_Column38 & Plot_HeaderRow + 1, Plot_Column38 & Plot_HeaderRow + RawNumberCycles_UPb)
+        
+        Set ChartDataY_68 = .Range(Plot_Column68 & Plot_HeaderRow + 1, Plot_Column68 & Plot_HeaderRow + RawNumberCycles_UPb)
+        Set ChartDataY_76 = .Range(Plot_Column76 & Plot_HeaderRow + 1, Plot_Column76 & Plot_HeaderRow + RawNumberCycles_UPb)
+'        Set ChartDataY_64 = .Range(Plot_Column64 & Plot_HeaderRow + 1, Plot_Column64 & Plot_HeaderRow + RawNumberCycles_UPb)
+'        Set ChartDataY_74 = .Range(Plot_Column74 & Plot_HeaderRow + 1, Plot_Column74 & Plot_HeaderRow + RawNumberCycles_UPb)
+'        Set ChartDataY_28 = .Range(Plot_Column28 & Plot_HeaderRow + 1, Plot_Column28 & Plot_HeaderRow + RawNumberCycles_UPb)
+'        Set ChartDataY_75 = .Range(Plot_Column75 & Plot_HeaderRow + 1, Plot_Column75 & Plot_HeaderRow + RawNumberCycles_UPb)
 
-            Set ChartDataY_RawSignal2 = .Range(Plot_Column2 & Plot_HeaderRow + 1, Plot_Column2 & Plot_HeaderRow + RawNumberCycles_UPb)
-            Set ChartDataY_RawSignal4 = .Range(Plot_Column4 & Plot_HeaderRow + 1, Plot_Column4 & Plot_HeaderRow + RawNumberCycles_UPb)
-            Set ChartDataY_RawSignal6 = .Range(Plot_Column6 & Plot_HeaderRow + 1, Plot_Column6 & Plot_HeaderRow + RawNumberCycles_UPb)
-            Set ChartDataY_RawSignal7 = .Range(Plot_Column7 & Plot_HeaderRow + 1, Plot_Column7 & Plot_HeaderRow + RawNumberCycles_UPb)
-            Set ChartDataY_RawSignal8 = .Range(Plot_Column8 & Plot_HeaderRow + 1, Plot_Column8 & Plot_HeaderRow + RawNumberCycles_UPb)
-            Set ChartDataY_RawSignal32 = .Range(Plot_Column32 & Plot_HeaderRow + 1, Plot_Column32 & Plot_HeaderRow + RawNumberCycles_UPb)
-            Set ChartDataY_RawSignal38 = .Range(Plot_Column38 & Plot_HeaderRow + 1, Plot_Column38 & Plot_HeaderRow + RawNumberCycles_UPb)
+
+        'The following lines must be changed if the Plot_ResultsPreview constant be changed
+        Set Preview_Ratio68 = .Range("T4")
+        Set Preview_Ratio68ErrorAbs = .Range("U4")
+        Set Preview_Ratio68ErrorRelative = .Range("V4")
+        Set Preview_Ratio68R = .Range("W4")
+        Set Preview_Ratio68R2 = .Range("X4")
+    
+        Set Preview_Ratio76 = .Range("T5")
+        Set Preview_Ratio76ErrorAbs = .Range("U5")
+        Set Preview_Ratio76ErrorRelative = .Range("V5")
+        Set Preview_Ratio76R = .Range("W5")
+        Set Preview_Ratio76R2 = .Range("X5")
+        ''''''''''''''''''''''''''''''''''''''''''''''''
+    End With
+
+    Select Case SpotRaster_UPb
+        Case "Spot"
+            'Intercept of 68 trend
+            Preview_Ratio68 = WorksheetFunction.Intercept(ChartDataY_68, ChartDataX)
+                '68 intercept error multiplied by student´s t factor for 68% confidence
+                Preview_Ratio68ErrorAbs = LineFitInterceptError(ChartDataY_68, ChartDataX) * _
+                    WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(ChartDataY_68) - 2)
             
-            Set ChartDataY_68 = .Range(Plot_Column68 & Plot_HeaderRow + 1, Plot_Column68 & Plot_HeaderRow + RawNumberCycles_UPb)
-            Set ChartDataY_76 = .Range(Plot_Column76 & Plot_HeaderRow + 1, Plot_Column76 & Plot_HeaderRow + RawNumberCycles_UPb)
-            Set ChartDataY_64 = .Range(Plot_Column64 & Plot_HeaderRow + 1, Plot_Column64 & Plot_HeaderRow + RawNumberCycles_UPb)
-            Set ChartDataY_74 = .Range(Plot_Column74 & Plot_HeaderRow + 1, Plot_Column74 & Plot_HeaderRow + RawNumberCycles_UPb)
-            Set ChartDataY_28 = .Range(Plot_Column28 & Plot_HeaderRow + 1, Plot_Column28 & Plot_HeaderRow + RawNumberCycles_UPb)
-            Set ChartDataY_75 = .Range(Plot_Column75 & Plot_HeaderRow + 1, Plot_Column75 & Plot_HeaderRow + RawNumberCycles_UPb)
-            Set ChartDataX = .Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1, Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb)
+            'R
+            Preview_Ratio68R = WorksheetFunction.Pearson(ChartDataY_68, ChartDataX)
+            'R2
+            Preview_Ratio68R2 = WorksheetFunction.Power(Preview_Ratio68R, 2)
+                
+        Case "Raster"
+            '68 average
+            Preview_Ratio68 = WorksheetFunction.Average(ChartDataY_68)
+            
+                '68 average error propagation multiplied by student´s t factor for 68% confidence
+                Preview_Ratio68ErrorAbs = (WorksheetFunction.StDev_S(ChartDataY_68) / Sqr(WorksheetFunction.count(ChartDataY_68)) * _
+                    WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(ChartDataY_68) - 1))
+                                                            
+            'R
+            Preview_Ratio68R = WorksheetFunction.Pearson(ChartDataY_68, ChartDataX)
+            'R2
+            Preview_Ratio68R2 = WorksheetFunction.Power(Preview_Ratio68R, 2)
+    End Select
+         
+        '68 relative error
+        Preview_Ratio68ErrorRelative = 100 * Preview_Ratio68ErrorAbs / Preview_Ratio68
 
-
+    
+    'Intercept of 76 trend
+    Preview_Ratio76 = WorksheetFunction.Intercept(ChartDataY_76, ChartDataX)
+                                                          
+    '76 error
+    Preview_Ratio76ErrorAbs = LineFitInterceptError(ChartDataY_76, ChartDataX) * WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(ChartDataY_76) - 2)
+    'R
+    Preview_Ratio76R = WorksheetFunction.Pearson(ChartDataY_76, ChartDataX)
+    'R2
+    Preview_Ratio76R2 = WorksheetFunction.Power(Preview_Ratio76R, 2)
+    
+        '76 relative error
+        Preview_Ratio76ErrorRelative = 100 * Preview_Ratio76ErrorAbs / Preview_Ratio76
 
 End Sub
 
@@ -840,22 +935,23 @@ Sub Plot_OrdinaryCalculations(Sh As Worksheet)
         
         Application.CutCopyMode = False
     
-    With Sh.Cells
-        'When some of the cycles are ignored, ratios that use these cycles as denomitors will raise #DIV/0!
-        Set FindCells = .Find("#DIV/0!", LookIn:=xlValues)
-        If Not FindCells Is Nothing Then
-            FirstAddress = FindCells.Address
-            Do
-                FindCells.ClearContents
+        With Sh.Cells
+            'When some of the cycles are ignored, ratios that use these cycles as denomitors will raise #DIV/0!
+            Set FindCells = .Find("#DIV/0!", LookIn:=xlValues)
+            If Not FindCells Is Nothing Then
+                FirstAddress = FindCells.Address
+                Do
+                    FindCells.ClearContents
+    
+                    Set FindCells = .FindNext(FindCells)
+                Loop While Not FindCells Is Nothing 'Or FindCells.Address <> FirstAddress
+            End If
+            
+        End With
 
-                Set FindCells = .FindNext(FindCells)
-            Loop While Not FindCells Is Nothing 'Or FindCells.Address <> FirstAddress
-        End If
-        
     End With
 
-        
-    End With
+    Call ResultsPreviewCalculation
 
 End Sub
 
