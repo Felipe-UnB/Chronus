@@ -118,7 +118,7 @@ Sub ExportChronusXlam()
     DuplicateMsg = "Specified file already exists in the destination folder. Shoul it be overwritten?"
     
     'This is Your File Name which you want to Copy
-    sFile = "Chronus.xlam"
+    sFile = "Chronus_1.2.0.xlam"
     
     'Change to match the source folder path
     sSFolder = "C:\Users\Felipe V\AppData\Roaming\Microsoft\AddIns\"

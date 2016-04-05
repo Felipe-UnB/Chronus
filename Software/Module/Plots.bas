@@ -312,30 +312,56 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
     
     End If
     
+    Call AddCodePlotSh(Plot_Sh)
+    
 End Sub
 
-Sub testAddCode()
+Sub testaddcode()
 
     Call AddCodePlotSh(ActiveSheet)
     
+    
 End Sub
+
 
 Sub AddCodePlotSh(Plot_Sh As Worksheet)
 
     'Created 05042016
     'This procedure will add automatically an event handler for the plot sheets: every time the user delete
-    'a cycle, the whole line will be cleared
-    
-    'TO BE CONTINUED
+    'a cycle, the whole line will be cleared and the RecultsPrevieCalculation will be called
+
 
     Dim Code As String
     Dim NextLine As Long
-
-    Code = "Private Sub Worksheet_Change(ByVal Target As Range)" & vbCrLf
-    Code = Code & "MsgBox ""your code here""" & vbCrLf
+    Dim Plot_Sh_Name As String
+    Dim vbcomp As VBComponent
+    
+    Code = "Public Sub Worksheet_Change(ByVal Target As Range)" & vbCrLf
+    Code = Code & "'Target is the range that has been changed" & vbCrLf
+    Code = Code & "Dim cell As Range" & vbCrLf
+    Code = Code & "Dim LastColumn As String" & vbCrLf
+    Code = Code & "LastColumn = " & Chr(34) & Plot_LastColumn & Chr(34) & vbCrLf
+    Code = Code & "If Target.Column = 1 Then" & vbCrLf
+    Code = Code & "Application.EnableEvents = False" & vbCrLf
+    Code = Code & "Application.ScreenUpdating = False" & vbCrLf
+    Code = Code & "else end" & vbCrLf
+    Code = Code & "For Each cell In Target" & vbCrLf
+    Code = Code & "Me.Range(cell, Me.Range(LastColumn & cell.Row)).ClearContents" & vbCrLf
+    Code = Code & "Next" & vbCrLf
+    Code = Code & "Application.EnableEvents = True" & vbCrLf
+    Code = Code & "Application.ScreenUpdating = True" & vbCrLf
+    Code = Code & "End If" & vbCrLf
+    Code = Code & "Application.Run " & Chr(34) & "Chronus_1.2.0.xlam!resultsPreviewCalculation" & Chr(34) & vbCrLf
     Code = Code & "End Sub"
-
-    With ActiveWorkbook.VBProject.VBComponents(Plot_Sh.Name).CodeModule
+    
+    For Each vbcomp In Plot_Sh.Parent.VBProject.VBComponents
+        If vbcomp.Name = Plot_Sh.CodeName Then
+            Plot_Sh_Name = vbcomp.Name
+                Exit For
+        End If
+    Next
+    
+    With Plot_Sh.Parent.VBProject.VBComponents(Plot_Sh_Name).CodeModule
         NextLine = .CountOfLines + 1
         .InsertLines NextLine, Code
     End With
@@ -647,10 +673,9 @@ Optional Plot76 As Boolean = True, Optional PlotRawSignal As Boolean = True)
 
 End Sub
 
-Sub ResultsPreviewCalculation()
+Public Sub ResultsPreviewCalculation()
     
-    'Created 05042016
-    'This program will update the results in the preview box (yellow area in the plot sheets)
+    'This program will update the results in the preview box
 
     Dim ChartDataX As Range
 '    Dim ChartDataY_RawSignal2 As Range
@@ -684,8 +709,8 @@ Sub ResultsPreviewCalculation()
     End If
     
     If Plot_Sh Is Nothing Then
-        MsgBox "Plot_Sh not set!"
-            End
+        Set Plot_Sh = ActiveSheet
+            Call CheckPlotSheet(Plot_Sh)
     End If
         
     With Plot_Sh
@@ -838,7 +863,8 @@ Sub LineUpMyCharts(Sh As Worksheet, Optional MainChart As Integer)
             On Error GoTo 0
                 Call SampleNameTxtBox
                     Call AddIgnoreSplButton
-                        Call FormatPlot(Plot_Sh)
+                        Call ResultsPreviewCalculation
+                            Call FormatPlot(Plot_Sh)
         End If
     On Error GoTo 0
     
@@ -950,8 +976,6 @@ Sub Plot_OrdinaryCalculations(Sh As Worksheet)
         End With
 
     End With
-
-    Call ResultsPreviewCalculation
 
 End Sub
 
