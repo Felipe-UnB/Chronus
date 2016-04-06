@@ -71,7 +71,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
             H = 1
         Else
             MsgBox "Please, indicate if 206Pb was analyzed using Faraday cup or Ion counter."
-                Application.Goto (StartANDOptions_Sh.Range("A1"))
+                Application.GoTo (StartANDOptions_Sh.Range("A1"))
                     End
     End If
 
@@ -120,7 +120,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
         Next
     
     'The name of the worksheet where data will be plotted should be the same as the analysis
-    Application.Goto SamList_Sh.Range("A1") 'This line is just necessary to activate the Samlist_Sh
+    Application.GoTo SamList_Sh.Range("A1") 'This line is just necessary to activate the Samlist_Sh
     With SamList_Sh.Columns(SamList_Sh.Range(SamList_ID & ":" & SamList_ID).Column)
         Set FindIDObj = .Find(ID)
             
@@ -339,16 +339,16 @@ Sub AddCodePlotSh(Plot_Sh As Worksheet)
     Code = Code & "Dim cell As Range" & vbCrLf
     Code = Code & "Dim LastColumn As String" & vbCrLf
     Code = Code & "LastColumn = " & Chr(34) & Plot_LastColumn & Chr(34) & vbCrLf
-    Code = Code & "If Target.Column = 1 Then" & vbCrLf
+    Code = Code & "If Target.Column = 1 and Target.Count = WorksheetFunction.CountA(Target) = False Then" & vbCrLf 'This line is an attempt to check if the user deleted the cells content
     Code = Code & "Application.EnableEvents = False" & vbCrLf
     Code = Code & "Application.ScreenUpdating = False" & vbCrLf
-    Code = Code & "else end" & vbCrLf
     Code = Code & "For Each cell In Target" & vbCrLf
     Code = Code & "Me.Range(cell, Me.Range(LastColumn & cell.Row)).ClearContents" & vbCrLf
     Code = Code & "Next" & vbCrLf
+    Code = Code & "else exit sub" & vbCrLf
+    Code = Code & "End If" & vbCrLf
     Code = Code & "Application.EnableEvents = True" & vbCrLf
     Code = Code & "Application.ScreenUpdating = True" & vbCrLf
-    Code = Code & "End If" & vbCrLf
     Code = Code & "Application.Run " & Chr(34) & "Chronus_1.2.0.xlam!resultsPreviewCalculation" & Chr(34) & vbCrLf
     Code = Code & "End Sub"
     
@@ -358,7 +358,7 @@ Sub AddCodePlotSh(Plot_Sh As Worksheet)
                 Exit For
         End If
     Next
-    
+
     With Plot_Sh.Parent.VBProject.VBComponents(Plot_Sh_Name).CodeModule
         NextLine = .CountOfLines + 1
         .InsertLines NextLine, Code
@@ -730,7 +730,6 @@ Public Sub ResultsPreviewCalculation()
 '        Set ChartDataY_28 = .Range(Plot_Column28 & Plot_HeaderRow + 1, Plot_Column28 & Plot_HeaderRow + RawNumberCycles_UPb)
 '        Set ChartDataY_75 = .Range(Plot_Column75 & Plot_HeaderRow + 1, Plot_Column75 & Plot_HeaderRow + RawNumberCycles_UPb)
 
-
         'The following lines must be changed if the Plot_ResultsPreview constant be changed
         Set Preview_Ratio68 = .Range("T4")
         Set Preview_Ratio68ErrorAbs = .Range("U4")
@@ -745,6 +744,10 @@ Public Sub ResultsPreviewCalculation()
         Set Preview_Ratio76R2 = .Range("X5")
         ''''''''''''''''''''''''''''''''''''''''''''''''
     End With
+
+    If WorksheetFunction.CountA(ChartDataX) = 0 Then 'Check if all cell in ChartDataX are empty (the plot sheet was not completly loaded)
+        Exit Sub
+    End If
 
     Select Case SpotRaster_UPb
         Case "Spot"
@@ -856,7 +859,7 @@ Sub LineUpMyCharts(Sh As Worksheet, Optional MainChart As Integer)
     
     On Error GoTo 0
     On Error Resume Next
-        Application.Goto Plot_Sh.Range("A1")
+        Application.GoTo Plot_Sh.Range("A1")
         If Err.Number = 0 Then
             On Error GoTo 0
                 Call SampleNameTxtBox
@@ -875,7 +878,7 @@ Sub Plot_CopyData(Source_Sh As Worksheet, Destination_Sh As Worksheet)
     'This procedure copies isotopes signal from the Source_Sh (analyses data files) to the Destination_Sh (Plot_sh and
     'Plot_ShHidden.
     
-    Application.Goto Source_Sh.Range("A1")
+    Application.GoTo Source_Sh.Range("A1")
 
     With Source_Sh
             .Range(RawCyclesTimeRange).Copy Destination_Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1)
@@ -1056,6 +1059,7 @@ Sub RestoreOriginalPlotData(Plot_Sh As Worksheet)
     SourceRange.Copy Destination:=DestinationRange
     
     Call FormatPlot(Plot_Sh)
+        Call ResultsPreviewCalculation
     
 End Sub
 
@@ -1104,8 +1108,10 @@ Sub SampleNameTxtBox()
             Exit Sub
     End If
 
-    Set SplNameLabel = Plot_Sh.Shapes.AddTextbox(msoTextOrientationHorizontal, 800, _
+    Set SplNameLabel = Plot_Sh.Shapes.AddTextbox(msoTextOrientationHorizontal, 1000, _
         200, 100, 100)
+    
+    SplNameLabel.Placement = xlFreeFloating
     
     With SplNameLabel.TextFrame2
         .TextRange.Characters.Text = AnalysisName

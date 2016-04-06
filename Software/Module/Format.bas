@@ -82,7 +82,7 @@ Sub FormatSamList()
         .Range(SamList_FilePath & SamList_HeadersLine1, SamList_Blk2ID & SamList_HeadersLine2).Font.Bold = True
         .Range(SamList_FilePath & SamList_HeadersLine1, SamList_Blk2ID & SamList_HeadersLine2).HorizontalAlignment = xlCenter
 
-        Application.Goto .Range("A" & SamList_FirstLine)
+        Application.GoTo .Range("A" & SamList_FirstLine)
             
             With ActiveWindow
                 .SplitColumn = 0
@@ -102,7 +102,7 @@ Sub FormatPlot(TargetSh As Worksheet)
         Call PublicVariables
     End If
 
-    Application.Goto TargetSh.Range("A1")
+    Application.GoTo TargetSh.Range("A1")
     
     'Code to set the ranges for the isotopes signal in the sheet where they will be plotted
     With TargetSh
@@ -277,7 +277,7 @@ Sub FormatBlkCalc(Optional AbsoluteUncertainty As Boolean = True)
         .Cells.Columns.AutoFit
         .Cells.HorizontalAlignment = xlCenter
 
-        Application.Goto .Range("A" & BlkCalc_HeaderLine + 1)
+        Application.GoTo .Range("A" & BlkCalc_HeaderLine + 1)
             
             With ActiveWindow
                 .SplitColumn = 1
@@ -660,7 +660,7 @@ Sub FormatSlpStdBlkCorr(Optional AbsoluteUncertainty As Boolean = True)
         'Below the program selects a cell without using the select method. This is very important because
         'it doesn't matter ifthe user is doing anything else in the computer, this program is able
         'to select or activate what I want.
-        Application.Goto .Range("A" & HeaderRow + 1)
+        Application.GoTo .Range("A" & HeaderRow + 1)
             
             With ActiveWindow
                 .SplitColumn = 2
@@ -798,7 +798,7 @@ Sub FormatSlpStdCorr(Optional AbsoluteUncertainty As Boolean = True, Optional Hi
             RangeUnion.NumberFormat = "0.00"
                     
         With .Range("A" & StdCorr_HeaderRow, .Range("A" & StdCorr_HeaderRow).End(xlToRight))
-            Application.Goto .Range("A" & 1)
+            Application.GoTo .Range("A" & 1)
             .Font.Bold = True
 
             If SlpStdCorr_Sh.AutoFilterMode = False Then
@@ -812,7 +812,7 @@ Sub FormatSlpStdCorr(Optional AbsoluteUncertainty As Boolean = True, Optional Hi
             .Bold = True
         End With
 
-        Application.Goto .Range("A" & StdCorr_HeaderRow)
+        Application.GoTo .Range("A" & StdCorr_HeaderRow)
             
             With ActiveWindow
                 .SplitColumn = 2
@@ -1225,7 +1225,7 @@ Sub FormatStartANDOptions()
             
     End With
     
-    Application.Goto StartANDOptions_Sh.Range("A1")
+    Application.GoTo StartANDOptions_Sh.Range("A1")
         
         With ActiveWindow
             .FreezePanes = True
