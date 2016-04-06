@@ -96,6 +96,8 @@ End Sub
 
 Sub FormatPlot(TargetSh As Worksheet)
 
+    Dim RangeUnion As Range
+
     If mwbk Is Nothing Then
         Call PublicVariables
     End If
@@ -175,6 +177,25 @@ Sub FormatPlot(TargetSh As Worksheet)
             End With
             
         End With
+        
+        'The lines below will format the results preview box. They must be changed if the Plot_ResultsPreview constant be changed!
+        .Range("S4").Font.Bold = True
+        .Range("S5").Font.Bold = True
+        .Range("T3").Font.Bold = True
+        .Range("U3").Font.Bold = True
+        .Range("V3").Font.Bold = True
+        .Range("W3").Font.Bold = True
+        .Range("X3").Font.Bold = True
+        
+        Set RangeUnion = Application.Union(.Range("T4"), .Range("T5"), .Range("W4"), .Range("W5"), .Range("X4"), .Range("X5"))
+            RangeUnion.NumberFormat = "0.000"
+        Set RangeUnion = Application.Union(.Range("U4"), .Range("U5"))
+            RangeUnion.NumberFormat = "0.00000"
+        Set RangeUnion = Application.Union(.Range("V4"), .Range("V5"))
+            RangeUnion.NumberFormat = "0.00"
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        
+        .Range(Plot_ResultsPreview).Columns.AutoFit
         
     End With
             

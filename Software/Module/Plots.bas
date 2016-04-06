@@ -312,8 +312,6 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
     
     End If
     
-    Call AddCodePlotSh(Plot_Sh)
-    
 End Sub
 
 Sub testaddcode()
@@ -865,6 +863,8 @@ Sub LineUpMyCharts(Sh As Worksheet, Optional MainChart As Integer)
                     Call AddIgnoreSplButton
                         Call ResultsPreviewCalculation
                             Call FormatPlot(Plot_Sh)
+                                Call AddCodePlotSh(Plot_Sh) 'By putting this command here, I want to avoid the worksheet change
+                                'event being raised the worksheet is being constructed yet.
         End If
     On Error GoTo 0
     
