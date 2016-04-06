@@ -349,7 +349,7 @@ Sub AddCodePlotSh(Plot_Sh As Worksheet)
     Code = Code & "End If" & vbCrLf
     Code = Code & "Application.EnableEvents = True" & vbCrLf
     Code = Code & "Application.ScreenUpdating = True" & vbCrLf
-    Code = Code & "Application.Run " & Chr(34) & "Chronus_1.2.0.xlam!resultsPreviewCalculation" & Chr(34) & vbCrLf
+    Code = Code & "Application.Run " & Chr(34) & ChronusNameVersion & "!resultsPreviewCalculation" & Chr(34) & vbCrLf
     Code = Code & "End Sub"
     
     For Each vbcomp In Plot_Sh.Parent.VBProject.VBComponents
