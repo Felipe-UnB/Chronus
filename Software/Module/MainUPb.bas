@@ -855,6 +855,9 @@ End Sub
 Sub CreateWorkbook()
 
     'For a new sample, the necessary workbook and all necessary sheets will be created.
+    'Updated 06042016
+    'In this update, the file format was changed to xlsm, in roder to add code to the plot sheets (worksheet_change event).
+    'Surprisingly, this also eliminated the screen blinking that appeared in the program after updating windows 7 to 10.
     Dim NewSample As Integer
     Dim SaveNewWorkbook As Variant
     Dim WB As Workbook
@@ -871,7 +874,7 @@ Sub CreateWorkbook()
             On Error Resume Next 'Important to force to code move to the next line, considering that there is some error handlers below
             
 100                SaveNewWorkbook = Application.GetSaveAsFilename _
-                    ("New Sample", "Excel workbook(*.xlsx),*.xlsx") 'Ask the user for a folder and a file name.
+                    ("New Sample", "Excel workbook(*.xlsm),*.xlsm") 'Ask the user for a folder and a file name.
                     
                     Do While SaveNewWorkbook = False 'User hit cancel button.
                         If MsgBox("Would you like to end the program? If not, " & _
@@ -911,7 +914,9 @@ Sub CreateWorkbook()
                             
                                 If ScreenAlerts = False Then Application.DisplayAlerts = True
                                 
-                                    mwbk.SaveAs FileName:=SaveNewWorkbook, ConflictResolution:=xlLocalSessionChanges 'UPDATE
+                                    'In the command below, the option FileFormat must be set, otherwise the saveas method won't work.
+                                    'See http://www.rondebruin.nl/win/s5/win001.htm for details!
+                                    mwbk.SaveAs FileName:=SaveNewWorkbook, FileFormat:=52, ConflictResolution:=xlLocalSessionChanges  'UPDATE
                                 
                                 Application.DisplayAlerts = ScreenAlerts
                                 
@@ -925,7 +930,7 @@ Sub CreateWorkbook()
                                     Else
                                         MsgBox "Please, write a new name or change the folder.", vbOKOnly
                                             SaveNewWorkbook = Application.GetSaveAsFilename _
-                                                ("New Sample", "Excel workbook(*.xlsx),*.xlsx")
+                                                ("New Sample", "Excel workbook(*.xlsm),*.xlsm")
                                     End If
                                 End If
                                 
@@ -992,7 +997,7 @@ Sub CreateWorkbook()
     
         Application.ScreenUpdating = ScreenUpd
     
-    Application.GoTo StartANDOptions_Sh.Range("A1")
+    Application.Goto StartANDOptions_Sh.Range("A1")
     
 End Sub
 Public Sub PublicVariables()
@@ -1655,7 +1660,7 @@ Sub CheckRawData()
                 
                 If Result = 0 Then
                     MsgBox (result2 & " is missing in " & OpenedWorkbook.Name & ". Please, check it. You may have selected the wrong range. ")
-                        Application.GoTo OpenedWorkbook.Worksheets(1).Range("A1")
+                        Application.Goto OpenedWorkbook.Worksheets(1).Range("A1")
                             Call UnloadAll
                                 End
                 End If
@@ -1668,7 +1673,7 @@ Sub CheckRawData()
                 E = WorksheetFunction.count(OpenedWorkbook.Worksheets(1).Range(C))
                     If E <> CyclesNumber Then
                         MsgBox ("Some cycles seem to be missing in " & OpenedWorkbook.Name & ". Please, check this file and then retry.")
-                            Application.GoTo OpenedWorkbook.Worksheets(1).Range("A1")
+                            Application.Goto OpenedWorkbook.Worksheets(1).Range("A1")
                                 Call UnloadAll
                                     End
                     End If
@@ -2744,16 +2749,16 @@ Sub SetPathsNamesIDsTimesCycles()
     'must not be empty. So, we check these conditions below.
         
         If IsEmpty(SamList_Sh.Range(SamList_FilePath & a + 1)) = True Then
-            Application.GoTo SamList_Sh.Range(SamList_FilePath & a + 1)
+            Application.Goto SamList_Sh.Range(SamList_FilePath & a + 1)
             GoTo ErrHandler
             ElseIf IsEmpty(SamList_Sh.Range(SamList_ID & a + 1)) = True Or WorksheetFunction.IsNumber(SamList_Sh.Range(SamList_ID & a + 1)) = False Then
-                Application.GoTo SamList_Sh.Range(SamList_ID & a + 1)
+                Application.Goto SamList_Sh.Range(SamList_ID & a + 1)
                 GoTo ErrHandler
                 ElseIf IsEmpty(SamList_Sh.Range(SamList_FirstCycleTime & a + 1)) = True Or WorksheetFunction.IsNumber(SamList_Sh.Range(SamList_FirstCycleTime & a + 1)) = False Then
-                    Application.GoTo SamList_Sh.Range(SamList_FirstCycleTime & a + 1)
+                    Application.Goto SamList_Sh.Range(SamList_FirstCycleTime & a + 1)
                     GoTo ErrHandler
                     ElseIf IsEmpty(SamList_Sh.Range("E" & a + 1)) = True Then
-                        Application.GoTo SamList_Sh.Range(SamList_Cycles & a + 1)
+                        Application.Goto SamList_Sh.Range(SamList_Cycles & a + 1)
                         GoTo ErrHandler
 
         End If
@@ -2879,7 +2884,7 @@ Sub IdentifyFileType()
         For E = a + 1 To UBound(All_Names)
             If All_Names(a) = All_Names(E) Then
                 MsgBox "Names of samples, blanks and standards are duplicated. Please, check them and then retry."
-                    Application.GoTo SamplesNames_UPb
+                    Application.Goto SamplesNames_UPb
                         Call UnloadAll
                             End
             End If
@@ -2955,22 +2960,22 @@ Sub IdentifyFileType()
 
     If IsArrayEmpty(BlkFound) = True Then
         MsgBox "No blanks were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
-            Application.GoTo BlankName_UPb
+            Application.Goto BlankName_UPb
                 Call UnloadAll: End
                 
         ElseIf IsArrayEmpty(SlpFound) = True Then
             MsgBox "No samples were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
-                Application.GoTo SamplesNames_UPb
+                Application.Goto SamplesNames_UPb
                     Call UnloadAll: End
     
             ElseIf IsArrayEmpty(StdFound) = True Then
                 MsgBox "No external standards were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
-                    Application.GoTo ExternalStandardName_UPb
+                    Application.Goto ExternalStandardName_UPb
                         Call UnloadAll: End
               
                 ElseIf InternalStandardCheck_UPb = True And IsArrayEmpty(IntStdFound) = True Then
                     MsgBox "No Internal standards were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
-                        Application.GoTo InternalStandard_UPb
+                        Application.Goto InternalStandard_UPb
                             Call UnloadAll: End
     End If
   
@@ -3038,19 +3043,19 @@ Public Sub LoadSamListMap()
     'must no be empty. So, we check these conditions below.
         
         If IsEmpty(SamList_Sh.Range("H" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("H" & a)) = False Then
-            Application.GoTo SamList_Sh.Range("H" & a)
+            Application.Goto SamList_Sh.Range("H" & a)
             GoTo ErrHandler
             ElseIf IsEmpty(SamList_Sh.Range("I" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("I" & a)) = False Then
-                Application.GoTo SamList_Sh.Range("I" & a)
+                Application.Goto SamList_Sh.Range("I" & a)
                 GoTo ErrHandler
                 ElseIf IsEmpty(SamList_Sh.Range("J" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("J" & a)) = False Then
-                    Application.GoTo SamList_Sh.Range("J" & a)
+                    Application.Goto SamList_Sh.Range("J" & a)
                     GoTo ErrHandler
                     ElseIf IsEmpty(SamList_Sh.Range("K" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("K" & a)) = False Then
-                        Application.GoTo SamList_Sh.Range("K" & a)
+                        Application.Goto SamList_Sh.Range("K" & a)
                         GoTo ErrHandler
                         ElseIf IsEmpty(SamList_Sh.Range("L" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("L" & a)) = False Then
-                            Application.GoTo SamList_Sh.Range("L" & a)
+                            Application.Goto SamList_Sh.Range("L" & a)
                             GoTo ErrHandler
         
         End If
@@ -3111,10 +3116,10 @@ Public Sub LoadStdListMap()
     'must no be empty. So, we check these conditions below.
         
         If IsEmpty(SamList_Sh.Range("F" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("F" & a)) = False Then
-            Application.GoTo SamList_Sh.Range("F" & a)
+            Application.Goto SamList_Sh.Range("F" & a)
             GoTo ErrHandler
             ElseIf IsEmpty(SamList_Sh.Range("G" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("G" & a)) = False Then
-                Application.GoTo SamList_Sh.Range("I" & a)
+                Application.Goto SamList_Sh.Range("I" & a)
                 GoTo ErrHandler
         End If
         
@@ -3165,7 +3170,7 @@ Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
             MsgBox "It's impossible to evaluate an analysis with only one cycle. " _
                 & "Please, check the cycles that must be considered for " & WB.Name & ". Look at column E."
                     WB.Close savechanges:=False
-                        Application.GoTo SamList_Sh.Range("A1")
+                        Application.Goto SamList_Sh.Range("A1")
                             End
         End If
         
@@ -3184,7 +3189,7 @@ Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
                 If Val(B) > UBound(AllCycles) Then
                     MsgBox "You have choosen an cycle for " & WB.Name & " that doesn't exist. Please, check it."
                         WB.Close savechanges:=False
-                            Application.GoTo SamList_Sh.Range("A1")
+                            Application.Goto SamList_Sh.Range("A1")
                                 End
                 End If
                     
