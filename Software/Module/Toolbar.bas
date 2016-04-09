@@ -300,7 +300,7 @@ Sub Button1_FullDataReduction()
     'Call FullDataReduction
     Box7_FullReduction.Show 'New interface to control what is being done
     
-    Call UnloadAll: End
+    Call UnloadAll
 
 End Sub
 
@@ -308,7 +308,7 @@ Sub Button2_OpenFilesByIDs()
 
     Call OpenFilesByIDs
 
-    Call UnloadAll: End
+    Call UnloadAll
 
 End Sub
 
@@ -344,7 +344,7 @@ Sub Button_ConvertToPercent()
 
     Call ConvertPercentage
 
-    Call UnloadAll: End
+    Call UnloadAll
 
 End Sub
 
@@ -352,7 +352,7 @@ Sub Button_FormatSheets()
 
     Call FormatMainSh
 
-    Call UnloadAll: End
+    Call UnloadAll
 
 End Sub
 
@@ -360,7 +360,7 @@ Sub Button_ConvertToAbsolute()
 
     Call ConvertAbsolute
 
-    Call UnloadAll: End
+    Call UnloadAll
 
 End Sub
 
@@ -372,7 +372,7 @@ Sub Button_StartOptions()
 
     Application.ScreenUpdating = True
 
-    Call UnloadAll: End
+    Call UnloadAll
 
 End Sub
 
@@ -422,7 +422,7 @@ Sub Button_OpenAnalysisByID()
             Application.DisplayAlerts = True
 
         End If
-    Call UnloadAll: End
+    Call UnloadAll
 
     Application.ScreenUpdating = True
 
@@ -468,7 +468,7 @@ Sub Button_NextID()
 
     End If
 
-    Call UnloadAll: End
+    Call UnloadAll
 
     Application.ScreenUpdating = True
 
@@ -516,7 +516,7 @@ Sub Button_PreviousID()
 
     End If
 
-    Call UnloadAll: End
+    Call UnloadAll
 
     Application.ScreenUpdating = True
 
@@ -527,7 +527,7 @@ Sub Button_CloseAnalysisByID()
 
     Call Plot_ClosePlot(ActiveSheet)
 
-    Call UnloadAll: End
+    Call UnloadAll
 
 End Sub
 
@@ -555,7 +555,7 @@ Sub Button_RestoreData()
 
     Call RestoreOriginalPlotData(ActiveSheet)
 
-    Call UnloadAll: End
+    Call UnloadAll
 
 End Sub
 
@@ -594,7 +594,7 @@ Sub Button_FinalReport()
 
     Call CreateFinalReport
 
-    Call UnloadAll: End
+    Call UnloadAll
 
 End Sub
 
@@ -602,7 +602,7 @@ Sub Button_ChartTitleAsSampleName()
 
     Call ChangeChartTitleToSampleName
 
-    Call UnloadAll: End
+    Call UnloadAll
     
 End Sub
 

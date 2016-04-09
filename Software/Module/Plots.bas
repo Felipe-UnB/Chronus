@@ -42,6 +42,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
     Dim TargetSheet As Worksheet
     Dim ShName As String
     Dim LastID As Long
+    Dim EnaEvent As Boolean 'Variable used to store application.enableevents state
     
     If TypeName(ID) <> "Integer" Then
         MsgBox "The type of the choosen ID (" & ID & ") is " & TypeName(ID) & ", but it must be an integer!"
@@ -152,7 +153,11 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
                             
                                     Set Plot_Sh = mwbk.Worksheets(ShName & " (" & ID & ")_Plot")
                                         Set Plot_ShHidden = mwbk.Worksheets(ShName & " (" & ID & ")_PlotHidden")
-                                            Plot_Sh.Cells.Clear
+                                            EnaEvent = Application.EnableEvents
+                                                Application.EnableEvents = False 'This will avoid the worksheet_change event from the plot sheet to be triggered
+                                                    Plot_Sh.Cells.Clear
+                                                Application.EnableEvents = EnaEvent
+                                                
                                                 Plot_ShHidden.Cells.Clear
                             Else
                                 
@@ -172,7 +177,11 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
                         
                                     Set Plot_Sh = mwbk.Worksheets(ShName & " (" & ID & ")_Plot")
                                         Set Plot_ShHidden = mwbk.Worksheets(ShName & " (" & ID & ")_PlotHidden")
-                                            Plot_Sh.Cells.Clear
+                                            EnaEvent = Application.EnableEvents
+                                                Application.EnableEvents = False 'This will avoid the worksheet_change event from the plot sheet to be triggered
+                                                    Plot_Sh.Cells.Clear
+                                                Application.EnableEvents = EnaEvent
+                                                
                                                 Plot_ShHidden.Cells.Clear
 
                         End If
@@ -339,21 +348,22 @@ Sub AddCodePlotSh(Plot_Sh As Worksheet)
     Code = Code & "Dim cell As Range" & vbCrLf
     Code = Code & "Dim LastColumn As String" & vbCrLf
     Code = Code & "LastColumn = " & Chr(34) & Plot_LastColumn & Chr(34) & vbCrLf
-    Code = Code & "If Target.Column = 1 and Target.Count = WorksheetFunction.CountA(Target) = False Then" & vbCrLf 'This line is an attempt to check if the user deleted the cells content
+    Code = Code & "If Target.Column = 1 Then" & vbCrLf 'This line is an attempt to check if the user deleted the cells content
+    Code = Code & "For Each cell In Target" & vbCrLf
+    Code = Code & "If cell <> vbNullString Then Exit Sub" & vbCrLf
+    Code = Code & "Next" & vbCrLf
     Code = Code & "Application.EnableEvents = False" & vbCrLf
-    Code = Code & "Application.ScreenUpdating = False" & vbCrLf
     Code = Code & "For Each cell In Target" & vbCrLf
     Code = Code & "Me.Range(cell, Me.Range(LastColumn & cell.Row)).ClearContents" & vbCrLf
     Code = Code & "Next" & vbCrLf
     Code = Code & "else exit sub" & vbCrLf
     Code = Code & "End If" & vbCrLf
     Code = Code & "Application.EnableEvents = True" & vbCrLf
-    Code = Code & "Application.ScreenUpdating = True" & vbCrLf
     Code = Code & "Application.Run " & Chr(34) & ChronusNameVersion & "!resultsPreviewCalculation" & Chr(34) & vbCrLf
     Code = Code & "End Sub"
     
     For Each vbcomp In Plot_Sh.Parent.VBProject.VBComponents
-        If vbcomp.Name = Plot_Sh.CodeName Then
+        If vbcomp.Name = Plot_Sh.CodeName Then 'I must know how my sheet is named, that's why I use the for loop structure
             Plot_Sh_Name = vbcomp.Name
                 Exit For
         End If
@@ -361,6 +371,7 @@ Sub AddCodePlotSh(Plot_Sh As Worksheet)
 
     With Plot_Sh.Parent.VBProject.VBComponents(Plot_Sh_Name).CodeModule
         NextLine = .CountOfLines + 1
+        .DeleteLines 1, .CountOfLines 'Avoiding code duplication by clearing the module before inserting the new lines
         .InsertLines NextLine, Code
     End With
 End Sub
@@ -898,8 +909,6 @@ Sub Plot_CopyData(Source_Sh As Worksheet, Destination_Sh As Worksheet)
             .Range(RawU238Range).Copy Destination_Sh.Range(Plot_Column38 & Plot_HeaderRow + 1)
     End With
     
-    
-
 End Sub
 
 Sub Plot_OrdinaryCalculations(Sh As Worksheet)

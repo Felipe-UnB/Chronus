@@ -69,7 +69,7 @@ Private Sub CommandButton2_TestAll_Click()
         'it has to come back to its initial state (false)
             
             Call OpenAnalysisToPlot_ByIDs(Val(Counter), True)
-        
+
         If FailToOpen = False Then
         
 '            Call Plot_PlotAnalysis(Plot_Sh)

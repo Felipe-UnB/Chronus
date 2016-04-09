@@ -2595,6 +2595,7 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
     Dim StdDevTestMsg As Integer
     Dim FailedCycles As Long 'Number of cycles that failed the standard deviation test.
     Dim ScreenUpdt As Boolean 'Variable used to store application.screenupdating state
+    Dim EnaEvent As Boolean 'Variable used to store application.enableevents state
     
     Dim ClearRowArray() As Variant 'Row with items that didn´t pass the standard deviation test and must be eliminated
         ReDim ClearRowArray(1 To 1) As Variant
@@ -2837,7 +2838,15 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
 '        ScreenUpdt = Application.ScreenUpdating
 '            Application.ScreenUpdating = True
                 For Counter = LBound(ClearRowArray_Unique) To UBound(ClearRowArray_Unique)
+                    EnaEvent = Application.EnableEvents
+                        If TestingAll = True Then
+                            EnaEvent = Application.EnableEvents
+                                Application.EnableEvents = False
+                        End If
+                    
                     Sh.Range(Plot_FirstColumn & ClearRowArray_Unique(Counter), Plot_LastColumn & ClearRowArray_Unique(Counter)).Clear
+                
+                    Application.EnableEvents = EnaEvent
                 Next
 '            Application.ScreenUpdating = ScreenUpdt
             
