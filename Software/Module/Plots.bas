@@ -336,7 +336,9 @@ Sub AddCodePlotSh(Plot_Sh As Worksheet)
     'Created 05042016
     'This procedure will add automatically an event handler for the plot sheets: every time the user delete
     'a cycle, the whole line will be cleared and the RecultsPrevieCalculation will be called
-
+    'Updated 24042016 - Application.EnableEvents and Application.ScreenUpdating state are preserved
+    'with two new variables and then set false. In the end, they are returned to their original
+    'state.
 
     Dim Code As String
     Dim NextLine As Long
@@ -347,18 +349,24 @@ Sub AddCodePlotSh(Plot_Sh As Worksheet)
     Code = Code & "'Target is the range that has been changed" & vbCrLf
     Code = Code & "Dim cell As Range" & vbCrLf
     Code = Code & "Dim LastColumn As String" & vbCrLf
+    Code = Code & "Dim EnableEventsState As boolean" & vbCrLf
+    Code = Code & "Dim AppScrUpdtState As boolean" & vbCrLf
     Code = Code & "LastColumn = " & Chr(34) & Plot_LastColumn & Chr(34) & vbCrLf
     Code = Code & "If Target.Column = 1 Then" & vbCrLf 'This line is an attempt to check if the user deleted the cells content
     Code = Code & "For Each cell In Target" & vbCrLf
     Code = Code & "If cell <> vbNullString Then Exit Sub" & vbCrLf
     Code = Code & "Next" & vbCrLf
+    Code = Code & "EnableEventsState=Application.EnableEvents" & vbCrLf
+    Code = Code & "AppScrUpdtState=application.ScreenUpdating" & vbCrLf
     Code = Code & "Application.EnableEvents = False" & vbCrLf
+    Code = Code & "application.ScreenUpdating=false" & vbCrLf
     Code = Code & "For Each cell In Target" & vbCrLf
     Code = Code & "Me.Range(cell, Me.Range(LastColumn & cell.Row)).ClearContents" & vbCrLf
     Code = Code & "Next" & vbCrLf
     Code = Code & "else exit sub" & vbCrLf
     Code = Code & "End If" & vbCrLf
-    Code = Code & "Application.EnableEvents = True" & vbCrLf
+    Code = Code & "Application.EnableEvents = EnableEventsState" & vbCrLf
+    Code = Code & "application.ScreenUpdating = AppScrUpdtState" & vbCrLf
     Code = Code & "Application.Run " & Chr(34) & ChronusNameVersion & "!resultsPreviewCalculation" & Chr(34) & vbCrLf
     Code = Code & "End Sub"
     

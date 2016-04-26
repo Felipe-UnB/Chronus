@@ -316,7 +316,9 @@ Sub FormatFinalReport()
     End If
     
     With FinalReport_Sh
-                
+        
+        .Range(FR_ChronusVersion) = .Range(FR_ChronusVersion).Value & " " & ChronusVersion
+        
         'Ages in Ma
         Set RangeUnion = Application.Union( _
             .Range(FR_ColumnAge76 & ":" & FR_ColumnAge76), _
@@ -384,6 +386,8 @@ Sub FormatFinalReport()
         .Range(FR_Column6876DiscPercent & FR_HeaderRow + 1).End(xlDown))
         
         AutoFitRange.Columns.AutoFit
+        
+        .Range(FR_ChronusVersion).Columns.AutoFit
         
         'Formatting the Chronus info
         

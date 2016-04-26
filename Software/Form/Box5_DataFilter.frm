@@ -793,17 +793,16 @@ Sub FilterAnalysis(AnalysesTotal As Long)
                 RemoveCells(Count1) = CellInRange.Row
                     ReDim Preserve RemoveCells(1 To UBound(RemoveCells) + 1) As Long
                         Count1 = Count1 + 1
-                        
-                With SlpStdCorr_Sh
-                    Set CutCellsRange = .Range(StdCorr_FirstColumn & CellInRange.Row, StdCorr_LastColumn & CellInRange.Row)
-                    Set PasteRange = CutCellsRange.End(xlDown).Offset(1)
-                End With
+                
+                Set CutCellsRange = SlpStdCorr_Sh.Range(StdCorr_FirstColumn & CellInRange.Row, StdCorr_LastColumn & CellInRange.Row)
                                 
                 If CutCellsRange.Row = Range75LastCell.Row Then
-                    CutCellsRange.Cut (PasteRange)
-                        Exit For
+                    Set PasteRange = CutCellsRange.Offset(1)
+                        CutCellsRange.Cut (PasteRange)
+                            Exit For
                 Else
-                    CutCellsRange.Cut (PasteRange)
+                    Set PasteRange = CutCellsRange.End(xlDown).Offset(1)
+                        CutCellsRange.Cut (PasteRange)
                 End If
             End If
         Next

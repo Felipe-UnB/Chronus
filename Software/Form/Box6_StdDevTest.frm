@@ -106,6 +106,7 @@ Private Sub CommandButton2_TestAll_Click()
     Call UnloadAll
 
     Application.ScreenUpdating = ScreenUpd
+
 End Sub
 
 Private Sub TextBox1_Change()

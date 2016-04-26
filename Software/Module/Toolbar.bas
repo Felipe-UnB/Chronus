@@ -300,7 +300,7 @@ Sub Button1_FullDataReduction()
     'Call FullDataReduction
     Box7_FullReduction.Show 'New interface to control what is being done
     
-    Call UnloadAll
+    Call UnloadAll: End
 
 End Sub
 
@@ -308,7 +308,7 @@ Sub Button2_OpenFilesByIDs()
 
     Call OpenFilesByIDs
 
-    Call UnloadAll
+    Call UnloadAll: End
 
 End Sub
 
@@ -344,7 +344,7 @@ Sub Button_ConvertToPercent()
 
     Call ConvertPercentage
 
-    Call UnloadAll
+    Call UnloadAll: End
 
 End Sub
 
@@ -352,7 +352,7 @@ Sub Button_FormatSheets()
 
     Call FormatMainSh
 
-    Call UnloadAll
+    Call UnloadAll: End
 
 End Sub
 
@@ -360,7 +360,7 @@ Sub Button_ConvertToAbsolute()
 
     Call ConvertAbsolute
 
-    Call UnloadAll
+    Call UnloadAll: End
 
 End Sub
 
@@ -372,7 +372,7 @@ Sub Button_StartOptions()
 
     Application.ScreenUpdating = True
 
-    Call UnloadAll
+    Call UnloadAll: End
 
 End Sub
 
@@ -422,9 +422,10 @@ Sub Button_OpenAnalysisByID()
             Application.DisplayAlerts = True
 
         End If
-    Call UnloadAll
-
+    
     Application.ScreenUpdating = True
+
+    Call UnloadAll: End
 
 End Sub
 
@@ -467,10 +468,10 @@ Sub Button_NextID()
         MsgBox "Please, check the cell " & Plot_Sh.Range(Plot_IDCell).Address & ", it should contain the ID of the analysis plotted.", vbOKOnly
 
     End If
-
-    Call UnloadAll
-
+    
     Application.ScreenUpdating = True
+    
+    Call UnloadAll: End
 
 End Sub
 
@@ -515,10 +516,10 @@ Sub Button_PreviousID()
         MsgBox "Please, check the cell " & Plot_Sh.Range(Plot_IDCell).Address & ", it should contain the ID of the analysis plotted.", vbOKOnly
 
     End If
-
-    Call UnloadAll
-
+    
     Application.ScreenUpdating = True
+    
+    Call UnloadAll: End
 
 End Sub
 
@@ -527,7 +528,7 @@ Sub Button_CloseAnalysisByID()
 
     Call Plot_ClosePlot(ActiveSheet)
 
-    Call UnloadAll
+    Call UnloadAll: End
 
 End Sub
 
@@ -544,10 +545,10 @@ Sub Button_FilterData()
     Application.ScreenUpdating = False
     
         Box5_DataFilter.Show
-    
-        Call UnloadAll
         
     Application.ScreenUpdating = True
+    
+        Call UnloadAll: End
 
 End Sub
 
@@ -555,7 +556,7 @@ Sub Button_RestoreData()
 
     Call RestoreOriginalPlotData(ActiveSheet)
 
-    Call UnloadAll
+    Call UnloadAll: End
 
 End Sub
 
@@ -576,25 +577,11 @@ Sub DeleteFromShortcut()
     
 End Sub
 
-Sub teste()
-
-    On Error Resume Next
-          
-        For Each Bt In CommandBars("Isoplot 3 Worksheet Tools").Controls
-            CommandBars("Isoplot 3 Worksheet Tools").Controls(Bt).Delete
-        Next
-        
-        CommandBars("Isoplot 3 Worksheet Tools").Delete
-
-    On Error GoTo 0
-    
-End Sub
-
 Sub Button_FinalReport()
 
     Call CreateFinalReport
 
-    Call UnloadAll
+    Call UnloadAll: End
 
 End Sub
 
@@ -602,7 +589,7 @@ Sub Button_ChartTitleAsSampleName()
 
     Call ChangeChartTitleToSampleName
 
-    Call UnloadAll
+    Call UnloadAll: End
     
 End Sub
 
@@ -661,11 +648,6 @@ Sub Button_QuestionHelp()
     
 End Sub
 
-'Private Sub Workbook_Open()
-'
-'    Call Auto_Open
-'
-'End Sub
 Private Sub Workbook_BeforeClose(Cancel As Boolean)
 
     Call DeleteFromShortcut

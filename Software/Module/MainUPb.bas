@@ -14,7 +14,8 @@ Option Explicit
     '.Getfolder does not list all the files in the indicated folder
     
     Public Const ProgramName = "CHRONUS"
-    Public Const ChronusNameVersion = "Chronus_1.3.2.xlam"
+    Public Const ChronusVersion = "1.3.2" 'Version
+    Public Const ChronusNameVersion = "Chronus_1.3.2.xlam" 'Name of the file
     
     Public ShowPresentation As Range 'RAnge where the user option to show or not the Chronus presentation
     
@@ -353,10 +354,10 @@ Option Explicit
     Public ExtStd76Repro1std As Range
         
     'Constants used to set the right columns (and header row) for isotopes signals or ratios in FinalReport
-    Public Const FR_HeaderRow As Integer = 1
-    'Public Const FR_ColumnID As String = "B"
-    Public Const FR_ColumnSlpName As String = "A"
+    Public Const FR_ChronusVersion As String = "B1"
     
+    Public Const FR_HeaderRow As Integer = 1
+    Public Const FR_ColumnSlpName As String = "A"
     Public Const FR_ColumnComments As String = "B"
     Public Const FR_Column204PbCps As String = "C"
     Public Const FR_Column206PbmV As String = "D"

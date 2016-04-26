@@ -39,21 +39,21 @@ Sub CreateWorkbookForAnalyses()
     
     With NewSheet
         
-        Select Case ComboBox1_Sheets
-            
-            Case BlkCalc_Sh_Name
-                .Name = BlkCalc_Sh_Name
-                    Call FormatBlkCalc(True)
-            
-            Case SlpStdBlkCorr_Sh_Name
-                .Name = SlpStdBlkCorr_Sh_Name
-                    Call FormatSlpStdBlkCorr(True)
-            
-            Case SlpStdCorr_Sh_Name
-                .Name = SlpStdCorr_Sh_Name
-                    Call FormatSlpStdCorr(True, False)
+'        Select Case ComboBox1_Sheets
+'
+'            Case BlkCalc_Sh_Name
+'                .Name = BlkCalc_Sh_Name
+'                    Call FormatBlkCalc(True)
+'
+'            Case SlpStdBlkCorr_Sh_Name
+'                .Name = SlpStdBlkCorr_Sh_Name
+'                    Call FormatSlpStdBlkCorr(True)
+'
+'            Case SlpStdCorr_Sh_Name
+'                .Name = SlpStdCorr_Sh_Name
+'                    Call FormatSlpStdCorr(True, False)
                     
-        End Select
+'        End Select
                 
         'The lines below will add two columns (for samples' names and analyses' date)
         .Range("A1").Columns.EntireColumn.Insert (xlShiftToRight)
@@ -107,16 +107,16 @@ Sub StandardCompilation()
 
     For Each File In WorkbooksFolder.Files
         
-        If FSO.getExtensionName(File.path) = DesiredExtension Then
-            
-            Set OpenedWorkbook = Workbooks.Open(File.path)
-                Set CellToPaste = NewSheet.Range(Comp_AnalysisID & CounterRow)
-            
-            Call CopyStandard(InputBoxStandardName, OpenedWorkbook, CellToPaste)
-            
-            OpenedWorkbook.Close (False)
-            
-        End If
+'        If FSO.getExtensionName(File.path) = DesiredExtension Then
+'
+'            Set OpenedWorkbook = Workbooks.Open(File.path)
+'                Set CellToPaste = NewSheet.Range(Comp_AnalysisID & CounterRow)
+'
+'            Call CopyStandard(InputBoxStandardName, OpenedWorkbook, CellToPaste)
+'
+'            OpenedWorkbook.Close (False)
+'
+'        End If
 
     Next
 

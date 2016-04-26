@@ -2838,16 +2838,16 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
 '        ScreenUpdt = Application.ScreenUpdating
 '            Application.ScreenUpdating = True
                 For Counter = LBound(ClearRowArray_Unique) To UBound(ClearRowArray_Unique)
+
                     EnaEvent = Application.EnableEvents
-                        If TestingAll = True Then
-                            EnaEvent = Application.EnableEvents
-                                Application.EnableEvents = False
-                        End If
+                        Application.EnableEvents = False
                     
                     Sh.Range(Plot_FirstColumn & ClearRowArray_Unique(Counter), Plot_LastColumn & ClearRowArray_Unique(Counter)).Clear
                 
                     Application.EnableEvents = EnaEvent
                 Next
+                
+                Call ResultsPreviewCalculation
 '            Application.ScreenUpdating = ScreenUpdt
             
     If TestingAll = False Then
