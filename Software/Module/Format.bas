@@ -389,6 +389,12 @@ Sub FormatFinalReport()
         
         .Range(FR_ChronusVersion).Columns.AutoFit
         
+        'The following lines will delete the columns that are still not being filled
+        .Columns("E").EntireColumn.Delete
+        .Columns("H:M").EntireColumn.Delete
+        .Columns("M:N").EntireColumn.Delete
+        .Columns("S:T").EntireColumn.Delete
+        
         'Formatting the Chronus info
         
         With .Range("A1").Font
