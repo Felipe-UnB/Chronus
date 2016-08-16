@@ -21,9 +21,9 @@ Public Comp_NewSheet As Worksheet
 
 Sub TestBox9()
     
-    FolderAddress = "D:\UnB\Projetos-Software\Chronus\Software\Data Compilation - Test Files\"
-    Box9_CompileResults.ComboBox1_Sheets = SlpStdBlkCorr_Sh_Name
-    Box9_CompileResults.TextBox1_AnalysesNames = "GJ"
+    FolderAddress = "D:\UnB\Geocronologia\Chronus development\Data Compilation - Test Files\"
+    Box9_CompileResults.ComboBox1_Sheets = FinalReport_Sh_Name
+    Box9_CompileResults.TextBox1_AnalysesNames = "91500"
 
 '    BlkCalc_Sh_Name
 '    SlpStdBlkCorr_Sh_Name
@@ -54,6 +54,7 @@ Sub CreateWorkbookForAnalyses()
     
     Dim NewWorkbook As Workbook
     
+    Set TW = ThisWorkbook
     Set NewWorkbook = Application.Workbooks.Add
     Set Comp_NewSheet = NewWorkbook.Worksheets(1)
     
@@ -91,9 +92,38 @@ Sub CreateWorkbookForAnalyses()
                     Comp_HeaderRow = StdCorr_HeaderRow
  
                     Call FormatSlpStdCorr(True, False, True)
+                    
+            Case FinalReport_Sh_Name
+            
+                'NewWorkbook.Close (False)
+                
+                On Error Resume Next
+                        
+                    TW.Sheets(FinalReport_Sh_Name).Copy _
+                        After:=NewWorkbook.Sheets(1)
+                    
+                    If Err.Number <> 0 Then
+                        MsgBox "Chronus not instaled correctly"
+                        Call UnloadAll
+                        End
+                    End If
+                    
+                    NewWorkbook.Worksheets(1).Delete
+                    Set Comp_NewSheet = NewWorkbook.Worksheets(1)
+                    
+                On Error GoTo 0
+                                    
+                    Comp_SlpName = FR_ColumnSlpName
+                    Comp_ColumnID = FR_ColumnSlpName
+                    Comp_HeaderRow = FR_HeaderRow
+                    
+                    Call FormatFinalReport(True)
 
         End Select
- 
+    End With
+    
+    With Comp_NewSheet
+    
         'The lines below will add two columns (for samples' names and analyses' date)
         .Range("A1").Columns.EntireColumn.Insert (xlShiftToRight)
         .Range("A1").Columns.EntireColumn.Insert (xlShiftToRight)
@@ -156,6 +186,9 @@ Sub AnalysesCompilation()
             
         Case SlpStdCorr_Sh_Name
             CounterRow = StdCorr_HeaderRow + 1
+            
+        Case FinalReport_Sh_Name
+            CounterRow = FR_HeaderRow + 2
 
     End Select
 
@@ -265,12 +298,16 @@ Sub CopyAnalysis(WB As Workbook, CellToPaste As Range)
             
                 Set Cell1 = Ws.Cells(FindAnalysis.Row, FindAnalysis.Column)
             
-                Set RangeToCopy = Ws.Range(Comp_ColumnID & Cell1.Row, Ws.Range(Comp_ColumnID & Cell1.Row).End(xlToRight))
+                If Ws.Range(Comp_ColumnID & Cell1.Row).Offset(, 1) = "" Then
+                    Set RangeToCopy = Ws.Range(Comp_ColumnID & Cell1.Row, Ws.Range(Comp_ColumnID & Cell1.Row).Offset(, 2).End(xlToRight))
+                Else
+                    Set RangeToCopy = Ws.Range(Comp_ColumnID & Cell1.Row, Ws.Range(Comp_ColumnID & Cell1.Row).End(xlToRight))
+                End If
                     RangeToCopy.Copy
                         
-                        CellToPaste.Offset(Counter).PasteSpecial (xlPasteValuesAndNumberFormats)
+                        CellToPaste.Offset(Counter).PasteSpecial (xlPasteValues)
                         Comp_NewSheet.Range(Comp_SampleNameColumn & CellToPaste.Row + Counter) = WB.Name
-                        
+                                                
                 Counter = Counter + 1
     
                 With Ws.Range(Comp_SlpName & Comp_HeaderRow, Ws.Range(Comp_SlpName & Comp_HeaderRow).End(xlDown))
@@ -287,19 +324,18 @@ End Sub
 
 Sub ComboBoxSheetsNames()
 
-    'This program will populate comboxes from Box1_Start
-    'and Box2_UPb_Options will standards informations
-    'stored in add-in workbook.
+    'This program will populate Box8_CompileResults
 
     Dim StandardsNamesHeader As Range 'Cell with standard names header.
     Dim Counter As Integer 'Used to add itens to External Standard ComboBox
-    Dim SheetsNames(1 To 3) As String
+    Dim SheetsNames(1 To 4) As String
     
     'The lines below will add values to the array SheetsNames
     SheetsNames(1) = BlkCalc_Sh_Name
     SheetsNames(2) = SlpStdBlkCorr_Sh_Name
     SheetsNames(3) = SlpStdCorr_Sh_Name
-
+    SheetsNames(4) = FinalReport_Sh_Name
+    
     For Counter = 1 To UBound(SheetsNames)
         Box9_CompileResults.ComboBox1_Sheets.AddItem (SheetsNames(Counter))
     Next

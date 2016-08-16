@@ -297,7 +297,7 @@ Sub FormatBlkCalc(Optional AbsoluteUncertainty As Boolean = True, Optional Compi
 
 End Sub
 
-Sub FormatFinalReport()
+Sub FormatFinalReport(Optional CompilingResults = False)
 
     'Procedure that formats the finalreport sheet.
     
@@ -308,8 +308,10 @@ Sub FormatFinalReport()
     Dim UncertantyText As String
     Dim AutoFitRange As Range
     
-    If mwbk Is Nothing Then
-        Call PublicVariables
+    If CompilingResults = False Then
+        If mwbk Is Nothing Then
+            Call PublicVariables
+        End If
     End If
 
     If FinalReport_Sh Is Nothing Then
@@ -399,10 +401,10 @@ Sub FormatFinalReport()
         
         'The following lines will delete the columns that are still not being filled
         .Columns("E").EntireColumn.Delete
-        .Columns("H:M").EntireColumn.Delete
-        .Columns("M:N").EntireColumn.Delete
-        .Columns("S:T").EntireColumn.Delete
-        .Columns("B").EntireColumn.Delete
+        .Columns("H:I").EntireColumn.Delete
+        .Columns("J:K").EntireColumn.Delete
+        .Columns("O:P").EntireColumn.Delete
+        .Columns("U:V").EntireColumn.Delete
         
         'Formatting the Chronus info
         

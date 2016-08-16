@@ -14,7 +14,7 @@ Option Explicit
     '.Getfolder does not list all the files in the indicated folder
     
     Public Const ProgramName = "CHRONUS"
-    Public Const ChronusVersion = "1.3.2" 'Version
+    Public Const ChronusVersion = "1.4.0" 'Version
     Public Const ChronusNameVersion = "Chronus_1.3.2.xlam" 'Name of the file
     
     Public ShowPresentation As Range 'RAnge where the user option to show or not the Chronus presentation
@@ -3427,7 +3427,7 @@ Sub UnloadAll()
     
 End Sub
 
-Sub CreateFinalReport()
+Sub CreateFinalReport(Optional CompilingResults = False)
 
     Dim PasteRow As Long
     Dim Counter As Long
@@ -3444,7 +3444,9 @@ Sub CreateFinalReport()
     
     Application.ScreenUpdating = False
         
-    If SlpStdCorr_Sh Is Nothing Then
+    If CompilingResults = True Then
+        Set FinalReport_Sh = Comp_NewSheet
+    ElseIf SlpStdCorr_Sh Is Nothing Then
         Call PublicVariables
     End If
                                         
@@ -3480,7 +3482,7 @@ Sub CreateFinalReport()
         Application.DisplayAlerts = True
     On Error GoTo 0
         
-    Call SetPathsNamesIDsTimesCycles
+    'Call SetPathsNamesIDsTimesCycles
     
     With SlpStdCorr_Sh
         .AutoFilterMode = False
@@ -3536,8 +3538,10 @@ Sub CreateFinalReport()
             FinalReport_Sh.Range(FR_ColumnThU & FR_HeaderRow + PasteRow) = .Range(StdCorr_Column28 & CellRange.Row)
             FinalReport_Sh.Range(FR_Column64 & FR_HeaderRow + PasteRow) = .Range(StdCorr_Column64 & CellRange.Row)
             FinalReport_Sh.Range(FR_Column641Std & FR_HeaderRow + PasteRow) = .Range(StdCorr_Column641Std & CellRange.Row)
-                
-                
+            
+            FinalReport_Sh.Range(FR_ColumnTera76 & FR_HeaderRow + PasteRow) = .Range(StdCorr_Column76 & CellRange.Row)
+            FinalReport_Sh.Range(FR_ColumnTera761Std & FR_HeaderRow + PasteRow) = .Range(StdCorr_Column761Std & CellRange.Row)
+            
             FinalReport_Sh.Range(FR_ColumnWeth75 & FR_HeaderRow + PasteRow) = .Range(StdCorr_Column75 & CellRange.Row)
             FinalReport_Sh.Range(FR_ColumnWeth751Std & FR_HeaderRow + PasteRow) = .Range(StdCorr_Column751Std & CellRange.Row)
 
