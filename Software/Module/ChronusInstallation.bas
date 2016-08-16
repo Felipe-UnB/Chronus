@@ -1,11 +1,14 @@
 Attribute VB_Name = "ChronusInstallation"
 Option Explicit
 
+
+
 Sub CheckAccessVBPM()
 
     'Created 21122015
     'This procedure checks if the trust Access to Visual Basic Project
     'Object Model option is enabled
+    
     
     Dim VBPrj As VBProject
     
@@ -33,7 +36,7 @@ Sub CheckIsoplotReference()
     IsoplotFound = False
     
     For i = 1 To Application.VBE.ActiveVBProject.References.count
-        
+        'Debug.Print Application.VBE.ActiveVBProject.References(i).Name
         If Application.VBE.ActiveVBProject.References(i).Name = "Isoplot4" Then
             IsoplotFound = True
                 
@@ -95,7 +98,7 @@ Sub AddReference()
     strGUID(8, 1) = "{420B2830-E718-11CF-893D-00A0C9054228}" 'Scripting-V1.0
     strGUID(8, 2) = 1
     strGUID(8, 3) = 0
-    
+
     'Set to continue in case of error
     On Error Resume Next
     

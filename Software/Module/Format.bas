@@ -82,7 +82,7 @@ Sub FormatSamList()
         .Range(SamList_FilePath & SamList_HeadersLine1, SamList_Blk2ID & SamList_HeadersLine2).Font.Bold = True
         .Range(SamList_FilePath & SamList_HeadersLine1, SamList_Blk2ID & SamList_HeadersLine2).HorizontalAlignment = xlCenter
 
-        Application.GoTo .Range("A" & SamList_FirstLine)
+        Application.Goto .Range("A" & SamList_FirstLine)
             
             With ActiveWindow
                 .SplitColumn = 0
@@ -102,7 +102,7 @@ Sub FormatPlot(TargetSh As Worksheet)
         Call PublicVariables
     End If
 
-    Application.GoTo TargetSh.Range("A1")
+    Application.Goto TargetSh.Range("A1")
     
     'Code to set the ranges for the isotopes signal in the sheet where they will be plotted
     With TargetSh
@@ -207,18 +207,26 @@ Sub FormatPlot(TargetSh As Worksheet)
 
 End Sub
 
-Sub FormatBlkCalc(Optional AbsoluteUncertainty As Boolean = True)
+Sub FormatBlkCalc(Optional AbsoluteUncertainty As Boolean = True, Optional CompilingAnalyses As Boolean = False)
 
     'Procedure that formats the BlkCalc sheet.
     
     'pdated 26092015 - Autofilter arrows are always shown
+    'Updated 16082016 - Optional COmpilingResults added
+    
+    'The optional CompilingAnalyses avoids the creation of a complete Chronus sheet if the user is only compiling
+    'analyes using the additional tools.
 
     Dim RangeUnion As Range
     Dim UncertantyText As String
     Dim SearchStr As Variant
     Dim ScreenUpdt As Boolean
 
-    If SamList_Sh Is Nothing Then
+    If CompilingAnalyses = True Then
+        Set BlkCalc_Sh = Comp_NewSheet
+    End If
+    
+    If BlkCalc_Sh Is Nothing Then
         Call PublicVariables
     End If
     
@@ -277,7 +285,7 @@ Sub FormatBlkCalc(Optional AbsoluteUncertainty As Boolean = True)
         .Cells.Columns.AutoFit
         .Cells.HorizontalAlignment = xlCenter
 
-        Application.GoTo .Range("A" & BlkCalc_HeaderLine + 1)
+        Application.Goto .Range("A" & BlkCalc_HeaderLine + 1)
             
             With ActiveWindow
                 .SplitColumn = 1
@@ -394,6 +402,7 @@ Sub FormatFinalReport()
         .Columns("H:M").EntireColumn.Delete
         .Columns("M:N").EntireColumn.Delete
         .Columns("S:T").EntireColumn.Delete
+        .Columns("B").EntireColumn.Delete
         
         'Formatting the Chronus info
         
@@ -424,21 +433,29 @@ Sub FormatFinalReport()
 
 End Sub
 
-Sub FormatSlpStdBlkCorr(Optional AbsoluteUncertainty As Boolean = True)
+Sub FormatSlpStdBlkCorr(Optional AbsoluteUncertainty As Boolean = True, Optional CompilingAnalyses As Boolean = False)
 
     'Procedure that formats the SlpStdBlkCorr
     
     'Updated 26092015 - Autofilter arrows always displayed
+    'Updated 16082016 - Optional COmpilingResults added
+    
+    'The optional CompilingAnalyses avoids the creation of a complete ChornuChronus sheet if the user is only compiling
+    'analyes using the additional tools.
     
     Dim RangeUnion As Range
     Dim SearchStr As Variant
     Dim UncertantyText As String
     Dim ScreenUpdt As Boolean
 
-    If SamList_Sh Is Nothing Then
-        Call PublicVariables
+    If CompilingAnalyses = True Then
+        Set SlpStdBlkCorr_Sh = Comp_NewSheet
     End If
 
+    If SlpStdBlkCorr_Sh Is Nothing Then
+        Call PublicVariables
+    End If
+    
     If AbsoluteUncertainty = True Then
         UncertantyText = "abs"
     ElseIf AbsoluteUncertainty = False Then
@@ -460,7 +477,12 @@ Sub FormatSlpStdBlkCorr(Optional AbsoluteUncertainty As Boolean = True)
 '                End If
 '        End If
 
-        .Range(ColumnExtStdRepro & ExtStdReproRow) = "Reproducibility of primary standard - " & StandardName_UPb
+        If CompilingAnalyses = False Then
+            .Range(ColumnExtStdRepro & ExtStdReproRow) = "Reproducibility of primary standard - " & StandardName_UPb
+        Else
+            .Range(ColumnExtStdRepro & ExtStdReproRow) = "Reproducibility of primary standard - "
+        End If
+        
         .Range(ColumnExtStd68 & ExtStdReproRow + 1) = "ratio 6/8 1 sigma"
         .Range(ColumnExtStd75 & ExtStdReproRow + 1) = "ratio 7/5 1 sigma"
         .Range(ColumnExtStd76 & ExtStdReproRow + 1) = "ratio 7/6 1 sigma"
@@ -670,7 +692,7 @@ Sub FormatSlpStdBlkCorr(Optional AbsoluteUncertainty As Boolean = True)
         'Below the program selects a cell without using the select method. This is very important because
         'it doesn't matter ifthe user is doing anything else in the computer, this program is able
         'to select or activate what I want.
-        Application.GoTo .Range("A" & HeaderRow + 1)
+        Application.Goto .Range("A" & HeaderRow + 1)
             
             With ActiveWindow
                 .SplitColumn = 2
@@ -680,23 +702,35 @@ Sub FormatSlpStdBlkCorr(Optional AbsoluteUncertainty As Boolean = True)
 
     End With
 
-    Call HighlightIntStd(SlpStdBlkCorr_Sh)
-    Call HighlightExtStd(SlpStdBlkCorr_Sh)
-    Call HighlightNAs(SlpStdBlkCorr_Sh)
+    If CompilingAnalyses = False Then
     
+        Call HighlightIntStd(SlpStdBlkCorr_Sh)
+        Call HighlightExtStd(SlpStdBlkCorr_Sh)
+        Call HighlightNAs(SlpStdBlkCorr_Sh)
+    
+    End If
+
 End Sub
 
-Sub FormatSlpStdCorr(Optional AbsoluteUncertainty As Boolean = True, Optional HighlightAnalysis As Boolean = True)
+Sub FormatSlpStdCorr(Optional AbsoluteUncertainty As Boolean = True, Optional HighlightAnalysis As Boolean = True, Optional CompilingAnalyses As Boolean = False)
     
     'Procedure that formats the SlpStdCorr sheet
     
     'Updated 26092015 - Autofilter arrows always displayed
+    'Updated 16082016 - CompilingAnalyses added
+    
+    'The optional CompilingAnalyses avoids the creation of a complete ChornuChronus sheet if the user is only compiling
+    'analyes using the additional tools.
     
     Dim SearchStr As Variant
     Dim RangeUnion As Range
     Dim UncertantyText As String
     Dim ScreenUpdt As Boolean
 
+    If CompilingAnalyses = True Then
+        Set SlpStdCorr_Sh = Comp_NewSheet
+    End If
+    
     If SlpStdCorr_Sh Is Nothing Then
         Call PublicVariables
     End If
@@ -808,7 +842,7 @@ Sub FormatSlpStdCorr(Optional AbsoluteUncertainty As Boolean = True, Optional Hi
             RangeUnion.NumberFormat = "0.00"
                     
         With .Range("A" & StdCorr_HeaderRow, .Range("A" & StdCorr_HeaderRow).End(xlToRight))
-            Application.GoTo .Range("A" & 1)
+            Application.Goto .Range("A" & 1)
             .Font.Bold = True
 
             If SlpStdCorr_Sh.AutoFilterMode = False Then
@@ -822,7 +856,7 @@ Sub FormatSlpStdCorr(Optional AbsoluteUncertainty As Boolean = True, Optional Hi
             .Bold = True
         End With
 
-        Application.GoTo .Range("A" & StdCorr_HeaderRow)
+        Application.Goto .Range("A" & StdCorr_HeaderRow)
             
             With ActiveWindow
                 .SplitColumn = 2
@@ -1235,7 +1269,7 @@ Sub FormatStartANDOptions()
             
     End With
     
-    Application.GoTo StartANDOptions_Sh.Range("A1")
+    Application.Goto StartANDOptions_Sh.Range("A1")
         
         With ActiveWindow
             .FreezePanes = True

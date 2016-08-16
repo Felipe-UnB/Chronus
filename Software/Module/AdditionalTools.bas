@@ -5,22 +5,42 @@ Public FolderAddress As String
 Public Const Comp_SampleNameColumn As String = "A"
 Public Const Comp_AnalysisDateColumn As String = "B"
 Public Const Comp_AnalysisID As String = "C"
-Public Const Comp_HeaderRow As Long = 1
+Public Comp_HeaderRow As Long
 Public CounterRow As Long
-Dim NewSheet As Worksheet
+
+Public Comp_AnalysesName As String    'AnalysesName is the common name of all the analyses that should be copied. This is a user input from the
+                                 'Box9_CompileResuults
+
+Public Comp_TargetSheet As String   'Name of the sheet where the analyses should be searched for.
+
+
+Public Comp_SlpName As String
+Public Comp_ColumnID As String
+
+Public Comp_NewSheet As Worksheet
+
+Sub TestBox9()
+    
+    FolderAddress = "D:\UnB\Projetos-Software\Chronus\Software\Data Compilation - Test Files\"
+    Box9_CompileResults.ComboBox1_Sheets = SlpStdBlkCorr_Sh_Name
+    Box9_CompileResults.TextBox1_AnalysesNames = "GJ"
+
+'    BlkCalc_Sh_Name
+'    SlpStdBlkCorr_Sh_Name
+'    SlpStdCorr_Sh_Name
+
+End Sub
 
 Sub CompileAnalyses()
 
     'This procedure will allow the user to open multiple results (.xlsx) and copy the
     'selected analyses to a single file.
-    
-    'Only results at SlpStdCorr sheets can be copied.
 
     Application.ScreenUpdating = False
     Application.DisplayAlerts = False
         
         Call CreateWorkbookForAnalyses
-        Call StandardCompilation
+        Call AnalysesCompilation
         
     Application.ScreenUpdating = True
     Application.DisplayAlerts = True
@@ -35,26 +55,45 @@ Sub CreateWorkbookForAnalyses()
     Dim NewWorkbook As Workbook
     
     Set NewWorkbook = Application.Workbooks.Add
-    Set NewSheet = NewWorkbook.Worksheets(1)
+    Set Comp_NewSheet = NewWorkbook.Worksheets(1)
     
-    With NewSheet
+    With Comp_NewSheet
         
-'        Select Case ComboBox1_Sheets
-'
-'            Case BlkCalc_Sh_Name
-'                .Name = BlkCalc_Sh_Name
-'                    Call FormatBlkCalc(True)
-'
-'            Case SlpStdBlkCorr_Sh_Name
-'                .Name = SlpStdBlkCorr_Sh_Name
-'                    Call FormatSlpStdBlkCorr(True)
-'
-'            Case SlpStdCorr_Sh_Name
-'                .Name = SlpStdCorr_Sh_Name
-'                    Call FormatSlpStdCorr(True, False)
-                    
-'        End Select
+        Select Case Comp_TargetSheet
+
+            Case BlkCalc_Sh_Name
+                .Name = BlkCalc_Sh_Name
                 
+                    Comp_SlpName = BlkSlpName
+                    Comp_ColumnID = BlkColumnID
+                    Comp_HeaderRow = BlkCalc_HeaderLine
+                    
+                    Call FormatBlkCalc(True, True)
+
+            Case SlpStdBlkCorr_Sh_Name
+                .Name = SlpStdBlkCorr_Sh_Name
+                
+                    Comp_SlpName = ColumnSlpName
+                    Comp_ColumnID = ColumnID
+                    Comp_HeaderRow = HeaderRow
+                    
+                    Set SlpStdBlkCorr_Sh = Comp_NewSheet
+                    
+                    Call SetSlpStdBlkCorr_Sh_Variables
+                    
+                    Call FormatSlpStdBlkCorr(True, True)
+
+            Case SlpStdCorr_Sh_Name
+                .Name = SlpStdCorr_Sh_Name
+                
+                    Comp_SlpName = StdCorr_SlpName
+                    Comp_ColumnID = StdCorr_ColumnID
+                    Comp_HeaderRow = StdCorr_HeaderRow
+ 
+                    Call FormatSlpStdCorr(True, False, True)
+
+        End Select
+ 
         'The lines below will add two columns (for samples' names and analyses' date)
         .Range("A1").Columns.EntireColumn.Insert (xlShiftToRight)
         .Range("A1").Columns.EntireColumn.Insert (xlShiftToRight)
@@ -75,26 +114,30 @@ Sub CreateWorkbookForAnalyses()
     
 End Sub
 
-Sub StandardCompilation()
+Sub AnalysesCompilation()
 
     'This procedure checks all files in the selected folder. For those with the
     'DesiredExtension, they are opened and then the CopyStandard procedure is
     'called.
-
+    
     Dim FSO As Scripting.FileSystemObject
     Dim WorkbooksFolder As Object 'Scripting.Folder
     Dim File As Object 'Scripting.File
     Dim a As Long 'Number of files with the specified extension found
-    Dim DesiredExtension As String 'String to be removed from the name of the sample
+    Dim DesiredExtension1 As String 'Chronus' files extension
+    Dim DesiredExtension2 As String 'Chronus' files extension
     Dim OpenedWorkbook As Workbook
     Dim StandardName As String
     Dim CellToPaste As Range
- 
-    DesiredExtension = "xlsx"
-       
+    Dim FoundExtension As Boolean 'Indicates if a single with one of the desired extension was found.
+    
+    DesiredExtension1 = "xlsx" 'Old Chronus files extension
+    DesiredExtension2 = "xlsm" 'New Chronus files extension
+    FoundExtension = False
+    
     Set FSO = CreateObject("Scripting.FileSystemObject") 'If the variable FSO is already declared as Scripting.Filesystem why do I have to set it like this?
        
-    'On Error Resume Next
+    On Error Resume Next
         Set WorkbooksFolder = FSO.GetFolder(FolderAddress)
 
         If Err.Number <> 0 Then
@@ -102,24 +145,49 @@ Sub StandardCompilation()
                 Exit Sub
         End If
     On Error GoTo 0
+    
+    Select Case Comp_TargetSheet
 
-    CounterRow = StdCorr_HeaderRow + 1
+        Case BlkCalc_Sh_Name
+            CounterRow = BlkCalc_HeaderLine + 1
+
+        Case SlpStdBlkCorr_Sh_Name
+            CounterRow = HeaderRow + 1
+            
+        Case SlpStdCorr_Sh_Name
+            CounterRow = StdCorr_HeaderRow + 1
+
+    End Select
 
     For Each File In WorkbooksFolder.Files
         
-'        If FSO.getExtensionName(File.path) = DesiredExtension Then
-'
-'            Set OpenedWorkbook = Workbooks.Open(File.path)
-'                Set CellToPaste = NewSheet.Range(Comp_AnalysisID & CounterRow)
-'
-'            Call CopyStandard(InputBoxStandardName, OpenedWorkbook, CellToPaste)
-'
-'            OpenedWorkbook.Close (False)
-'
-'        End If
+        If FSO.getExtensionName(File.path) = DesiredExtension1 Or FSO.getExtensionName(File.path) = DesiredExtension2 Then
+            
+            FoundExtension = True
+            
+            Set OpenedWorkbook = Workbooks.Open(File.path)
+                Set CellToPaste = Comp_NewSheet.Range(Comp_AnalysisID & CounterRow)
+
+            Call CopyAnalysis(OpenedWorkbook, CellToPaste)
+
+            OpenedWorkbook.Close (False)
+
+        End If
 
     Next
 
+    If FoundExtension = False Then
+        MsgBox "No files with the extensions " & DesiredExtension1 & " or " & DesiredExtension2 & " found!", vbOKOnly
+    End If
+
+    If CounterRow = StdCorr_HeaderRow + 1 Then
+        MsgBox "No analysis with the name " & Comp_AnalysesName & " was found.", vbOKOnly
+    End If
+    
+    If FoundExtension = True And CounterRow <> StdCorr_HeaderRow + 1 Then
+        MsgBox "You will have to fill the data of analysis manually!", vbOKOnly
+    End If
+    
 End Sub
 
 Function SelectFolderCompilation() As String
@@ -164,10 +232,10 @@ Function SelectFolderCompilation() As String
   
 End Function
 
-Sub CopyStandard(StandardName As String, WB As Workbook, CellToPaste As Range)
+Sub CopyAnalysis(WB As Workbook, CellToPaste As Range)
 
     Dim Ws As Worksheet
-    Dim FindStandard As Object
+    Dim FindAnalysis As Object
     Dim FindDate As Object
     Dim RangeToCopy As Range
     Dim FirstAddress As String
@@ -175,41 +243,45 @@ Sub CopyStandard(StandardName As String, WB As Workbook, CellToPaste As Range)
     Dim Cell1 As Range
     Dim Counter As Long
     
-    For Each Ws In WB.Worksheets
-        If Ws.Name = SlpStdCorr_Sh_Name Then
-            
-            With Ws.Range(StdCorr_SlpName & 1, Ws.Range(StdCorr_SlpName & 1).End(xlDown))
-                Set FindStandard = .Find(StandardName)
-            End With
-            
-                If Not FindStandard Is Nothing Then
-                
-                    FirstAddress = FindStandard.Address
-                    
-                    Counter = 0
-                    SlpStdCorr_Sh.Activate
-                    Do
-                    
-                        Set Cell1 = Ws.Cells(FindStandard.Row, FindStandard.Column)
-                    
-                        Set RangeToCopy = Ws.Range(StdCorr_ColumnID & Cell1.Row, Ws.Range(StdCorr_ColumnID & Cell1.Row).End(xlToRight))
-                            RangeToCopy.Copy
-                                CellToPaste.Offset(Counter).PasteSpecial (xlPasteValues)
-                                SlpStdCorr_Sh.Range(Comp_SampleNameColumn & CellToPaste.Row + Counter) = WB.Name
-                                
-                        Counter = Counter + 1
-            
-                        With Ws.Range(StdCorr_SlpName & 1, Ws.Range(StdCorr_SlpName & 1).End(xlDown))
-                            Set FindStandard = .FindNext(FindStandard)
-                        End With
-
-                    Loop While Not FindStandard Is Nothing And FindStandard.Address <> FirstAddress
-                        
-                End If
+    On Error Resume Next
+        Set Ws = WB.Worksheets(Comp_TargetSheet)
+        If Err.Number <> 0 Then
+            On Error GoTo 0
+            Exit Sub
         End If
-    Next
+    On Error GoTo 0
     
-    CounterRow = CounterRow + Counter
+    With Ws.Range(Comp_SlpName & Comp_HeaderRow, Ws.Range(Comp_SlpName & Comp_HeaderRow).End(xlDown))
+        Set FindAnalysis = .Find(Comp_AnalysesName)
+    End With
+    
+        If Not FindAnalysis Is Nothing Then
+        
+            FirstAddress = FindAnalysis.Address
+            
+            Counter = 0
+            
+            Do
+            
+                Set Cell1 = Ws.Cells(FindAnalysis.Row, FindAnalysis.Column)
+            
+                Set RangeToCopy = Ws.Range(Comp_ColumnID & Cell1.Row, Ws.Range(Comp_ColumnID & Cell1.Row).End(xlToRight))
+                    RangeToCopy.Copy
+                        
+                        CellToPaste.Offset(Counter).PasteSpecial (xlPasteValuesAndNumberFormats)
+                        Comp_NewSheet.Range(Comp_SampleNameColumn & CellToPaste.Row + Counter) = WB.Name
+                        
+                Counter = Counter + 1
+    
+                With Ws.Range(Comp_SlpName & Comp_HeaderRow, Ws.Range(Comp_SlpName & Comp_HeaderRow).End(xlDown))
+                    Set FindAnalysis = .FindNext(FindAnalysis)
+                End With
+
+            Loop While Not FindAnalysis Is Nothing And FindAnalysis.Address <> FirstAddress
+                
+        End If
+        
+        CounterRow = CounterRow + Counter
     
 End Sub
 

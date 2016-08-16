@@ -156,7 +156,7 @@ Sub ConvertUncertantiesTo(UncertantiesType As String, Sh As Worksheet)
         Case "Percentage" 'Convert to relative (percentage)
             If SearchStr <> 0 Then
                 
-                Application.ScreenUpdating = True: Application.GoTo Sh.Range("A1"): Application.ScreenUpdating = UpdtScreen
+                Application.ScreenUpdating = True: Application.Goto Sh.Range("A1"): Application.ScreenUpdating = UpdtScreen
                 
                     SearchStr = MsgBox("Data errors are absolute? Please, take a look at the table behind " & _
                     "this message, otherwise you might have to reduce all your data again.", vbYesNo, "Relative or absolute errors")
@@ -195,7 +195,7 @@ Sub ConvertUncertantiesTo(UncertantiesType As String, Sh As Worksheet)
         Case "Absolute"
             If SearchStr = 0 Then
                 
-                Application.ScreenUpdating = True: Application.GoTo Sh.Range("A1"): Application.ScreenUpdating = UpdtScreen
+                Application.ScreenUpdating = True: Application.Goto Sh.Range("A1"): Application.ScreenUpdating = UpdtScreen
                 
                     SearchStr = MsgBox("Data errors are in percentage? Please, take a look at the table behind " & _
                     "this message, otherwise you might have to reduce all your data again.", vbYesNo, "Relative or absolute errors")
@@ -311,7 +311,7 @@ Sub CalcAllSlpStd_BlkCorr()
             H = 1
         Else
             MsgBox "Please, indicate if 206Pb was analyzed using Faraday cup or Ion counter."
-                Application.GoTo StartANDOptions_Sh.Range("A1")
+                Application.Goto StartANDOptions_Sh.Range("A1")
                     End
     End If
     
@@ -460,7 +460,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                 
                 If .Range(BlkColumnID & BlkCalc_HeaderLine + 1).End(xlDown) = "" Then
                     MsgBox ("You need at least two blanks to reduce your data.")
-                        Application.GoTo BlkCalc_Sh.Range("A1")
+                        Application.Goto BlkCalc_Sh.Range("A1")
                             End
                 End If
                 
@@ -694,7 +694,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                 
                 If .Range(BlkColumnID & BlkCalc_HeaderLine + 1).End(xlDown) = "" Then
                     MsgBox ("You need at least two blanks to reduce your data.")
-                        Application.GoTo BlkCalc_Sh.Range(BlkColumnID & BlkCalc_HeaderLine)
+                        Application.Goto BlkCalc_Sh.Range(BlkColumnID & BlkCalc_HeaderLine)
                             End
                 End If
                 
@@ -1431,7 +1431,7 @@ Sub CalcBlank()
                             d = 1
                         Else
                             MsgBox "Please, indicate if 206Pb was analyzed using Faraday cup or Ion counter."
-                                Application.GoTo StartANDOptions_Sh.Range("A1")
+                                Application.Goto StartANDOptions_Sh.Range("A1")
                                     End
                     End If
                                         
@@ -1566,7 +1566,7 @@ Sub CalcAllSlp_StdCorr()
     
     If SlpStdCorr_Sh.Range(StdCorr_ColumnID & StdCorr_HeaderRow + 1).End(xlDown) = "" Then
         MsgBox "There are no analyses in SlpStdBlkCorr sheet. Please, check it."
-            Application.GoTo SlpStdBlkCorr_Sh.Range("A1")
+            Application.Goto SlpStdBlkCorr_Sh.Range("A1")
                 End
         Else
             Set SamplesID = SlpStdCorr_Sh.Range(StdCorr_ColumnID & StdCorr_HeaderRow + 1, SlpStdCorr_Sh.Range(StdCorr_ColumnID & StdCorr_HeaderRow + 1).End(xlDown))
@@ -1737,7 +1737,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
 
         If .Range(ColumnID & HeaderRow + 1).End(xlDown) = "" Then
             MsgBox ("There is no data in SlpStdBlkCorr sheet. Please, check it.")
-                Application.GoTo SlpStdBlkCorr_Sh.Range("A1")
+                Application.Goto SlpStdBlkCorr_Sh.Range("A1")
                     End
         End If
 
@@ -1761,7 +1761,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
 
         If .Range(BlkColumnID & BlkCalc_HeaderLine + 1).End(xlDown) = "" Then
             MsgBox ("You need at least two blanks to reduce your data.")
-                Application.GoTo BlkCalc_Sh.Range("A1")
+                Application.Goto BlkCalc_Sh.Range("A1")
                     End
         End If
 
@@ -1789,7 +1789,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
 
         If .Range(ColumnID & HeaderRow + 1) = "" Then
             MsgBox ("There is no data in SlpStdBlkCorr sheet. Please, check it.")
-                Application.GoTo SlpStdBlkCorr_Sh.Range("A1")
+                Application.Goto SlpStdBlkCorr_Sh.Range("A1")
                     End
         End If
 
@@ -3010,7 +3010,7 @@ Sub ExternalReproSamples()
                 
                 If .Range(BlkColumnID & BlkCalc_HeaderLine + 1).End(xlDown) = "" Then
                     MsgBox ("You need at least two blanks to reduce your data.")
-                        Application.GoTo BlkCalc_Sh.Range(BlkColumnID & BlkCalc_HeaderLine)
+                        Application.Goto BlkCalc_Sh.Range(BlkColumnID & BlkCalc_HeaderLine)
                             End
                 End If
                 

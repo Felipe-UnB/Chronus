@@ -16,7 +16,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub CommandButton3_Ok_Click()
-
         
     If Len(TextBox1_AnalysesNames) = 0 Then
         MsgBox "No name provided."
@@ -30,7 +29,20 @@ Private Sub CommandButton3_Ok_Click()
                 Exit Sub
     End If
     
+    If FolderAddress = "" Then
+        MsgBox "Please, select the folder where the analyses are.", vbOKOnly
+            CommandButton4.SetFocus
+                Exit Sub
+    End If
+    
+    Comp_TargetSheet = Box9_CompileResults.ComboBox1_Sheets.Value
+    Comp_AnalysesName = Box9_CompileResults.TextBox1_AnalysesNames.Value
+    
+    Box9_CompileResults.Hide
+    
     Call CompileAnalyses
+
+    Unload Box9_CompileResults
 
 End Sub
 
@@ -47,6 +59,8 @@ End Sub
 Private Sub UserForm_Initialize()
 
     Call ComboBoxSheetsNames
+    
+    Call TestBox9
     
 End Sub
 
