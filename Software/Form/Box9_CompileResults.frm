@@ -42,7 +42,7 @@ Private Sub CommandButton3_Ok_Click()
     
     Call CompileAnalyses
 
-    Unload Box9_CompileResults
+    UnloadAll
 
 End Sub
 

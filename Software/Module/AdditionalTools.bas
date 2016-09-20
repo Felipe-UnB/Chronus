@@ -110,6 +110,9 @@ Sub CreateWorkbookForAnalyses()
                     
                     NewWorkbook.Worksheets(1).Delete
                     Set Comp_NewSheet = NewWorkbook.Worksheets(1)
+                    Set FinalReport_Sh = Comp_NewSheet
+                    
+                    Comp_NewSheet.Rows("5:11").EntireRow.Delete
                     
                 On Error GoTo 0
                                     
@@ -298,8 +301,8 @@ Sub CopyAnalysis(WB As Workbook, CellToPaste As Range)
             
                 Set Cell1 = Ws.Cells(FindAnalysis.Row, FindAnalysis.Column)
             
-                If Ws.Range(Comp_ColumnID & Cell1.Row).Offset(, 1) = "" Then
-                    Set RangeToCopy = Ws.Range(Comp_ColumnID & Cell1.Row, Ws.Range(Comp_ColumnID & Cell1.Row).Offset(, 2).End(xlToRight))
+                If Comp_NewSheet.Name = FinalReport_Sh_Name Then
+                    Set RangeToCopy = Ws.Range(Comp_ColumnID & Cell1.Row, Ws.Range(FR_LastColumn & Cell1.Row))
                 Else
                     Set RangeToCopy = Ws.Range(Comp_ColumnID & Cell1.Row, Ws.Range(Comp_ColumnID & Cell1.Row).End(xlToRight))
                 End If
@@ -342,3 +345,48 @@ Sub ComboBoxSheetsNames()
 
 End Sub
 
+Sub CopyStandardCompilation()
+    'This will copy the standard compilation to all opened spreadsheets.
+    
+    Dim CompilationWB As Workbook
+    Dim CompilationWS As Worksheet
+    Dim WB As Workbook
+    Dim CompilationSheetName As String
+    Dim InputStdDataTable As Variant
+    Dim InputStdDiagram As Variant
+    
+    Dim SSDataTable As Worksheet
+    Dim SSDiagram As Chart
+    
+    Set CompilationWB = ActiveWorkbook
+
+    InputStdDataTable = InputBox("Please, write the name of the secondary standard data sheet.")
+    If MsgBox("Is there another sheet you would like to copy?", vbYesNo) = vbYes Then
+        InputStdDiagram = InputBox("Write the diagram's sheet name.")
+    End If
+       
+    On Error Resume Next
+        Set SSDataTable = CompilationWB.Worksheets(InputStdDataTable)
+        Set SSDiagram = CompilationWB.Charts(InputStdDiagram)
+    
+        If Err.Number <> 0 Then
+
+            MsgBox "At least one of the names is not correct.", vbOKOnly
+            On Error GoTo 0
+            Exit Sub
+
+        End If
+    On Error GoTo 0
+         
+    For Each WB In Workbooks
+        
+        If Not WB.Name = CompilationWB.Name And Not UCase(WB.Name) = "PERSONAL.XLSB" Then
+            If MsgBox("Do you want to copy the sheet(s) to " & WB.Name & " ?", vbYesNo) = vbYes Then
+                SSDataTable.Copy After:=WB.Worksheets(WB.Worksheets.count)
+                SSDiagram.Copy After:=WB.Worksheets(WB.Worksheets.count)
+            End If
+        End If
+        
+    Next
+    
+End Sub

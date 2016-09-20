@@ -798,10 +798,11 @@ Sub FilterAnalysis(AnalysesTotal As Long)
                                 
                 If CutCellsRange.Row = Range75LastCell.Row Then
                     Set PasteRange = CutCellsRange.Offset(1)
-                        CutCellsRange.Cut (PasteRange)
+'                        CutCellsRange.Cut (PasteRange)
                             Exit For
                 Else
                     Set PasteRange = CutCellsRange.End(xlDown).Offset(1)
+                    PasteRange.Select
                         CutCellsRange.Cut (PasteRange)
                 End If
             End If
@@ -818,7 +819,9 @@ Sub FilterAnalysis(AnalysesTotal As Long)
                     Set RemoveCellsRange = .Range(StdCorr_FirstColumn & RemoveCells(Count1) - Count2, StdCorr_LastColumn & RemoveCells(Count1) - Count2)
                 End With
 
-                RemoveCellsRange.Delete (xlShiftUp)
+                If IsEmpty(RemoveCellsRange.Item(1)) = True Then
+                    RemoveCellsRange.Delete (xlShiftUp)
+                End If
                 
                 Count2 = Count2 + 1
                 
@@ -856,10 +859,18 @@ Private Sub ShowDataFilterResult( _
     Dim CountRhoPercent As Long
     Dim CountConcordancePercent As Long
     
-    Countf206Percent = 100 * Countf206 / FailedAnalyses
-    CountError75Percent = 100 * CountError75 / FailedAnalyses
-    CountRhoPercent = 100 * CountRho / FailedAnalyses
-    CountConcordancePercent = 100 * CountConcordance / FailedAnalyses
+    
+    If FailedAnalyses <> 0 Then
+        Countf206Percent = 100 * Countf206 / FailedAnalyses
+        CountError75Percent = 100 * CountError75 / FailedAnalyses
+        CountRhoPercent = 100 * CountRho / FailedAnalyses
+        CountConcordancePercent = 100 * CountConcordance / FailedAnalyses
+    Else
+        Countf206Percent = 0
+        CountError75Percent = 0
+        CountRhoPercent = 0
+        CountConcordancePercent = 0
+    End If
     
     Load Box8_DataFilterResult
     

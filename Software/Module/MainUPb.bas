@@ -14,8 +14,8 @@ Option Explicit
     '.Getfolder does not list all the files in the indicated folder
     
     Public Const ProgramName = "CHRONUS"
-    Public Const ChronusVersion = "1.4.0" 'Version
-    Public Const ChronusNameVersion = "Chronus_1.3.2.xlam" 'Name of the file
+    Public Const ChronusVersion = "1.4.3" 'Version
+    Public Const ChronusNameVersion = "Chronus_1.4.3.xlam" 'Name of the file
     
     Public ShowPresentation As Range 'RAnge where the user option to show or not the Chronus presentation
     
@@ -999,7 +999,7 @@ Sub CreateWorkbook()
     
         Application.ScreenUpdating = ScreenUpd
     
-    Application.Goto StartANDOptions_Sh.Range("A1")
+    Application.GoTo StartANDOptions_Sh.Range("A1")
     
 End Sub
 Public Sub PublicVariables()
@@ -1669,7 +1669,7 @@ Sub CheckRawData()
                 
                 If Result = 0 Then
                     MsgBox (result2 & " is missing in " & OpenedWorkbook.Name & ". Please, check it. You may have selected the wrong range. ")
-                        Application.Goto OpenedWorkbook.Worksheets(1).Range("A1")
+                        Application.GoTo OpenedWorkbook.Worksheets(1).Range("A1")
                             Call UnloadAll
                                 End
                 End If
@@ -1682,7 +1682,7 @@ Sub CheckRawData()
                 E = WorksheetFunction.count(OpenedWorkbook.Worksheets(1).Range(C))
                     If E <> CyclesNumber Then
                         MsgBox ("Some cycles seem to be missing in " & OpenedWorkbook.Name & ". Please, check this file and then retry.")
-                            Application.Goto OpenedWorkbook.Worksheets(1).Range("A1")
+                            Application.GoTo OpenedWorkbook.Worksheets(1).Range("A1")
                                 Call UnloadAll
                                     End
                     End If
@@ -2758,16 +2758,16 @@ Sub SetPathsNamesIDsTimesCycles()
     'must not be empty. So, we check these conditions below.
         
         If IsEmpty(SamList_Sh.Range(SamList_FilePath & a + 1)) = True Then
-            Application.Goto SamList_Sh.Range(SamList_FilePath & a + 1)
+            Application.GoTo SamList_Sh.Range(SamList_FilePath & a + 1)
             GoTo ErrHandler
             ElseIf IsEmpty(SamList_Sh.Range(SamList_ID & a + 1)) = True Or WorksheetFunction.IsNumber(SamList_Sh.Range(SamList_ID & a + 1)) = False Then
-                Application.Goto SamList_Sh.Range(SamList_ID & a + 1)
+                Application.GoTo SamList_Sh.Range(SamList_ID & a + 1)
                 GoTo ErrHandler
                 ElseIf IsEmpty(SamList_Sh.Range(SamList_FirstCycleTime & a + 1)) = True Or WorksheetFunction.IsNumber(SamList_Sh.Range(SamList_FirstCycleTime & a + 1)) = False Then
-                    Application.Goto SamList_Sh.Range(SamList_FirstCycleTime & a + 1)
+                    Application.GoTo SamList_Sh.Range(SamList_FirstCycleTime & a + 1)
                     GoTo ErrHandler
                     ElseIf IsEmpty(SamList_Sh.Range("E" & a + 1)) = True Then
-                        Application.Goto SamList_Sh.Range(SamList_Cycles & a + 1)
+                        Application.GoTo SamList_Sh.Range(SamList_Cycles & a + 1)
                         GoTo ErrHandler
 
         End If
@@ -2893,7 +2893,7 @@ Sub IdentifyFileType()
         For E = a + 1 To UBound(All_Names)
             If All_Names(a) = All_Names(E) Then
                 MsgBox "Names of samples, blanks and standards are duplicated. Please, check them and then retry."
-                    Application.Goto SamplesNames_UPb
+                    Application.GoTo SamplesNames_UPb
                         Call UnloadAll
                             End
             End If
@@ -2969,22 +2969,22 @@ Sub IdentifyFileType()
 
     If IsArrayEmpty(BlkFound) = True Then
         MsgBox "No blanks were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
-            Application.Goto BlankName_UPb
+            Application.GoTo BlankName_UPb
                 Call UnloadAll: End
                 
         ElseIf IsArrayEmpty(SlpFound) = True Then
             MsgBox "No samples were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
-                Application.Goto SamplesNames_UPb
+                Application.GoTo SamplesNames_UPb
                     Call UnloadAll: End
     
             ElseIf IsArrayEmpty(StdFound) = True Then
                 MsgBox "No external standards were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
-                    Application.Goto ExternalStandardName_UPb
+                    Application.GoTo ExternalStandardName_UPb
                         Call UnloadAll: End
               
                 ElseIf InternalStandardCheck_UPb = True And IsArrayEmpty(IntStdFound) = True Then
                     MsgBox "No Internal standards were found in " & FolderPath_UPb & ". Please, check their names and their files paths.", vbOKOnly
-                        Application.Goto InternalStandard_UPb
+                        Application.GoTo InternalStandard_UPb
                             Call UnloadAll: End
     End If
   
@@ -3052,19 +3052,19 @@ Public Sub LoadSamListMap()
     'must no be empty. So, we check these conditions below.
         
         If IsEmpty(SamList_Sh.Range("H" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("H" & a)) = False Then
-            Application.Goto SamList_Sh.Range("H" & a)
+            Application.GoTo SamList_Sh.Range("H" & a)
             GoTo ErrHandler
             ElseIf IsEmpty(SamList_Sh.Range("I" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("I" & a)) = False Then
-                Application.Goto SamList_Sh.Range("I" & a)
+                Application.GoTo SamList_Sh.Range("I" & a)
                 GoTo ErrHandler
                 ElseIf IsEmpty(SamList_Sh.Range("J" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("J" & a)) = False Then
-                    Application.Goto SamList_Sh.Range("J" & a)
+                    Application.GoTo SamList_Sh.Range("J" & a)
                     GoTo ErrHandler
                     ElseIf IsEmpty(SamList_Sh.Range("K" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("K" & a)) = False Then
-                        Application.Goto SamList_Sh.Range("K" & a)
+                        Application.GoTo SamList_Sh.Range("K" & a)
                         GoTo ErrHandler
                         ElseIf IsEmpty(SamList_Sh.Range("L" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("L" & a)) = False Then
-                            Application.Goto SamList_Sh.Range("L" & a)
+                            Application.GoTo SamList_Sh.Range("L" & a)
                             GoTo ErrHandler
         
         End If
@@ -3125,10 +3125,10 @@ Public Sub LoadStdListMap()
     'must no be empty. So, we check these conditions below.
         
         If IsEmpty(SamList_Sh.Range("F" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("F" & a)) = False Then
-            Application.Goto SamList_Sh.Range("F" & a)
+            Application.GoTo SamList_Sh.Range("F" & a)
             GoTo ErrHandler
             ElseIf IsEmpty(SamList_Sh.Range("G" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("G" & a)) = False Then
-                Application.Goto SamList_Sh.Range("I" & a)
+                Application.GoTo SamList_Sh.Range("I" & a)
                 GoTo ErrHandler
         End If
         
@@ -3179,7 +3179,7 @@ Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
             MsgBox "It's impossible to evaluate an analysis with only one cycle. " _
                 & "Please, check the cycles that must be considered for " & WB.Name & ". Look at column E."
                     WB.Close savechanges:=False
-                        Application.Goto SamList_Sh.Range("A1")
+                        Application.GoTo SamList_Sh.Range("A1")
                             End
         End If
         
@@ -3198,7 +3198,7 @@ Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
                 If Val(B) > UBound(AllCycles) Then
                     MsgBox "You have choosen an cycle for " & WB.Name & " that doesn't exist. Please, check it."
                         WB.Close savechanges:=False
-                            Application.Goto SamList_Sh.Range("A1")
+                            Application.GoTo SamList_Sh.Range("A1")
                                 End
                 End If
                     
@@ -3307,7 +3307,7 @@ Sub CopyToCovarSheet(RngArray As Variant)
     
 End Sub
 
-Sub MatchValidRangeItems(ByVal rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As Range, Sh As Worksheet, CalcFirstCell As Range) 'UPDATE DESCRIPTION
+Sub MatchValidRangeItems(ByVal rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As Range, SH As Worksheet, CalcFirstCell As Range) 'UPDATE DESCRIPTION
 
     'This procedure will take all the items from both ranges and check if the pairs
     'are valid. By valid I mean they are numeric and not equal to 0. This is
@@ -3354,9 +3354,9 @@ Sub MatchValidRangeItems(ByVal rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As
                 Rng3.Copy Destination:=CalcFirstCell.Offset(, 2)
         
     'To avoid changing the input ranges, I set new ones to the ranges where rng1, rng2 and rng3 contents were pasted.
-    Set Range1 = Sh.Range(CalcFirstCell, CalcFirstCell.Offset(NumRows - 1))
-    Set Range2 = Sh.Range(CalcFirstCell.Offset(, 1), CalcFirstCell.Offset(NumRows - 1, 1))
-    Set Range3 = Sh.Range(CalcFirstCell.Offset(, 2), CalcFirstCell.Offset(NumRows - 1, 2))
+    Set Range1 = SH.Range(CalcFirstCell, CalcFirstCell.Offset(NumRows - 1))
+    Set Range2 = SH.Range(CalcFirstCell.Offset(, 1), CalcFirstCell.Offset(NumRows - 1, 1))
+    Set Range3 = SH.Range(CalcFirstCell.Offset(, 2), CalcFirstCell.Offset(NumRows - 1, 2))
     
 '    Rng1.Select
 '    Rng2.Select
@@ -3592,6 +3592,17 @@ Sub CreateFinalReport(Optional CompilingResults = False)
                         FinalReport_Sh.Range(FR_Column641Std & FR_HeaderRow + PasteRow) / _
                         FinalReport_Sh.Range(FR_Column64 & FR_HeaderRow + PasteRow))
                 
+                End If
+                
+                'Error 76 will be converted to percentage
+                If _
+                    WorksheetFunction.IsNumber(FinalReport_Sh.Range(FR_ColumnTera761Std & FR_HeaderRow + PasteRow)) And _
+                    WorksheetFunction.IsNumber(FinalReport_Sh.Range(FR_ColumnTera76 & FR_HeaderRow + PasteRow)) Then
+                
+                    FinalReport_Sh.Range(FR_ColumnTera761Std & FR_HeaderRow + PasteRow) = _
+                        100 * _
+                        FinalReport_Sh.Range(FR_ColumnTera761Std & FR_HeaderRow + PasteRow) / _
+                        FinalReport_Sh.Range(FR_ColumnTera76 & FR_HeaderRow + PasteRow)
                 End If
                 
                 'Error 75 will be converted to percentage

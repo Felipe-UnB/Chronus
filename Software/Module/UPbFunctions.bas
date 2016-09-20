@@ -253,7 +253,7 @@ Dim a As Double
     LineFitStdDev = Sqr(a / (rng1Count - 2))
         If LineFitStdDev = 0 Then
             MsgBox "It's not possible to calculate standard deviation for points of the line. All cells are empty or not populated with number"
-                Application.Goto rng1
+                Application.GoTo rng1
                     End
         End If
     
@@ -719,7 +719,7 @@ Function TetaFactor(a As Integer)
                 
                 With SamList_Sh.Columns(SamList_ID)
                     Set FindIDObj = .Find(AnalysesList(a).sample)
-                    Application.Goto .Range(FindIDObj.Address)
+                    Application.GoTo .Range(FindIDObj.Address)
                 End With
                     
                     End
@@ -809,7 +809,7 @@ Function IsInArray(arr As Variant, valueToFind As Variant) As Boolean
 
 End Function
 
-Function NonEmptyCellsRange(Rng As Range, rngFirstcell As Range, Sh As Worksheet, Optional OnlyNumericCells As Boolean = False) As Range
+Function NonEmptyCellsRange(Rng As Range, rngFirstcell As Range, SH As Worksheet, Optional OnlyNumericCells As Boolean = False) As Range
 
     'This function takes the rng range, eliminates the empty cells and
     'returns a new range with only non empty cells. The optional argument
@@ -891,7 +891,7 @@ Function NonEmptyCellsRange(Rng As Range, rngFirstcell As Range, Sh As Worksheet
                     
                 Next
                 
-            Set NonEmptyCellsRange = Sh.Range(rngFirstcell, rngFirstcell.Offset(NumElements(ItemsNewRange, 1) - 1))
+            Set NonEmptyCellsRange = SH.Range(rngFirstcell, rngFirstcell.Offset(NumElements(ItemsNewRange, 1) - 1))
             
 '            NonEmptyCellsRange.Select
         Else

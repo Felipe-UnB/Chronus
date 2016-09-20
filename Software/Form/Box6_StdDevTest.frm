@@ -121,7 +121,7 @@ End Sub
 
 Private Sub UserForm_Initialize()
     
-    Dim Sh As Worksheet
+    Dim SH As Worksheet
     
     If mwbk Is Nothing Then
         Call PublicVariables

@@ -14,7 +14,7 @@ Sub FormatMainSh()
         
     Call FormatSamList
     Call FormatStartANDOptions
-    Call FormatFinalReport
+    'Call FormatFinalReport
     
     If SearchStr = 0 Then
         Call FormatBlkCalc(True)
@@ -82,7 +82,7 @@ Sub FormatSamList()
         .Range(SamList_FilePath & SamList_HeadersLine1, SamList_Blk2ID & SamList_HeadersLine2).Font.Bold = True
         .Range(SamList_FilePath & SamList_HeadersLine1, SamList_Blk2ID & SamList_HeadersLine2).HorizontalAlignment = xlCenter
 
-        Application.Goto .Range("A" & SamList_FirstLine)
+        Application.GoTo .Range("A" & SamList_FirstLine)
             
             With ActiveWindow
                 .SplitColumn = 0
@@ -102,7 +102,7 @@ Sub FormatPlot(TargetSh As Worksheet)
         Call PublicVariables
     End If
 
-    Application.Goto TargetSh.Range("A1")
+    Application.GoTo TargetSh.Range("A1")
     
     'Code to set the ranges for the isotopes signal in the sheet where they will be plotted
     With TargetSh
@@ -285,7 +285,7 @@ Sub FormatBlkCalc(Optional AbsoluteUncertainty As Boolean = True, Optional Compi
         .Cells.Columns.AutoFit
         .Cells.HorizontalAlignment = xlCenter
 
-        Application.Goto .Range("A" & BlkCalc_HeaderLine + 1)
+        Application.GoTo .Range("A" & BlkCalc_HeaderLine + 1)
             
             With ActiveWindow
                 .SplitColumn = 1
@@ -399,7 +399,7 @@ Sub FormatFinalReport(Optional CompilingResults = False)
         
         .Range(FR_ChronusVersion).Columns.AutoFit
         
-        'The following lines will delete the columns that are still not being filled
+        'The following lines will delete the columns and rows that are still not being filled
         .Columns("E").EntireColumn.Delete
         .Columns("H:I").EntireColumn.Delete
         .Columns("J:K").EntireColumn.Delete
@@ -694,7 +694,7 @@ Sub FormatSlpStdBlkCorr(Optional AbsoluteUncertainty As Boolean = True, Optional
         'Below the program selects a cell without using the select method. This is very important because
         'it doesn't matter ifthe user is doing anything else in the computer, this program is able
         'to select or activate what I want.
-        Application.Goto .Range("A" & HeaderRow + 1)
+        Application.GoTo .Range("A" & HeaderRow + 1)
             
             With ActiveWindow
                 .SplitColumn = 2
@@ -844,7 +844,7 @@ Sub FormatSlpStdCorr(Optional AbsoluteUncertainty As Boolean = True, Optional Hi
             RangeUnion.NumberFormat = "0.00"
                     
         With .Range("A" & StdCorr_HeaderRow, .Range("A" & StdCorr_HeaderRow).End(xlToRight))
-            Application.Goto .Range("A" & 1)
+            Application.GoTo .Range("A" & 1)
             .Font.Bold = True
 
             If SlpStdCorr_Sh.AutoFilterMode = False Then
@@ -858,7 +858,7 @@ Sub FormatSlpStdCorr(Optional AbsoluteUncertainty As Boolean = True, Optional Hi
             .Bold = True
         End With
 
-        Application.Goto .Range("A" & StdCorr_HeaderRow)
+        Application.GoTo .Range("A" & StdCorr_HeaderRow)
             
             With ActiveWindow
                 .SplitColumn = 2
@@ -1271,7 +1271,7 @@ Sub FormatStartANDOptions()
             
     End With
     
-    Application.Goto StartANDOptions_Sh.Range("A1")
+    Application.GoTo StartANDOptions_Sh.Range("A1")
         
         With ActiveWindow
             .FreezePanes = True
@@ -1281,7 +1281,7 @@ Sub FormatStartANDOptions()
 
 End Sub
 
-Sub HighlightNAs(Sh As Worksheet)
+Sub HighlightNAs(SH As Worksheet)
 
     Dim FindCells As Object
     Dim FirstAddress As String
@@ -1289,7 +1289,7 @@ Sub HighlightNAs(Sh As Worksheet)
     
     NAs = "n.a."
     
-    With Sh.Cells
+    With SH.Cells
         Set FindCells = .Find(NAs, LookIn:=xlValues)
         If Not FindCells Is Nothing Then
             FirstAddress = FindCells.Address
@@ -1319,7 +1319,7 @@ Sub HighlightNAs(Sh As Worksheet)
 
 End Sub
 
-Sub HighlightIntStd(Sh As Worksheet)
+Sub HighlightIntStd(SH As Worksheet)
     
     'This procedure will highlight the secondary standards in the sheets indicated
     'following a colorscale with 10 different colors. When more than 10 different
@@ -1347,7 +1347,7 @@ Sub HighlightIntStd(Sh As Worksheet)
         Next
         
         For Counter = LBound(IntStdNames) To UBound(IntStdNames)
-            With Sh.Cells
+            With SH.Cells
                 Set FindCells = .Find(IntStdNames(Counter), LookIn:=xlValues)
                 If Not FindCells Is Nothing Then
                     FirstAddress = FindCells.Address
@@ -1387,7 +1387,7 @@ Sub HighlightIntStd(Sh As Worksheet)
 
 End Sub
 
-Sub HighlightExtStd(Sh As Worksheet)
+Sub HighlightExtStd(SH As Worksheet)
 
     Dim FindCells As Object
     Dim FirstAddress As String
@@ -1397,7 +1397,7 @@ Sub HighlightExtStd(Sh As Worksheet)
     End If
     
     If Not IsEmpty(ExternalStandardName_UPb) Then
-        With Sh.Cells
+        With SH.Cells
             Set FindCells = .Find(ExternalStandardName_UPb, LookIn:=xlValues)
             If Not FindCells Is Nothing Then
                 FirstAddress = FindCells.Address
@@ -1420,9 +1420,9 @@ Sub HighlightExtStd(Sh As Worksheet)
         End With
     End If
 
-    If Sh.Name = SlpStdBlkCorr_Sh.Name Then
+    If SH.Name = SlpStdBlkCorr_Sh.Name Then
         
-        With Sh.Rows("1:1").Interior
+        With SH.Rows("1:1").Interior
             .Pattern = xlNone
         End With
     
