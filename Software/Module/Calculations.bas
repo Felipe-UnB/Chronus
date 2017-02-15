@@ -35,7 +35,7 @@ Sub ConvertPercentage()
     Application.ScreenUpdating = True
 
 End Sub
-Sub ConvertUncertantiesTo(UncertantiesType As String, SH As Worksheet)
+Sub ConvertUncertantiesTo(UncertantiesType As String, Sh As Worksheet)
     'This procedure will take all uncertanties in BlkCalc, SlpStdBlkCorr and SlpStdCorr, and
     'convert to relative (%) or absolute.
     
@@ -52,7 +52,7 @@ Sub ConvertUncertantiesTo(UncertantiesType As String, SH As Worksheet)
     
     'Columns of uncertainty in BlkCalc sheet
     
-    Select Case SH.Name
+    Select Case Sh.Name
     
         Case BlkCalc_Sh.Name
             
@@ -156,7 +156,7 @@ Sub ConvertUncertantiesTo(UncertantiesType As String, SH As Worksheet)
         Case "Percentage" 'Convert to relative (percentage)
             If SearchStr <> 0 Then
                 
-                Application.ScreenUpdating = True: Application.GoTo SH.Range("A1"): Application.ScreenUpdating = UpdtScreen
+                Application.ScreenUpdating = True: Application.GoTo Sh.Range("A1"): Application.ScreenUpdating = UpdtScreen
                 
                     SearchStr = MsgBox("Data errors are absolute? Please, take a look at the table behind " & _
                     "this message, otherwise you might have to reduce all your data again.", vbYesNo, "Relative or absolute errors")
@@ -195,7 +195,7 @@ Sub ConvertUncertantiesTo(UncertantiesType As String, SH As Worksheet)
         Case "Absolute"
             If SearchStr = 0 Then
                 
-                Application.ScreenUpdating = True: Application.GoTo SH.Range("A1"): Application.ScreenUpdating = UpdtScreen
+                Application.ScreenUpdating = True: Application.GoTo Sh.Range("A1"): Application.ScreenUpdating = UpdtScreen
                 
                     SearchStr = MsgBox("Data errors are in percentage? Please, take a look at the table behind " & _
                     "this message, otherwise you might have to reduce all your data again.", vbYesNo, "Relative or absolute errors")
@@ -236,7 +236,7 @@ Sub ConvertUncertantiesTo(UncertantiesType As String, SH As Worksheet)
     Exit Sub
     
 ErrHandler:
-    MsgBox ("Uncertainties were not converted to " & UncertantiesType & "in " & SH.Name & ".")
+    MsgBox ("Uncertainties were not converted to " & UncertantiesType & "in " & Sh.Name & ".")
         End
     
 End Sub
@@ -834,7 +834,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
 End Sub
 
 
-Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, AcquisitionSpotRaster As String, ByVal Blk1 As Integer, Optional ByVal Blk2 As Integer)
+Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal C As Integer, AcquisitionSpotRaster As String, ByVal Blk1 As Integer, Optional ByVal Blk2 As Integer)
 
     'Sh is the worksheet with raw data and c is a counter for the lines where data will be pasted.
 
@@ -858,7 +858,7 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
     Dim ClearRange As Range
     Dim TEMP As Long
     
-    With SH
+    With Sh
             
         'In the beginning, Y_ValuesRange and OriginalY_ValuesRange are set to the same range but this changes during code execution
         Set Y_ValuesRange = .Range(.Range(CalculationFirstCell), .Range(CalculationColumn & RawNumberCycles_UPb))
@@ -873,10 +873,10 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
         
         ClearRange.ClearContents
         
-        Call MatchValidRangeItems(.Range(RawPb206Range), .Range(RawU238Range), OriginalX_ValuesRange, SH, .Range(CalculationFirstCell))
-        Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), SH, True)
-        Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), SH, True)
-        Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), SH, True)
+        Call MatchValidRangeItems(.Range(RawPb206Range), .Range(RawU238Range), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
+        Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
+        Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
+        Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
         
             Y2_ValuesRange.Copy
                 Y_ValuesRange.PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide
@@ -913,10 +913,10 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
         'Ratio 76
         ClearRange.ClearContents
         
-        Call MatchValidRangeItems(.Range(RawPb207Range), .Range(RawPb206Range), OriginalX_ValuesRange, SH, .Range(CalculationFirstCell))
-        Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), SH, True)
-        Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), SH, True)
-        Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), SH, True)
+        Call MatchValidRangeItems(.Range(RawPb207Range), .Range(RawPb206Range), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
+        Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
+        Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
+        Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
         
             Y2_ValuesRange.Copy
                 Y_ValuesRange.PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide
@@ -950,7 +950,7 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
         ClearRange.ClearContents
         
             .Range(RawHg202Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
-                Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), SH, True)
+                Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
 
 '            '202 average error propagation
 
@@ -981,7 +981,7 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
         ClearRange.ClearContents
         
             .Range(RawPb204Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
-                Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), SH, True)
+                Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
 
 '            '204 average error propagation
             
@@ -1015,7 +1015,7 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
         ClearRange.ClearContents
         
             .Range(RawPb206Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
-                Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1).Item(1), SH, True)
+                Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1).Item(1), Sh, True)
 
 '            '206 average error propagation
 '            SlpStdBlkCorr_Sh.Range(Column61Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange)
@@ -1049,7 +1049,7 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
 '        OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
         
             .Range(RawPb207Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
-                Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), SH, True)
+                Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
 '                    SlpStdBlkCorr_Sh.Range(Column7 & c) = WorksheetFunction.Average(Y_ValuesRange) '207 average
 '
 '
@@ -1084,7 +1084,7 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
             OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
             
                 .Range(RawPb208Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
-                    Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), SH, True)
+                    Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
                         
                         On Error Resume Next
                         
@@ -1117,7 +1117,7 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
             OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
             
                 .Range(RawTh232Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
-                    Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), SH, True)
+                    Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
     '                    SlpStdBlkCorr_Sh.Range(Column32 & c) = WorksheetFunction.Average(Y_ValuesRange) '232 average
     
     '            '232 average error propagation
@@ -1152,7 +1152,7 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
         OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
         
             .Range(RawU238Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
-                Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), SH, True)
+                Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
                     SlpStdBlkCorr_Sh.Range(Column38 & C) = WorksheetFunction.Average(Y_ValuesRange) '238 average
 
             
@@ -1194,10 +1194,10 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
 '
         OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
         
-        Call MatchValidRangeItems(.Range(RawPb206Range), .Range(RawPb204Range), OriginalX_ValuesRange, SH, .Range(CalculationFirstCell))
-        Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), SH, True)
-        Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), SH, True)
-        Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), SH, True)
+        Call MatchValidRangeItems(.Range(RawPb206Range), .Range(RawPb204Range), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
+        Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
+        Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
+        Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
         
             Y2_ValuesRange.Copy
                 Y_ValuesRange.PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide
@@ -1240,10 +1240,10 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
                 
         OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
         
-        Call MatchValidRangeItems(.Range(RawPb207Range), .Range(RawPb204Range), OriginalX_ValuesRange, SH, .Range(CalculationFirstCell))
-        Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), SH, True)
-        Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), SH, True)
-        Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), SH, True)
+        Call MatchValidRangeItems(.Range(RawPb207Range), .Range(RawPb204Range), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
+        Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
+        Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
+        Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
         
             Y2_ValuesRange.Copy
                 Y_ValuesRange.PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide
@@ -1279,10 +1279,10 @@ Sub CommonCalcSlpExtStd_BlkCorr(SH As Worksheet, ByVal C As Integer, Acquisition
         If Isotope232analyzed = True Then
             OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
             
-            Call MatchValidRangeItems(.Range(RawTh232Range), .Range(RawU238Range), OriginalX_ValuesRange, SH, .Range(CalculationFirstCell))
-            Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), SH, True)
-            Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), SH, True)
-            Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), SH, True)
+            Call MatchValidRangeItems(.Range(RawTh232Range), .Range(RawU238Range), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
+            Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
+            Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
+            Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
             
                 Y2_ValuesRange.Copy
                     Y_ValuesRange.PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide
@@ -2436,7 +2436,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
                     P = "n.a."
                 Else
                     On Error Resume Next
-                        P = 100 * (SingleStagePbR(agepb6u8(.Range(StdCorr_Column68 & C)), 1) / Q)
+                        P = 100 * (SingleStagePbR(AgePb6U8(.Range(StdCorr_Column68 & C)), 1) / Q)
                             If Err.Number <> 0 Then
                                 P = "n.a."
                             End If
@@ -2451,7 +2451,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
                     P = "n.a."
                 Else
                     On Error Resume Next
-                        P = agepb6u8(Q)
+                        P = AgePb6U8(Q)
                             If Err.Number <> 0 Then
                                 P = "n.a."
                             End If
@@ -2467,7 +2467,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
                     P = "n.a."
                 Else
                     On Error Resume Next
-                        P = agepb6u8(P2 + Q) - agepb6u8(P2)
+                        P = AgePb6U8(P2 + Q) - AgePb6U8(P2)
                             If Err.Number <> 0 Then
                                 P = "n.a."
                             End If
@@ -2483,7 +2483,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
                     P = "n.a."
                 Else
                     On Error Resume Next
-                        P = agepb7u5(Q)
+                        P = AgePb7U5(Q)
                             If Err.Number <> 0 Then
                                 P = "n.a."
                             End If
@@ -2499,7 +2499,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
                     P = "n.a."
                 Else
                     On Error Resume Next
-                        P = agepb7u5(P2 + Q) - agepb7u5(P2)
+                        P = AgePb7U5(P2 + Q) - AgePb7U5(P2)
                             If Err.Number <> 0 Then
                                 P = "n.a."
                             End If
@@ -2566,7 +2566,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
     
 End Sub
 
-Sub StandardDeviationTest(SH As Worksheet, Test68 As Boolean, LineFit68 As Boolean, Test76 As Boolean, StdDevLimit As Integer, Optional Test28 As Boolean = False, _
+Sub StandardDeviationTest(Sh As Worksheet, Test68 As Boolean, LineFit68 As Boolean, Test76 As Boolean, StdDevLimit As Integer, Optional Test28 As Boolean = False, _
 Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional RunningAgain As Boolean = False, Optional TestingAll As Boolean = False)
     
     'This procedure takes some ranges in Plot_Sh and calculates the standard deviation of them. Then, this is used
@@ -2602,7 +2602,7 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
     Dim ClearRowArray_Unique() As Variant 'The same as ClearRowArray sans duplicate values.
         ReDim ClearRowArray_Unique(1 To 1) As Variant
     
-    If SH Is Nothing Then
+    If Sh Is Nothing Then
         If MsgBox("You must select an worksheet to run the standard deviation test. Would you like to skip the standard deviation " _
             & "test (the program will keep running)?", vbYesNo) = vbYes Then
             Exit Sub
@@ -2615,12 +2615,12 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
         Call PublicVariables
     End If
     
-    Set x = SH.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1, Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb)
-    Set Y68 = SH.Range(Plot_Column68 & Plot_HeaderRow + 1, Plot_Column68 & Plot_HeaderRow + RawNumberCycles_UPb)
-    Set Y76 = SH.Range(Plot_Column76 & Plot_HeaderRow + 1, Plot_Column76 & Plot_HeaderRow + RawNumberCycles_UPb)
-    Set Y28 = SH.Range(Plot_Column28 & Plot_HeaderRow + 1, Plot_Column28 & Plot_HeaderRow + RawNumberCycles_UPb)
-    Set Y74 = SH.Range(Plot_Column74 & Plot_HeaderRow + 1, Plot_Column74 & Plot_HeaderRow + RawNumberCycles_UPb)
-    Set Y64 = SH.Range(Plot_Column64 & Plot_HeaderRow + 1, Plot_Column64 & Plot_HeaderRow + RawNumberCycles_UPb)
+    Set x = Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1, Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb)
+    Set Y68 = Sh.Range(Plot_Column68 & Plot_HeaderRow + 1, Plot_Column68 & Plot_HeaderRow + RawNumberCycles_UPb)
+    Set Y76 = Sh.Range(Plot_Column76 & Plot_HeaderRow + 1, Plot_Column76 & Plot_HeaderRow + RawNumberCycles_UPb)
+    Set Y28 = Sh.Range(Plot_Column28 & Plot_HeaderRow + 1, Plot_Column28 & Plot_HeaderRow + RawNumberCycles_UPb)
+    Set Y74 = Sh.Range(Plot_Column74 & Plot_HeaderRow + 1, Plot_Column74 & Plot_HeaderRow + RawNumberCycles_UPb)
+    Set Y64 = Sh.Range(Plot_Column64 & Plot_HeaderRow + 1, Plot_Column64 & Plot_HeaderRow + RawNumberCycles_UPb)
     
     'Standard deviation test for 68 ratios
     If Test68 = True Then
@@ -2842,7 +2842,7 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
                     EnaEvent = Application.EnableEvents
                         Application.EnableEvents = False
                     
-                    SH.Range(Plot_FirstColumn & ClearRowArray_Unique(Counter), Plot_LastColumn & ClearRowArray_Unique(Counter)).Clear
+                    Sh.Range(Plot_FirstColumn & ClearRowArray_Unique(Counter), Plot_LastColumn & ClearRowArray_Unique(Counter)).Clear
                 
                     Application.EnableEvents = EnaEvent
                 Next

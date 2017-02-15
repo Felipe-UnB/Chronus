@@ -384,7 +384,7 @@ Sub AddCodePlotSh(Plot_Sh As Worksheet)
     End With
 End Sub
 
-Sub Plot_PlotAnalysis(SH As Worksheet, Optional Plot64 As Boolean = True, Optional Plot74 As Boolean = True, _
+Sub Plot_PlotAnalysis(Sh As Worksheet, Optional Plot64 As Boolean = True, Optional Plot74 As Boolean = True, _
 Optional Plot28 As Boolean = True, Optional Plot75 As Boolean = True, Optional Plot68 As Boolean = True, _
 Optional Plot76 As Boolean = True, Optional PlotRawSignal As Boolean = True)
     'This program is based on an example of code from the book VBA programming for dummies.
@@ -423,17 +423,17 @@ Optional Plot76 As Boolean = True, Optional PlotRawSignal As Boolean = True)
     End If
     
     'Advises the user that there charts in the sheet that will be deleted.
-    If SH.Shapes.count <> 0 Then
-        If MsgBox("There are charts in " & SH.Name & ". They will be deleted, would you like to continue?", vbYesNo) = vbNo Then
+    If Sh.Shapes.count <> 0 Then
+        If MsgBox("There are charts in " & Sh.Name & ". They will be deleted, would you like to continue?", vbYesNo) = vbNo Then
             End
         Else
-            For Each ShapesInSheet In SH.Shapes
+            For Each ShapesInSheet In Sh.Shapes
                 ShapesInSheet.Delete
             Next
         End If
     End If
 
-    With SH
+    With Sh
         Set ChartDataX = .Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1, Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb)
         
         'RawSignal
@@ -657,20 +657,20 @@ Optional Plot76 As Boolean = True, Optional PlotRawSignal As Boolean = True)
         End With
     End If
     
-    For Each Cht In SH.ChartObjects
+    For Each Cht In Sh.ChartObjects
         Cht.Chart.Type = xlXYScatter
     Next Cht
 
     'The lines below will make series lines invisible and set minimum and maximum scale
-    For Each ShapesInSheet In SH.Shapes
+    For Each ShapesInSheet In Sh.Shapes
             
         For Each a In ShapesInSheet.Chart.SeriesCollection
             a.Format.Line.Visible = msoFalse
         Next
 
         With ShapesInSheet.Chart
-            Set MinimumScaleRange = SH.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1)
-            Set MaximumScaleRange = SH.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb)
+            Set MinimumScaleRange = Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1)
+            Set MaximumScaleRange = Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb)
             
             .Axes(xlValue).Crosses = xlMaximum
             
@@ -814,7 +814,7 @@ Public Sub ResultsPreviewCalculation()
 
 End Sub
 
-Sub LineUpMyCharts(SH As Worksheet, Optional MainChart As Integer)
+Sub LineUpMyCharts(Sh As Worksheet, Optional MainChart As Integer)
 
     'Modified from http://peltiertech.com/Excel/ChartsHowTo/ResizeAndMoveAChart.html
     
@@ -830,11 +830,11 @@ Sub LineUpMyCharts(SH As Worksheet, Optional MainChart As Integer)
     End If
     
     
-    MyWidth = SH.Range(Plot_ColumnCyclesTime & Plot_HeaderRow).End(xlToRight).Offset(, 1).Left / 2
+    MyWidth = Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow).End(xlToRight).Offset(, 1).Left / 2
     MyHeight = 200
     
-    MyWidthMainChart = SH.Range(Plot_ColumnCyclesTime & Plot_HeaderRow).End(xlToRight).Offset(, 1).Left - _
-        SH.Range(Plot_ColumnCyclesTime & Plot_HeaderRow).Offset(, 1).Left '2 * MyWidth
+    MyWidthMainChart = Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow).End(xlToRight).Offset(, 1).Left - _
+        Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow).Offset(, 1).Left '2 * MyWidth
     
     MyHeightMainChart = 2 * MyHeight
     
@@ -848,29 +848,29 @@ Sub LineUpMyCharts(SH As Worksheet, Optional MainChart As Integer)
         a = 1
         B = 0
 
-    iChtCt = SH.ChartObjects.count
+    iChtCt = Sh.ChartObjects.count
     For iChtIx = 1 To iChtCt
     
-        SH.ChartObjects(iChtIx).Placement = xlFreeFloating
+        Sh.ChartObjects(iChtIx).Placement = xlFreeFloating
         
         If iChtIx = MainChart Then
-            With SH.ChartObjects(iChtIx)
+            With Sh.ChartObjects(iChtIx)
                 .Width = MyWidthMainChart
                 .Height = MyHeightMainChart
-                .Left = SH.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb).Offset(, 1).Left
-                .Top = SH.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb + 2).Top
+                .Left = Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb).Offset(, 1).Left
+                .Top = Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + RawNumberCycles_UPb + 2).Top
             End With
             
             a = 0
             B = 1
         Else
-            With SH.ChartObjects(iChtIx)
+            With Sh.ChartObjects(iChtIx)
                 .Width = MyWidth
                 .Height = MyHeight
                 
-                    .Left = ((iChtIx - a) Mod NumWide) * MyWidth + SH.Range(Plot_ColumnCyclesTime & Plot_HeaderRow).Offset(, 1).Left * 2
+                    .Left = ((iChtIx - a) Mod NumWide) * MyWidth + Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow).Offset(, 1).Left * 2
                     '.Left = ((iChtIx - a) Mod NumWide) * MyWidth + MyWidthMainChart + Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow).Offset(, 1).Left
-                    .Top = Int(((iChtIx - a) / NumWide - B)) * MyHeight + SH.Range(Plot_LastColumn & Plot_HeaderRow + 1).Top * 2 ' The second part of this formula is the top of the second cell
+                    .Top = Int(((iChtIx - a) / NumWide - B)) * MyHeight + Sh.Range(Plot_LastColumn & Plot_HeaderRow + 1).Top * 2 ' The second part of this formula is the top of the second cell
                     
             End With
         End If
@@ -919,7 +919,7 @@ Sub Plot_CopyData(Source_Sh As Worksheet, Destination_Sh As Worksheet)
     
 End Sub
 
-Sub Plot_OrdinaryCalculations(SH As Worksheet)
+Sub Plot_OrdinaryCalculations(Sh As Worksheet)
 
     'This procedure copies and copies dividing isotopes signal to other columns in the same worksheet creating the ratios.
     
@@ -929,7 +929,7 @@ Sub Plot_OrdinaryCalculations(SH As Worksheet)
 
     'Application.Goto Sh.Range("A1")
 
-    With SH
+    With Sh
         
         '64 ratio
         .Range(Plot_Column6 & Plot_HeaderRow + 1, Plot_Column6 & Plot_HeaderRow + Val(RawNumberCycles_UPb)).Copy _
@@ -981,7 +981,7 @@ Sub Plot_OrdinaryCalculations(SH As Worksheet)
         
         Application.CutCopyMode = False
     
-        With SH.Cells
+        With Sh.Cells
             'When some of the cycles are ignored, ratios that use these cycles as denomitors will raise #DIV/0!
             Set FindCells = .Find("#DIV/0!", LookIn:=xlValues)
             If Not FindCells Is Nothing Then

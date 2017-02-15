@@ -595,6 +595,7 @@ Sub FilterAnalysis(AnalysesTotal As Long)
                 ElseIf Convert75Percent > Error75 Or CellInRange < 0 Then
                 
                     Call FailAnalysisFilter(CellInRange)
+                    'Call HighlightBorders(CellInRange, "BiggerSmaller", ">" & Trim(Str(Error75)))
                         CountError75 = CountError75 + 1
                 End If
             
@@ -840,6 +841,70 @@ Private Sub FailAnalysisFilter(CellRange As Range)
         '.Color = -16776961
         '.TintAndShade = 0
         .Strikethrough = True
+    End With
+    
+    With CellRange.Font
+        '.Bold = True
+        .Name = "Franklin Gothic Heavy"
+        .Size = 11
+        .Strikethrough = True
+        .Superscript = False
+        .Subscript = False
+        .OutlineFont = False
+        .Shadow = False
+        .Underline = xlUnderlineStyleNone
+        .Color = -16776961
+        .TintAndShade = 0
+        .ThemeFont = xlThemeFontNone
+    End With
+
+End Sub
+
+Sub HighlightBorders(CellRange As Range, ConditionType As String, Condition As String, Optional CondValue1 = 0, Optional CondValue2 = 0)
+
+    'Created 31012017
+    
+    'NOT USED
+    
+    'This program will change the borders of the indicated cell. The primary application of this
+    'is to highlight those cells that failed the test applied by chronus on SlpStdCorr sheet.
+    
+    Select Case ConditionType
+    
+        Case "Between"
+            CellRange.FormatConditions.Add Type:=xlCellValue, Operator:=xlBetween, _
+                Formula1:="=" & Str(CondValue1), Formula2:="=" & Str(CondValue2)
+        
+        Case "BiggerSmaller"
+            CellRange.FormatConditions.Add Type:=xlExpression, Formula1:="=" & CellRange.Address & Condition
+    
+    End Select
+    
+    CellRange.FormatConditions(CellRange.FormatConditions.count).SetFirstPriority
+    CellRange.FormatConditions(1).StopIfTrue = False
+    
+    With CellRange.FormatConditions(1).Borders(xlLeft)
+        .LineStyle = xlContinuous
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    
+    With CellRange.FormatConditions(1).Borders(xlRight)
+        .LineStyle = xlContinuous
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    
+    With CellRange.FormatConditions(1).Borders(xlTop)
+        .LineStyle = xlContinuous
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    
+    With CellRange.FormatConditions(1).Borders(xlBottom)
+        .LineStyle = xlContinuous
+        .TintAndShade = 0
+        .Weight = xlThin
     End With
 
 End Sub

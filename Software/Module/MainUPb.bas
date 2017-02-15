@@ -1002,6 +1002,49 @@ Sub CreateWorkbook()
     Application.GoTo StartANDOptions_Sh.Range("A1")
     
 End Sub
+
+Sub Main_WB_TW()
+
+    Set TW = ThisWorkbook
+    Set mwbk = ActiveWorkbook
+    
+    'Worksheets from the AddIn
+    Set StandardsUPb_TW_Sh = TW.Worksheets("StandardsUPb")
+    Set StartANDOptions_TW_Sh = TW.Worksheets("Start-AND-Options")
+    Set UnB_TW_Sh = TW.Worksheets("UnB")
+    
+    'Set range where constants from Box2_UPb_Options must be copied
+    Set TW_RatioUranium_UPb = StartANDOptions_TW_Sh.Range("B22")
+    Set TW_RatioMercury_UPb = StartANDOptions_TW_Sh.Range("B23")
+    Set TW_mVtoCPS_UPb = StartANDOptions_TW_Sh.Range("B24")
+    Set TW_RatioMercury1Std = StartANDOptions_TW_Sh.Range("C23")
+    
+    Set TW_BlankName = StartANDOptions_TW_Sh.Range("D3")
+    Set TW_SampleName = StartANDOptions_TW_Sh.Range("D4")
+    Set TW_PrimaryStandardName = StartANDOptions_TW_Sh.Range("D5")
+    
+    'Code to set the ranges for the address of each isotope signal in Start-AND-Options sheet
+    Set TW_RawHg202Range = StartANDOptions_TW_Sh.Range("B45")
+    Set TW_RawPb204Range = StartANDOptions_TW_Sh.Range("B46")
+    Set TW_RawPb206Range = StartANDOptions_TW_Sh.Range("B47")
+    Set TW_RawPb207Range = StartANDOptions_TW_Sh.Range("B48")
+    Set TW_RawPb208Range = StartANDOptions_TW_Sh.Range("B49")
+    Set TW_RawTh232Range = StartANDOptions_TW_Sh.Range("B50")
+    Set TW_RawU238Range = StartANDOptions_TW_Sh.Range("B51")
+    Set TW_RawCyclesTimeRange = StartANDOptions_TW_Sh.Range("B53")
+    Set TW_AnalysisDateRange = StartANDOptions_TW_Sh.Range("B54")
+    
+    'Code to set the ranges for the address of each isotope header in Start-AND-Options sheet from Addin workbook
+    Set TW_RawHg202HeaderRange = StartANDOptions_TW_Sh.Range("C45")
+    Set TW_RawPb204HeaderRange = StartANDOptions_TW_Sh.Range("C46")
+    Set TW_RawPb206HeaderRange = StartANDOptions_TW_Sh.Range("C47")
+    Set TW_RawPb207HeaderRange = StartANDOptions_TW_Sh.Range("C48")
+    Set TW_RawPb208HeaderRange = StartANDOptions_TW_Sh.Range("C49")
+    Set TW_RawTh232HeaderRange = StartANDOptions_TW_Sh.Range("C50")
+    Set TW_RawU238HeaderRange = StartANDOptions_TW_Sh.Range("C51")
+
+End Sub
+
 Public Sub PublicVariables()
     'This sub must be called by any program.
     'Here, all necessary variable that could be used by multiple procedures must be defined. Don't forget to
@@ -1012,13 +1055,15 @@ Public Sub PublicVariables()
     
     Dim Msg As Integer
     
-    Set TW = ThisWorkbook
-    Set mwbk = ActiveWorkbook
+'    Set TW = ThisWorkbook
+'    Set mwbk = ActiveWorkbook
+'
+'    'Worksheets from the AddIn
+'    Set StandardsUPb_TW_Sh = TW.Worksheets("StandardsUPb")
+'    Set StartANDOptions_TW_Sh = TW.Worksheets("Start-AND-Options")
+'    Set UnB_TW_Sh = TW.Worksheets("UnB")
     
-    'Worksheets from the AddIn
-    Set StandardsUPb_TW_Sh = TW.Worksheets("StandardsUPb")
-    Set StartANDOptions_TW_Sh = TW.Worksheets("Start-AND-Options")
-    Set UnB_TW_Sh = TW.Worksheets("UnB")
+    Main_WB_TW
     
     'The lines below try to trap na error 91, which indicates that there is not any workbook opened, so the user
     'wants to create a new workbook. These lines checks too if the opened workbook is a valid.
@@ -1108,26 +1153,6 @@ Public Sub PublicVariables()
     
     'Presentation box
     Set ShowPresentation = StartANDOptions_TW_Sh.Range("B58")
-        
-    'Code to set the ranges for the address of each isotope signal in Start-AND-Options sheet
-    Set TW_RawHg202Range = StartANDOptions_TW_Sh.Range("B45")
-    Set TW_RawPb204Range = StartANDOptions_TW_Sh.Range("B46")
-    Set TW_RawPb206Range = StartANDOptions_TW_Sh.Range("B47")
-    Set TW_RawPb207Range = StartANDOptions_TW_Sh.Range("B48")
-    Set TW_RawPb208Range = StartANDOptions_TW_Sh.Range("B49")
-    Set TW_RawTh232Range = StartANDOptions_TW_Sh.Range("B50")
-    Set TW_RawU238Range = StartANDOptions_TW_Sh.Range("B51")
-    Set TW_RawCyclesTimeRange = StartANDOptions_TW_Sh.Range("B53")
-    Set TW_AnalysisDateRange = StartANDOptions_TW_Sh.Range("B54")
-    
-    'Code to set the ranges for the address of each isotope header in Start-AND-Options sheet from Addin workbook
-    Set TW_RawHg202HeaderRange = StartANDOptions_TW_Sh.Range("C45")
-    Set TW_RawPb204HeaderRange = StartANDOptions_TW_Sh.Range("C46")
-    Set TW_RawPb206HeaderRange = StartANDOptions_TW_Sh.Range("C47")
-    Set TW_RawPb207HeaderRange = StartANDOptions_TW_Sh.Range("C48")
-    Set TW_RawPb208HeaderRange = StartANDOptions_TW_Sh.Range("C49")
-    Set TW_RawTh232HeaderRange = StartANDOptions_TW_Sh.Range("C50")
-    Set TW_RawU238HeaderRange = StartANDOptions_TW_Sh.Range("C51")
     
     'Code to set the ranges for the address of each isotope signal in Start-AND-Options sheet
     Set RawHg202Range = StartANDOptions_Sh.Range("B45")
@@ -1152,16 +1177,6 @@ Public Sub PublicVariables()
     'Code to set the ranges where isotopes analyzed are identified
     Set Isotope208analyzed = StartANDOptions_Sh.Range("D49")
     Set Isotope232analyzed = StartANDOptions_Sh.Range("D50")
-    
-    'Set range where constants from Box2_UPb_Options must be copied
-    Set TW_RatioUranium_UPb = StartANDOptions_TW_Sh.Range("B22")
-    Set TW_RatioMercury_UPb = StartANDOptions_TW_Sh.Range("B23")
-    Set TW_mVtoCPS_UPb = StartANDOptions_TW_Sh.Range("B24")
-    Set TW_RatioMercury1Std = StartANDOptions_TW_Sh.Range("C23")
-    
-    Set TW_BlankName = StartANDOptions_TW_Sh.Range("D3")
-    Set TW_SampleName = StartANDOptions_TW_Sh.Range("D4")
-    Set TW_PrimaryStandardName = StartANDOptions_TW_Sh.Range("D5")
     
     Set RatioUranium_UPb = StartANDOptions_Sh.Range("B22")
     Set RatioMercury_UPb = StartANDOptions_Sh.Range("B23")
@@ -2205,7 +2220,7 @@ Sub FirstCycleTime()
     ''Application.DisplayAlerts = False
 
     Dim WorkbookOpened As Workbook
-    Dim cell As Range
+    Dim Cell As Range
 
     If FolderPath_UPb Is Nothing Then 'We need some public variables, so we must be shure that they were set
         Call PublicVariables
@@ -2216,16 +2231,16 @@ Sub FirstCycleTime()
     End If
            
     'Every analysis in AllSamplesPath range will be opened and the time of analysis will be copied to SamList_Sh
-    For Each cell In AllSamplesPath
+    For Each Cell In AllSamplesPath
     
-        If cell = "" Then
+        If Cell = "" Then
             Exit For
         End If
 
         On Error Resume Next
-            Workbooks.Open FileName:=cell
+            Workbooks.Open FileName:=Cell
                 If Err.Number <> 0 Then
-                    MsgBox MissingFile1 & cell & MissingFile2
+                    MsgBox MissingFile1 & Cell & MissingFile2
                         Call UpdateFilesAddresses
                             Call UnloadAll
                                 End
@@ -2234,10 +2249,10 @@ Sub FirstCycleTime()
     
             Set WorkbookOpened = ActiveWorkbook
             
-                 SamList_Sh.Range("D" & cell.Row) = DateTimeCustomFormat(WorkbookOpened, WorkbookOpened.Worksheets(1).Range(RawCyclesTimeRange).Item(1), _
+                 SamList_Sh.Range("D" & Cell.Row) = DateTimeCustomFormat(WorkbookOpened, WorkbookOpened.Worksheets(1).Range(RawCyclesTimeRange).Item(1), _
                  WorkbookOpened.Worksheets(1).Range(AnalysisDateRange), "hh:mm:ss:ms(xxx)", "Date: dd/mm/yyyy")
                                 
-                    Call WriteCycles(WorkbookOpened.Sheets(1).Range(RawCyclesTimeRange), cell.Row)
+                    Call WriteCycles(WorkbookOpened.Sheets(1).Range(RawCyclesTimeRange), Cell.Row)
 
                     WorkbookOpened.Close (False)
     Next
@@ -2733,7 +2748,7 @@ Sub SetPathsNamesIDsTimesCycles()
     'first cycle of every sample
     
     Dim a As Variant
-    Dim cell As Range
+    Dim Cell As Range
     
     If mwbk Is Nothing Then 'We need some public variables, so we must be shure that they were set
         Call PublicVariables
@@ -2752,7 +2767,7 @@ Sub SetPathsNamesIDsTimesCycles()
     
     'Below we populate PathsIDsTimes array with information of all analyses (samples, internal standards, external standards
     'and blanks. This is necessary so that we can reduce data after running this sub.
-    For Each cell In IDsRange
+    For Each Cell In IDsRange
     
     'Columns A and B must have strings. Columns C to J must be filled with only numbers (IDs) and any of its cells
     'must not be empty. So, we check these conditions below.
@@ -3027,7 +3042,7 @@ Public Sub LoadSamListMap()
     'THIS SUB IS NOT BEING USED BECAUSE IT NECESSARY TO UPDATE OTHER CHRONUS PROCEDURES. BY DEFAULT,
     'THE LIST OF SAMPLES IS CREATED AGAIN BY MARCOFOLDEROFFICE2010.
             
-    Dim cell As Range
+    Dim Cell As Range
     Dim a As Integer
     Dim Counter As Integer
     
@@ -3046,7 +3061,7 @@ Public Sub LoadSamListMap()
     
     ReDim Preserve AnalysesList(1 To 1) As SamplesMap '''''''''''''''''''''''''CHECAR   <<<<<-------------------------------------
     
-    For Each cell In MapIDsRange
+    For Each Cell In MapIDsRange
             
     'The "map" of samples, standards and blanks IDs must be filled with only numbers and any of its cells
     'must no be empty. So, we check these conditions below.
@@ -3100,7 +3115,7 @@ Public Sub LoadStdListMap()
     'This program recognizes the external standards and blanks IDs in SamList, creating an array (AnalysesList_std which is
     'equal to the StdListMap) that will be used to set the sequence in which data will be reduced.
             
-    Dim cell As Range
+    Dim Cell As Range
     Dim a As Integer
     Dim Counter As Integer
     
@@ -3119,7 +3134,7 @@ Public Sub LoadStdListMap()
     
     ReDim Preserve AnalysesList_std(1 To 1) As ExtStandardsMap '''''''''''''''''''''''''CHECAR   <<<<<-------------------------------------
     
-    For Each cell In MapIDsRange
+    For Each Cell In MapIDsRange
             
     'The "map" of samples, standards and blanks IDs must be filled with only numbers and any of its cells
     'must no be empty. So, we check these conditions below.
@@ -3307,7 +3322,7 @@ Sub CopyToCovarSheet(RngArray As Variant)
     
 End Sub
 
-Sub MatchValidRangeItems(ByVal rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As Range, SH As Worksheet, CalcFirstCell As Range) 'UPDATE DESCRIPTION
+Sub MatchValidRangeItems(ByVal rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As Range, Sh As Worksheet, CalcFirstCell As Range) 'UPDATE DESCRIPTION
 
     'This procedure will take all the items from both ranges and check if the pairs
     'are valid. By valid I mean they are numeric and not equal to 0. This is
@@ -3354,9 +3369,9 @@ Sub MatchValidRangeItems(ByVal rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As
                 Rng3.Copy Destination:=CalcFirstCell.Offset(, 2)
         
     'To avoid changing the input ranges, I set new ones to the ranges where rng1, rng2 and rng3 contents were pasted.
-    Set Range1 = SH.Range(CalcFirstCell, CalcFirstCell.Offset(NumRows - 1))
-    Set Range2 = SH.Range(CalcFirstCell.Offset(, 1), CalcFirstCell.Offset(NumRows - 1, 1))
-    Set Range3 = SH.Range(CalcFirstCell.Offset(, 2), CalcFirstCell.Offset(NumRows - 1, 2))
+    Set Range1 = Sh.Range(CalcFirstCell, CalcFirstCell.Offset(NumRows - 1))
+    Set Range2 = Sh.Range(CalcFirstCell.Offset(, 1), CalcFirstCell.Offset(NumRows - 1, 1))
+    Set Range3 = Sh.Range(CalcFirstCell.Offset(, 2), CalcFirstCell.Offset(NumRows - 1, 2))
     
 '    Rng1.Select
 '    Rng2.Select

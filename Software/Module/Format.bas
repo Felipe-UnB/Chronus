@@ -1281,7 +1281,7 @@ Sub FormatStartANDOptions()
 
 End Sub
 
-Sub HighlightNAs(SH As Worksheet)
+Sub HighlightNAs(Sh As Worksheet)
 
     Dim FindCells As Object
     Dim FirstAddress As String
@@ -1289,7 +1289,7 @@ Sub HighlightNAs(SH As Worksheet)
     
     NAs = "n.a."
     
-    With SH.Cells
+    With Sh.Cells
         Set FindCells = .Find(NAs, LookIn:=xlValues)
         If Not FindCells Is Nothing Then
             FirstAddress = FindCells.Address
@@ -1319,7 +1319,7 @@ Sub HighlightNAs(SH As Worksheet)
 
 End Sub
 
-Sub HighlightIntStd(SH As Worksheet)
+Sub HighlightIntStd(Sh As Worksheet)
     
     'This procedure will highlight the secondary standards in the sheets indicated
     'following a colorscale with 10 different colors. When more than 10 different
@@ -1347,7 +1347,7 @@ Sub HighlightIntStd(SH As Worksheet)
         Next
         
         For Counter = LBound(IntStdNames) To UBound(IntStdNames)
-            With SH.Cells
+            With Sh.Cells
                 Set FindCells = .Find(IntStdNames(Counter), LookIn:=xlValues)
                 If Not FindCells Is Nothing Then
                     FirstAddress = FindCells.Address
@@ -1387,7 +1387,7 @@ Sub HighlightIntStd(SH As Worksheet)
 
 End Sub
 
-Sub HighlightExtStd(SH As Worksheet)
+Sub HighlightExtStd(Sh As Worksheet)
 
     Dim FindCells As Object
     Dim FirstAddress As String
@@ -1397,7 +1397,7 @@ Sub HighlightExtStd(SH As Worksheet)
     End If
     
     If Not IsEmpty(ExternalStandardName_UPb) Then
-        With SH.Cells
+        With Sh.Cells
             Set FindCells = .Find(ExternalStandardName_UPb, LookIn:=xlValues)
             If Not FindCells Is Nothing Then
                 FirstAddress = FindCells.Address
@@ -1420,9 +1420,9 @@ Sub HighlightExtStd(SH As Worksheet)
         End With
     End If
 
-    If SH.Name = SlpStdBlkCorr_Sh.Name Then
+    If Sh.Name = SlpStdBlkCorr_Sh.Name Then
         
-        With SH.Rows("1:1").Interior
+        With Sh.Rows("1:1").Interior
             .Pattern = xlNone
         End With
     

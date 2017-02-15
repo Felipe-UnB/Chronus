@@ -77,7 +77,7 @@ Function LineFitSlopeError(rng1 As Range, Rng2 As Range)
     'rng1 is the dependent (Y) variable range
     'rng2 is the independent (X) variable range
     
-Dim cell As Integer
+Dim Cell As Integer
 Dim rng1Count As Double 'Number of cells not empty in rng1
 Dim rng2Count As Double 'Number of cells not empty in rng2
 Dim E As Range 'Value of a specific cell in rng1
@@ -96,11 +96,11 @@ Dim SumXi As Double 'sum of Xi, from i =1 to n
     End If
     
     
-    cell = 1: SumXiSquared = 0: SumXi = 0
+    Cell = 1: SumXiSquared = 0: SumXi = 0
     
-    While Not cell > rng1Count 'Loop through all values in the selected range
+    While Not Cell > rng1Count 'Loop through all values in the selected range
         
-        Set E = rng1.Item(cell): Set f = Rng2.Item(cell)
+        Set E = rng1.Item(Cell): Set f = Rng2.Item(Cell)
         
         If IsEmpty(E) = False And IsEmpty(f) = False Then
             If WorksheetFunction.IsNumber(E) = True And WorksheetFunction.IsNumber(f) = True Then
@@ -112,7 +112,7 @@ Dim SumXi As Double 'sum of Xi, from i =1 to n
             End If
         End If
         
-        cell = cell + 1
+        Cell = Cell + 1
     Wend
     
     LineFitSlopeError = Sqr(LineFitStdDev(rng1, Rng2) * rng1Count / (rng1Count * SumXiSquared - (SumXi) ^ 2))
@@ -155,7 +155,7 @@ Function LineFitInterceptError(Y_Range As Range, X_Range As Range)
     'rng1 is the dependent (Y) variable range
     'rng2 is the independent (X) variable range
     
-Dim cell As Integer
+Dim Cell As Integer
 Dim Y_RangeCount As Double 'Number of cells not empty in Y_Range
 Dim X_RangeCount As Double 'Number of cells not empty in X_Range
 Dim E As Range 'Value of a specific cell in rng1
@@ -174,11 +174,11 @@ Dim SumXi As Double 'sum of Xi, from i =1 to n
     End If
     
     
-    cell = 1: SumXiSquared = 0: SumXi = 0
+    Cell = 1: SumXiSquared = 0: SumXi = 0
     
-    While Not cell > Y_RangeCount 'Loop through all values in the selected range
+    While Not Cell > Y_RangeCount 'Loop through all values in the selected range
         
-        Set E = Y_Range.Item(cell): Set f = X_Range.Item(cell)
+        Set E = Y_Range.Item(Cell): Set f = X_Range.Item(Cell)
         
         If IsEmpty(E) = False And IsEmpty(f) = False Then
             If WorksheetFunction.IsNumber(E) = True And WorksheetFunction.IsNumber(f) = True Then
@@ -190,7 +190,7 @@ Dim SumXi As Double 'sum of Xi, from i =1 to n
             End If
         End If
         
-        cell = cell + 1
+        Cell = Cell + 1
     Wend
             
     LineFitInterceptError = Sqr(LineFitStdDev(Y_Range, X_Range) ^ 2 * (SumXiSquared / (Y_RangeCount * SumXiSquared - (SumXi) ^ 2)))
@@ -211,7 +211,7 @@ Function LineFitStdDev(rng1 As Range, Rng2 As Range)
     'rng2 is the independent (X) variable range
 
 
-Dim cell As Integer
+Dim Cell As Integer
 Dim lineSlope As Double
 Dim lineIntercept As Double
 Dim rng1Count As Double 'Number of cells not empty in rng1
@@ -233,11 +233,11 @@ Dim a As Double
     lineSlope = WorksheetFunction.Slope(rng1, Rng2)
     lineIntercept = WorksheetFunction.Intercept(rng1, Rng2)
         
-    cell = 1: LineFitStdDev = 0: a = 0
+    Cell = 1: LineFitStdDev = 0: a = 0
     
-    While Not cell > rng1Count 'Loop through all values in the selected range
+    While Not Cell > rng1Count 'Loop through all values in the selected range
         
-        Set E = rng1.Item(cell): Set f = Rng2.Item(cell)
+        Set E = rng1.Item(Cell): Set f = Rng2.Item(Cell)
         
         If IsEmpty(E) = False And IsEmpty(f) = False Then
             If WorksheetFunction.IsNumber(E) = True And WorksheetFunction.IsNumber(f) = True Then
@@ -245,7 +245,7 @@ Dim a As Double
             End If
         End If
         
-        cell = cell + 1
+        Cell = Cell + 1
     Wend
     
     ''debug.print A & " a"
@@ -262,17 +262,17 @@ End Function
 Function SumSquaredDev(Rng As Range)
 'Calculates the sum of squared deviations
 
-Dim cell As Range
+Dim Cell As Range
 Dim a As Double
 
     a = WorksheetFunction.Average(Rng)
 
 
-For Each cell In Rng 'Loop through all values in the selected range
-    If Not cell = "" Then
-        SumSquaredDev = SumSquaredDev + (cell.Value - a) ^ 2
+For Each Cell In Rng 'Loop through all values in the selected range
+    If Not Cell = "" Then
+        SumSquaredDev = SumSquaredDev + (Cell.Value - a) ^ 2
     End If
-Next cell
+Next Cell
 
     If SumSquaredDev = "" Then
         MsgBox "It's not possible to calculate the sum of the squared deviations, all cells are empty."
@@ -284,7 +284,7 @@ Function SumPrudDev(rng1 As Range, Rng2 As Range)
 
 'Calculates the sum of the product of deviations between (Xi,Average X) and (Yi, Average Y).
 
-Dim cell As Integer
+Dim Cell As Integer
 Dim a As Integer 'Number of cells not empty in rng1
 Dim B As Integer 'Number of cells not empty in rng2
 Dim C As Double 'Average of rng1
@@ -304,12 +304,12 @@ Dim f As Range 'Value of a specific cell in rng2
     C = WorksheetFunction.Average(rng1)
     d = WorksheetFunction.Average(Rng2)
 
-    cell = 1
+    Cell = 1
     
-    While Not cell = a 'Loop through all values in the selected range
+    While Not Cell = a 'Loop through all values in the selected range
         
-        Set E = rng1.Item(cell)
-        Set f = Rng2.Item(cell)
+        Set E = rng1.Item(Cell)
+        Set f = Rng2.Item(Cell)
         
         If IsEmpty(E) = False And IsEmpty(f) = False Then
             If WorksheetFunction.IsNumber(E) = True And WorksheetFunction.IsNumber(f) = True Then
@@ -317,7 +317,7 @@ Dim f As Range 'Value of a specific cell in rng2
             End If
         End If
         
-        cell = cell + 1
+        Cell = Cell + 1
     Wend
 
 End Function
@@ -732,26 +732,26 @@ Function TetaFactor(a As Integer)
     
 End Function
 
-Function EntryIsValid(cell) As Variant
+Function EntryIsValid(Cell) As Variant
 
     'Code modified from http://www.java2s.com/Code/VBA-Excel-Access-Word/Excel/ValidatingdataentryinWorksheetchangeevent.htm
     
-    If cell = "" Then
+    If Cell = "" Then
         EntryIsValid = True
         Exit Function
     End If
 
-    If Not IsNumeric(cell) Then
+    If Not IsNumeric(Cell) Then
         EntryIsValid = "Non-numeric entry."
         Exit Function
     End If
 
-    If CInt(cell) <> cell Then
+    If CInt(Cell) <> Cell Then
         EntryIsValid = "Integer required."
         Exit Function
     End If
 
-    If cell < 1 Or cell > 12 Then
+    If Cell < 1 Or Cell > 12 Then
         EntryIsValid = "Valid values are between 1 and 12."
         Exit Function
     End If
@@ -809,7 +809,7 @@ Function IsInArray(arr As Variant, valueToFind As Variant) As Boolean
 
 End Function
 
-Function NonEmptyCellsRange(Rng As Range, rngFirstcell As Range, SH As Worksheet, Optional OnlyNumericCells As Boolean = False) As Range
+Function NonEmptyCellsRange(Rng As Range, rngFirstcell As Range, Sh As Worksheet, Optional OnlyNumericCells As Boolean = False) As Range
 
     'This function takes the rng range, eliminates the empty cells and
     'returns a new range with only non empty cells. The optional argument
@@ -891,7 +891,7 @@ Function NonEmptyCellsRange(Rng As Range, rngFirstcell As Range, SH As Worksheet
                     
                 Next
                 
-            Set NonEmptyCellsRange = SH.Range(rngFirstcell, rngFirstcell.Offset(NumElements(ItemsNewRange, 1) - 1))
+            Set NonEmptyCellsRange = Sh.Range(rngFirstcell, rngFirstcell.Offset(NumElements(ItemsNewRange, 1) - 1))
             
 '            NonEmptyCellsRange.Select
         Else
@@ -1039,63 +1039,6 @@ BadEntry:
         
 End Function
 
-Function Ratio76BasedOn6875Ratios(Ratio68 As Double, Ratio75 As Double, Ratio238235 As Double)
-    'Calculates the ratio 75 for the indicated age. Decay constant must be in the same
-    'unit as the age (years, millions of years, etc). Age must be 0 or any other positive
-    'number.
-    
-    On Error GoTo BadEntry
-    
-    If Ratio68 = 0 Or Ratio75 = 0 Or Ratio238235 = 0 Then
-        Ratio76BasedOn6875Ratios = 0
-    End If
-    
-    If Ratio68 <= 0 Or Ratio75 <= 0 Then
-        GoTo BadEntry
-    End If
-    
-    Ratio76BasedOn6875Ratios = (Ratio75 / Ratio68) / Ratio238235
-    
-    Exit Function
-    
-BadEntry:
-    MsgBox "An error occurred." & vbNewLine & "Check if you entered a negative number"
-    Ratio76BasedOn6875Ratios = "Error"
-    
-    Exit Function
-        
-End Function
-
-Function Ratio76fromInterations6875(age76 As Double, startRatio As Double, Optional Incre As Double = 0.00000001, Optional Delta As Double = 0.001, Optional Intercations As Long = 10000)
-
-    'Calculates the 76 ratio based on the expected 76 age. startRatio is a guess that the user should give about the
-    'the ratio. A good guess can reduce the amount of time necessary to approximate the ratio. Interactions are the
-    'number of times that the program will increase the ratio by delta and compare the ages. Incre is the increment
-    'added to startRatio every interaction. Delta is the acceptable difference between expected 76 age and the age
-    'calculated by Isoplot considering the startRatio (increased or not).
-
-    Dim Counter As Integer
-    Dim age76Isoplot
-    
-    Incre = 0.00000001
-    Delta = 0.001
-    
-    For Counter = 1 To Intercations
-        age76Isoplot = agepb76(startRatio)
-            
-            If Sqr(WorksheetFunction.Power(age76Isoplot - age76, 2)) <= Delta Then
-                Ratio76fromInterations6875 = startRatio
-                    Exit Function
-            End If
-            
-        startRatio = startRatio + Incre
-    Next
-    
-    Ratio76fromInterations6875 = "Error"
-    
-    
-End Function
-
 Function IsStrike(rCell As Range)
 ' '******************************************************
 '/------------------------------------------------------\
@@ -1210,3 +1153,226 @@ Function CompareAnalysisNames(ByRef TxtBox As MSForms.TextBox)
     End If
 
 End Function
+
+Function Chronus_AgePb7U5(Ratio75 As Double)
+
+    If TypeName(Ratio75) <> "Double" Then
+        Chronus_AgePb7U5 = CVErr(xlErrNum)
+        Exit Function
+    ElseIf Ratio75 < 0 Then
+        Chronus_AgePb7U5 = CVErr(xlErrNum)
+        Exit Function
+    ElseIf Ratio75 = 0 Then
+        Chronus_AgePb7U5 = 0
+    End If
+    
+    Chronus_AgePb7U5 = WorksheetFunction.Ln(Ratio75 + 1) / (Decay235U_yrs * 1000000)
+
+End Function
+
+Function Chronus_AgePb6U8(Ratio68 As Double)
+
+    If TypeName(Ratio68) <> "Double" Then
+        Chronus_AgePb6U8 = CVErr(xlErrNum)
+        Exit Function
+    ElseIf Ratio68 < 0 Then
+        Chronus_AgePb6U8 = CVErr(xlErrNum)
+        Exit Function
+    ElseIf Ratio68 = 0 Then
+        Chronus_AgePb6U8 = 0
+    End If
+    
+    Chronus_AgePb6U8 = WorksheetFunction.Ln(Ratio68 + 1) / (Decay238U_yrs * 1000000)
+
+End Function
+
+Function Chronus_AgePb76( _
+                            Ratio76 As Double, _
+                            Optional Lambda235 As Double, _
+                            Optional Lambda238 As Double, _
+                            Optional RatioU As Double, _
+                            Optional MaxInterations = 10000)
+
+    Dim Interation As Long
+    Dim Delta As Double
+    Dim Guess As Double
+    Dim EstimatedAge As Double
+    Dim Equation As Double
+    Dim Equation_Dt As Double
+        
+    If Lambda235 = 0 Then
+        Lambda235 = Decay235U_yrs * 1000000
+    End If
+    
+    If Lambda238 = 0 Then
+        Lambda238 = Decay235U_yrs * 1000000
+    End If
+    
+    If RatioU = 0 Then
+        If TW_RatioUranium_UPb Is Nothing Then
+            Main_WB_TW
+        End If
+        RatioU = TW_RatioUranium_UPb.Value
+    End If
+    
+    If TypeName(Ratio76) <> "Double" Then
+        Chronus_AgePb76 = CVErr(xlErrNum)
+        Exit Function
+    ElseIf Ratio76 < 0 Then
+        Chronus_AgePb76 = CVErr(xlErrNum)
+        Exit Function
+    ElseIf Ratio76 = 0 Then
+        Chronus_AgePb76 = 0
+    End If
+
+    Delta = 0.000000001
+    Guess = 1
+    
+    For Interation = 1 To MaxInterations
+        
+        Equation = (TW_RatioUranium_UPb * (Exp(Lambda235 * Guess) - 1) / (Exp(Lambda238 * Guess) - 1) - Ratio76)
+        Equation_Dt = (TW_RatioUranium_UPb * (((Lambda235 - Lambda238) * Exp(Lambda238 * Guess) - Lambda235) * Exp(Lambda235 * Guess) + Lambda235 * Exp(Lambda235 * Lambda238)) / (WorksheetFunction.Power((Exp(Lambda235 * Guess) - 1), 2)))
+        
+        EstimatedAge = Guess - (Equation / Equation_Dt)
+        Debug.Print EstimatedAge
+
+        If Abs(EstimatedAge - 0 < Delta) Then
+            Chronus_AgePb76 = EstimatedAge
+            Exit Function
+        End If
+        
+        Guess = EstimatedAge
+        
+    Next
+    
+
+End Function
+
+Sub test76agecalcilator()
+
+    Dim a As Double
+    Dim x As Double
+    
+    a = 2
+    x = Chronus_AgePb76(a)
+
+End Sub
+
+
+Sub TestAgePb6U8()
+
+    Dim ThisWB As Workbook
+    Dim Sh As Worksheet
+    Dim Cell As Range
+    Dim RatiosRange As Range
+    Dim Increment As Double
+    Dim FirstValue As Double
+    Dim NumberTests As Long
+    
+    Application.ScreenUpdating = False
+    
+    Set ThisWB = ActiveWorkbook
+    Set Sh = ThisWB.ActiveSheet
+    
+    NumberTests = 100000
+    
+    'MsgBox ThisWB.Name
+    'MsgBox Sh.Name
+    'RatiosRange.Select
+    
+    
+    With Sh
+        .Cells.ClearContents
+        .Cells(1, 1) = "Ratio 68"
+        .Cells(1, 2) = "Chronus 68 age"
+        .Cells(1, 3) = "Isoplot 68 age"
+        .Cells(1, 4) = "68 age check"
+        
+        .Cells(1, 5) = "Ratio 75"
+        .Cells(1, 6) = "Chronus 75 age"
+        .Cells(1, 7) = "Isoplot 75 age"
+        .Cells(1, 8) = "75 age check"
+        
+        .Cells(1, 9) = "Ratio 76"
+        .Cells(1, 10) = "Chronus 76 age"
+        .Cells(1, 11) = "Isoplot 76 age"
+        .Cells(1, 12) = "76 age check"
+    
+        .Range(.Cells(1, 1), .Cells(1, 12)).Columns.AutoFit
+        .Range(.Cells(1, 1), .Cells(1, 12)).Font.Bold = True
+    End With
+    
+    '68 AGES
+        
+        Set RatiosRange = Sh.Range(Sh.Cells(2, 1), Sh.Cells(NumberTests, 1))
+        Increment = 0.0005
+        FirstValue = 0
+        
+        For Each Cell In RatiosRange
+        
+            Cell = FirstValue
+            FirstValue = FirstValue + Increment
+        
+        Next
+        
+        For Each Cell In RatiosRange
+        
+            Cell.Offset(, 1) = Chronus_AgePb6U8(Cell.Value)
+            Cell.Offset(, 2) = AgePb6U8(Cell.Value)
+             
+            If TypeName(Cell.Offset(, 1).Value) <> TypeName(Cell.Offset(, 2).Value) Then
+                
+                Cell.Offset(, 3) = "Error"
+                
+            Else
+            
+                If Cell.Offset(, 1) = Cell.Offset(, 2) Then
+                    Cell.Offset(, 3) = "Equal"
+                Else
+                    Cell.Offset(, 3) = 100 * (Cell.Offset(, 1) / Cell.Offset(, 2))
+                                
+                End If
+            
+            End If
+            
+        Next
+        
+    '75 AGES
+
+        Set RatiosRange = Sh.Range(Sh.Cells(2, 5), Sh.Cells(NumberTests, 5))
+        Increment = 0.001
+        FirstValue = 0
+        
+        For Each Cell In RatiosRange
+        
+            Cell = FirstValue
+            FirstValue = FirstValue + Increment
+        
+        Next
+        
+        For Each Cell In RatiosRange
+        
+            Cell.Offset(, 1) = Chronus_AgePb7U5(Cell.Value)
+            Cell.Offset(, 2) = AgePb7U5(Cell.Value)
+             
+            If TypeName(Cell.Offset(, 1).Value) <> TypeName(Cell.Offset(, 2).Value) Then
+                
+                Cell.Offset(, 3) = "Error"
+                
+            Else
+            
+                If Cell.Offset(, 1) = Cell.Offset(, 2) Then
+                    Cell.Offset(, 3) = "Equal"
+                Else
+                    Cell.Offset(, 3) = 100 * (Cell.Offset(, 1) / Cell.Offset(, 2))
+                                
+                End If
+            
+            End If
+            
+        Next
+    
+    Application.ScreenUpdating = True
+    
+End Sub
+
