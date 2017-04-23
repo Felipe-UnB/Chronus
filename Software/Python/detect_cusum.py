@@ -71,18 +71,18 @@ def detect_cusum(x, threshold=1, drift=0, ending=False, show=True, ax=None):
 
     Examples
     --------
-    >>> from detect_cusum import detect_cusum
-
-    >>> x = np.random.randn(300)/5
-    >>> x[100:200] += np.arange(0, 4, 4/100)
-    >>> ta, tai, taf, amp = detect_cusum(x, 2, .02, True, True)
-
-    >>> x = np.random.randn(300)
-    >>> x[100:200] += 6
-    >>> detect_cusum(x, 4, 1.5, True, True)
-
-    >>> x = 2*np.sin(2*np.pi*np.arange(0, 3, .01))
-    >>> ta, tai, taf, amp = detect_cusum(x, 1, .05, True, True)
+    # >>> from detect_cusum import detect_cusum
+    #
+    # >>> x = np.random.randn(300)/5
+    # >>> x[100:200] += np.arange(0, 4, 4/100)
+    # >>> ta, tai, taf, amp = detect_cusum(x, 2, .02, True, True)
+    #
+    # >>> x = np.random.randn(300)
+    # >>> x[100:200] += 6
+    # >>> detect_cusum(x, 4, 1.5, True, True)
+    #
+    # >>> x = 2*np.sin(2*np.pi*np.arange(0, 3, .01))
+    # >>> ta, tai, taf, amp = detect_cusum(x, 1, .05, True, True)
     """
 
     x = np.atleast_1d(x).astype('float64')
@@ -96,19 +96,24 @@ def detect_cusum(x, threshold=1, drift=0, ending=False, show=True, ax=None):
         gp[i] = gp[i-1] + s - drift  # cumulative sum for + change
         gn[i] = gn[i-1] - s - drift  # cumulative sum for - change
 
-        print()
-        print('x[',i,'] = ',x[i])
-        print('x[', i, '- 1 ] = ', x[i-1])
-        print('s = ', s)
-        print('gn[',i,'] =', gn[i])
-        print('gp[',i,'] =', gp[i])
+        # print()
+        # print('x[',i,'] = ',x[i])
+        # print('x[', i, '- 1 ] = ', x[i-1])
+        # print('s = ', s)
+        # print('gn[',i,'] =', gn[i])
+        # print('gp[',i,'] =', gp[i])
         if gp[i] < 0:
+            # print('gp[i] < 0')
             gp[i], tap = 0, i
         if gn[i] < 0:
+            # print('gn[i] < 0')
             gn[i], tan = 0, i
         if gp[i] > threshold or gn[i] > threshold:  # change detected!
+            # print()
             ta = np.append(ta, i)    # alarm index
+            # print('ta appended')
             tai = np.append(tai, tap if gp[i] > threshold else tan)  # start
+            # print('tai appended')
             gp[i], gn[i] = 0, 0      # reset alarm
     # THE CLASSICAL CUSUM ALGORITHM ENDS HERE
 

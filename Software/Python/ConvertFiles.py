@@ -1,7 +1,6 @@
 from __future__ import division, print_function
 import detect_cusum
 
-
 class configuration:
     '''
     Some constants necessary to handle data in the files from some mass spectrometers
@@ -44,21 +43,34 @@ class configuration:
             return self.__Constants_Neptune
 
 
-config = configuration()
-
-
-class SampleData():
+class SampleData(configuration):
     '''
-    This object represents a single data file. Now, only the 206 intensities were translated to a list
-    '''
+    This object represents a single data file.
 
-    import datetime
+    parameters:
+            Name - Name of the sample
+            File_as_Array - Array representing the raw data file
+            Equipment - Equipment used to analyze the sample (it must be described by the configuration class)
+            blank_together (default = False) - Is blank recorded with each sample?
+            breakingpoints (default is an empty tuple) - If the blank was recorded with the sample then the breaking
+                points to separete both analyses must be provided
+            unit_202 (default = 'cps') - Unit of the 202 mass intensities
+            unit_204 (default = ='cps') - Unit of the 204 mass intensities
+            unit_206 (default = ='mV') - Unit of the 206 mass intensities
+            unit_207 (default = ='cps') - Unit of the 207 mass intensities
+            unit_208 (default = ='cps') - Unit of the 208 mass intensities
+            unit_232 (default = ='mV') - Unit of the 232 mass intensities
+            unit_238 (default = ='mV) - Unit of the 238 mass intensities
+
+    '''
 
     def __init__(
             self,
             Name,
             File_as_Array,
             Equipment,
+            blank_together=False,
+            breaking_points=(),
             unit_202='cps',
             unit_204='cps',
             unit_206='mV',
@@ -67,12 +79,22 @@ class SampleData():
             unit_232='mV',
             unit_238='mV'
     ):
+        super(SampleData, self).__init__()
 
         import datetime
 
-        self.__Constants = config.GetConfigurations(Equipment)
+        self.__Constants = self.GetConfigurations(Equipment)
         self.Name = Name
         self.__RawData = File_as_Array
+        self.blank_together = blank_together
+        self.breaking_points = breaking_points
+        self.unit_202 = unit_202
+        self.unit_204 = unit_204
+        self.unit_206 = unit_206
+        self.unit_207 = unit_207
+        self.unit_208 = unit_208
+        self.unit_232 = unit_232
+        self.unit_238 = unit_238
 
         AnalysisDate = File_as_Array[self.__Constants['Line_AnalysisDate']][0]
         self.AnalysisDate = datetime.datetime.strptime(AnalysisDate.split(' ')[2], "%d/%m/%Y")
@@ -93,13 +115,13 @@ class SampleData():
         Line_LastIntensity = Line_FirstIntensity + self.__Constants['NumberCycles']
 
         self.__CyclesDateTime = []
-        self.__Signal_206 = []
-        self.__Signal_208 = []
-        self.__Signal_232 = []
-        self.__Signal_238 = []
-        self.__Signal_202 = []
-        self.__Signal_204 = []
-        self.__Signal_207 = []
+        self.Signal_206 = []
+        self.Signal_208 = []
+        self.Signal_232 = []
+        self.Signal_238 = []
+        self.Signal_202 = []
+        self.Signal_204 = []
+        self.Signal_207 = []
 
         __Column_CycleTime = self.__Constants['Column_CycleTime']
         __Column_206 = self.__Constants['Column_206']
@@ -116,13 +138,13 @@ class SampleData():
             self.__CyclesDateTime.append(datetime.datetime.combine(self.AnalysisDate.date(), CyclesTime.time()))
             # print(self.__CyclesDateTime)
             try:
-                self.__Signal_206.append(float(File_as_Array[line][__Column_206]))
-                self.__Signal_208.append(float(File_as_Array[line][__Column_208]))
-                self.__Signal_232.append(float(File_as_Array[line][__Column_232]))
-                self.__Signal_238.append(float(File_as_Array[line][__Column_238]))
-                self.__Signal_202.append(float(File_as_Array[line][__Column_202]))
-                self.__Signal_204.append(float(File_as_Array[line][__Column_204]))
-                self.__Signal_207.append(float(File_as_Array[line][__Column_207]))
+                self.Signal_206.append(float(File_as_Array[line][__Column_206]))
+                self.Signal_208.append(float(File_as_Array[line][__Column_208]))
+                self.Signal_232.append(float(File_as_Array[line][__Column_232]))
+                self.Signal_238.append(float(File_as_Array[line][__Column_238]))
+                self.Signal_202.append(float(File_as_Array[line][__Column_202]))
+                self.Signal_204.append(float(File_as_Array[line][__Column_204]))
+                self.Signal_207.append(float(File_as_Array[line][__Column_207]))
 
             except:
                 print('Class SampleData')
@@ -144,76 +166,205 @@ class SampleData():
                       File_as_Array[line][__Column_207])
                 exit()
 
-    def Get206(self):
-        return self.__Signal_206
+        if self.blank_together == True and len(self.breaking_points) == 0:  # If sample and blank were recorded togeter
+            # and the user didn't indicated the breaking points, it is necessary to determine them
 
-    def Get208(self):
-        return self.__Signal_208
+            drift_206 = 0
+            drift_207 = 0
+            drift_232 = 0
+            drift_238 = 0
 
-    def Get232(self):
-        return self.__Signal_232
+            ShowParameters = True
 
-    def Get238(self):
-        return self.__Signal_238
+            if self.unit_206 == 'mV':
+                drift_206 = 0.01
+            elif self.unit_206 == 'cps':
+                drift_206 = 6250000
+            else:
+                print('206 unit (', self.unit_206, ' unrecognized')
+                exit()
 
-    def Get202(self):
-        return self.__Signal_202
+            if self.unit_207 == 'mV':
+                drift_207 = 0.01
+            elif self.unit_207 == 'cps':
+                drift_207 = 6250000
+            else:
+                print('206 unit (', self.unit_207, ' unrecognized')
+                exit()
 
-    def Get204(self):
-        return self.__Signal_204
+            if self.unit_232 == 'mV':
+                drift_232 = 0.01
+            elif self.unit_232 == 'cps':
+                drift_232 = 6250000
+            else:
+                print('206 unit (', self.unit_232, ' unrecognized')
+                exit()
 
-    def Get207(self):
-        return self.__Signal_207
+            if self.unit_238 == 'mV':
+                drift_238 = 0.01
+            elif self.unit_238 == 'cps':
+                drift_238 = 6250000
+            else:
+                print('206 unit (', self.unit_238, ' unrecognized')
+                exit()
+
+            print('206')
+            print(max(self.Signal_206))
+            print(100 * 0.005 / max(self.Signal_206))
+            print(100 * 0.0005 / max(self.Signal_206))
+
+            print()
+            print('207')
+            print(max(self.Signal_207))
+            print(100 * 20000 / max(self.Signal_207))
+            print(100 * 5000 / max(self.Signal_207))
+
+            print()
+            print('232')
+            print(max(self.Signal_232))
+            print(100 * 0.001 / max(self.Signal_232))
+            print(100 * 0.00005 / max(self.Signal_232))
+
+            print()
+            print('238')
+            print(max(self.Signal_238))
+            print(100 * 0.05 / max(self.Signal_238))
+            print(100 * 0.005 / max(self.Signal_238))
+
+            parameters_206 = [self.Signal_206, 0.005, 0.0005]
+            parameters_207 = [self.Signal_207, 20000, 5000]
+            parameters_232 = [self.Signal_232, max(self.Signal_232) / 2, 0.01 * max(self.Signal_232) / 2]
+            parameters_238 = [self.Signal_238, 0.05, 0.005]
+
+            self.__CUMSUM_Parameters_206 = detect_cusum.detect_cusum(
+                parameters_206[0],
+                parameters_206[1],
+                parameters_206[2],
+                True,
+                ShowParameters
+            )
+            self.__CUMSUM_Parameters_207 = detect_cusum.detect_cusum(
+                parameters_207[0],
+                parameters_207[1],
+                parameters_207[2],
+                True,
+                ShowParameters
+            )
+            self.__CUMSUM_Parameters_232 = detect_cusum.detect_cusum(
+                parameters_232[0],
+                parameters_232[1],
+                parameters_232[2],
+                True,
+                ShowParameters
+            )
+            self.__CUMSUM_Parameters_238 = detect_cusum.detect_cusum(
+                parameters_238[0],
+                parameters_238[1],
+                parameters_238[2],
+                True,
+                ShowParameters
+            )
+
+        if self.blank_together == True and len(self.breaking_points) != 0:
+            print('Prepare blank together with breaking points')
+
+
 
     def GetCyclesDateTime(self):
+
         return self.__CyclesDateTime
 
-    def plot_All(self,
-                 plot202=True,
-                 plot204=True,
-                 plot206=True,
-                 plot207=True,
-                 plot208=True,
-                 plot232=True,
-                 plot238=True):
+    def plot_save_All(self,
+                      SameFigure=True,
+                      plot202=True,
+                      plot204=True,
+                      plot206=True,
+                      plot207=True,
+                      plot208=True,
+                      plot232=True,
+                      plot238=True,
+                      showplot=True,
+                      saveplots=True):
+        '''
+        
+        :param SameFigure: Should all mass intensities be plotted in the same figure?
+        :param plot202: Should the 202 mass intensities be plotted?
+        :param plot204: Should the 204 mass intensities be plotted?
+        :param plot206: Should the 206 mass intensities be plotted?
+        :param plot207: Should the 207 mass intensities be plotted?
+        :param plot208: Should the 208 mass intensities be plotted?
+        :param plot232: Should the 232 mass intensities be plotted?
+        :param plot238: Should the 238 mass intensities be plotted?
+        :return: A plot as required
+        
+        '''
         import matplotlib.pyplot as plt
 
-        f, (ax206, ax208, ax232, ax238, ax202, ax204, ax207) = plt.subplots(7, figsize=(10, 10))
+        Should_Plot = [
+            ['202 intensities', self.Signal_202, plot202],
+            ['204 intensities', self.Signal_204, plot204],
+            ['206 intensities', self.Signal_206, plot206],
+            ['207 intensities', self.Signal_207, plot207],
+            ['208 intensities', self.Signal_208, plot208],
+            ['232 intensities', self.Signal_232, plot232],
+            ['238 intensities', self.Signal_238, plot238]
+        ]
+
+        Plots = []
+
+        Plots_final = Should_Plot[:]
+
+        NumPlots = 0
+        for plot in Should_Plot:
+            if plot[2] == True:
+                NumPlots += 1
+                Plots.append(plot)
+            else:
+                Plots_final.remove(plot)
+
         Xs = self.__CyclesDateTime
 
-        if plot206 == True:
-            ax206.plot(Xs, self.__Signal_206, color='r')
-            ax206.set_title('206 signal', fontsize=10)
+        if SameFigure == False:
+            for intensity in Plots_final:
+                fig, ax = plt.subplots()
+                ax.plot(Xs, intensity[1], color='r')
+                ax.set_title(intensity[0], fontsize=10)
+                fig.autofmt_xdate()  # I dont't know if this have another effect, but the one I wanted was it automatically rotates the x axis labels
 
-        if plot208 == True:
-            ax208.plot(Xs, self.__Signal_208, color='b')
-            ax208.set_title('208 signal', fontsize=10)
+                if showplot == True:
+                    fig.show()
 
-        if plot232 == True:
-            ax232.plot(Xs, self.__Signal_232, color='g')
-            ax232.set_title('232 signal', fontsize=10)
+                if saveplots == True:
+                    print(self.Name + intensity[0] + '.pdf')
+                    plt.savefig(self.Name + intensity[0] + '.pdf')
 
-        if plot238 == True:
-            ax238.plot(Xs, self.__Signal_238, color='y')
-            ax238.set_title('238 signal', fontsize=10)
+        elif SameFigure == True:
+            num_subplots = len(Plots_final)
+            num_rows = int(num_subplots / 2) + 1
+            num_columns = 2
+            position = 1
+            fig = plt.figure(1, figsize=(13, 6))
+            fig.suptitle(str(self.Name + ' mass intensities'), fontsize=15)
 
-        if plot202 == True:
-            ax202.plot(Xs, self.__Signal_202, color='m')
-            ax202.set_title('202 signal', fontsize=10)
+            for intensity in Plots_final:
+                # add every single subplot to the figure with a for loop
+                ax = fig.add_subplot(num_rows, num_columns, position)
+                position += 1
+                ax.plot(Xs, intensity[1])
+                ax.set_title(intensity[0], fontsize=10)
 
-        if plot204 == True:
-            ax204.plot(Xs, self.__Signal_204, color='b')
-            ax204.set_title('204 signal', fontsize=10)
+            fig.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top=0.9,
+                                wspace=0.2, hspace=0.5)
 
-        if plot207 == True:
-            ax207.plot(Xs, self.__Signal_207, color='c')
-            ax207.set_title('207 signal', fontsize=10)
+            fig.autofmt_xdate()
 
-        # Fine-tune figure; make subplots close to each other and hide x ticks for
-        # all but bottom plot.
-        f.subplots_adjust(hspace=2)
-        plt.setp([a.get_xticklabels() for a in f.axes[:-1]], visible=False)
-        plt.show()
+            if showplot == True:
+                plt.show()
+
+            if saveplots == True:
+                print(self.Name + '.pdf')
+                plt.savefig(self.Name + '.pdf')
+
 
     def print_RawData(self):
         ROW_FORMAT = '| {0!s:10s} | {1!s:10s}'
@@ -222,25 +373,61 @@ class SampleData():
             # print(ROW_FORMAT.format(self.__RawData[line]))
             print('Line ', line, ' = ', self.__RawData[line])
 
-    def CUMSUM(self):
 
-        x = self.__Signal_207
-        threshold = 0.25 * max(x)
-        print(threshold)
-        drift = threshold/8
-        print(drift)
-        ta, tai, taf, amp = detect_cusum.detect_cusum(x, threshold, drift, True, True, 1)
-        # x = self.__Signal_206
-        # ta, tai, taf, amp = detect_cusum.detect_cusum(x, 0.01, 0.0005, True, True, 1)
-        # print('ta = ', ta)
-        # print('tai = ', tai)
-        # print('taf = ', taf)
-        # print('amp = ', amp)
+def Set_breakingpoints(parameters_206, parameters_207, parameters_232, parameters_238, ShowParameters=False):
+    '''    
+    :param parameters_206: [list of the 206 intensities, threshold, drift]
+    :param parameters_207: [list of the 207 intensities, threshold, drift]
+    :param parameters_232: [list of the 232 intensities, threshold, drift]
+    :param parameters_238: [list of the 238 intensities, threshold, drift]
+    :return: [CUMSUM_parameters_206, CUMSUM_parameters_207, CUMSUM_parameters_232, CUMSUM_parameters_238]
+    '''
+
+    CUMSUM_206 = detect_cusum.detect_cusum(
+        parameters_206[0],
+        parameters_206[1],
+        parameters_206[2],
+        True,
+        ShowParameters)
+
+    # CUMSUM_207 = detect_cusum.detect_cusum(
+    #     parameters_207[0],
+    #     parameters_207[1],
+    #     parameters_207[2],
+    #     True,
+    #     ShowParameters)
+    #
+    # CUMSUM_232 = detect_cusum.detect_cusum(
+    #     parameters_232[0],
+    #     parameters_232[1],
+    #     parameters_232[2],
+    #     True,
+    #     ShowParameters)
+    #
+    # CUMSUM_238 = detect_cusum.detect_cusum(
+    #     parameters_238[0],
+    #     parameters_238[1],
+    #     parameters_238[2],
+    #     True,
+    #     ShowParameters)
+
+
+def WriteTXT(List, FileAddress):
+    # print(FileAddress)
+    SaveTo = open(FileAddress, 'w')
+
+    for item in List:
+        SaveTo.write("%s\n" % item)
 
 
 def ListFiles(FolderPath, Extension):
     '''
-    Returns a list of files with the desired extension in the indicated folder
+    Returns a list of lists in the following format
+        [name, os.path.join(root, name)]
+        
+    item[0] - files with the desired extension in the indicated folder
+    item[0][0] - file name
+    item[0][1] - file path
     '''
 
     import os
@@ -286,18 +473,21 @@ def ListFiles(FolderPath, Extension):
     return FilesList
 
 
-def LoadFiles(FilesList):
+def Convert_Files_to_Lists(FilesList):
     '''
-    Transforms each file in an array and append it to LoadedFiles as [SampleName,DataArray]
-    '''
+    Transforms each file in a list and append it to LoadedFiles as [SampleName,DataArray]
+    Each item of the list is another list and represents a row of the original file.
 
+    :param FilesList: List with the paths of the files to be opened
+    :return: LoadedFiles, a list of the files as [SampleName,DataArray]
+    '''
     import csv
 
     if len(FilesList) == 0:
         print("FileList is empty!")
         exit()
 
-    LoadedFiles = []
+    LoadedFile = []
 
     for file in FilesList:
         a = csv.reader(open(file[1], 'r'), delimiter='\t')  # delimiter='\t' is the tab delimiter
@@ -308,51 +498,66 @@ def LoadFiles(FilesList):
             temp.append(line)
             # print(line)
 
-        LoadedFiles.append([file[0], temp])
+        LoadedFile.append([file[0], temp])
 
-    return LoadedFiles
+    return LoadedFile
 
 
-a = ListFiles(r'D:\UnB\Projetos-Software\Chronus\Software\Blank_Test\teste91500_10042017\91500_TESTE', '.exp')
-b = LoadFiles(a)
-c = SampleData(b[0][0], b[0][1], 'Thermo Finnigan Neptune')
+def LoadFiles(FolderPath, extension):
+    list_of_files = ListFiles(FolderPath, extension)
+
+    list_of_files_converted_to_List = Convert_Files_to_Lists(list_of_files)
+
+    loaded_files = []
+
+    for file in list_of_files_converted_to_List:
+        loaded_files.append(SampleData(file[0], file[1], 'Thermo Finnigan Neptune', False))
+
+    return loaded_files
+
+
+loaded_files = LoadFiles(r'D:\UnB\Projetos-Software\Chronus\Software\Blank_Test\teste91500_10042017\91500_TESTE',
+                         '.exp')
+
+loaded_files[0].plot_save_All(
+    SameFigure=False,
+    plot202=True,
+    plot204=True,
+    plot206=True,
+    plot207=True,
+    plot208=True,
+    plot232=True,
+    plot238=True,
+    showplot=True,
+    saveplots=True)
+
+
+# for file in loaded_files:
+#     file.plot_All(
+#         SameFigure=False,
+#         plot202=True,
+#         plot204=True,
+#         plot206=True,
+#         plot207=True,
+#         plot208=True,
+#         plot232=True,
+#         plot238=True)
+
+# c = SampleData(b[0][0], b[0][1], 'Thermo Finnigan Neptune',True)
+# c = SampleData(b[1][0], b[1][1], 'Thermo Finnigan Neptune',True)
+# c = SampleData(b[2][0], b[2][1], 'Thermo Finnigan Neptune',True)
+
+
 # print(c.Name)
-
-import pprint
-
+#
 # c.print_RawData()
 
-# c.plot_All(plot202=True,
-#            plot204=True,
-#            plot206=True,
-#            plot207=True,
-#            plot208=True,
-#            plot232=True,
-#            plot238=True)
-#
-# # for n in c.GetCyclesDateTime():
-# #     print(str(n))
-c.CUMSUM()
-# import matplotlib.pyplot as plt
-# plt.plot(c.Get207())
-# plt.show()
-
-# for n in c.Get207():
-#     print(n)
-# print(c.Get202())
-# print(c.Get204())
-# print(c.Get206())
-
-# print(c.Get208())
-# print(c.Get232())
-# print(c.Get238())
-
-# a = configuration()
-# # print(a.__Constants['Column_232Th'])
-# a.Print__Constants_Neptune()
-# a.PrintSuportedEquipment()
-
-# x = np.random.randn(300) / 5
-#
-# x[100:200] += np.arange(0, 4, 4 / 100)
-# ta, tai, taf, amp = detect_cusum(x, 2, .02, True, True)
+# c.plot_All(
+#     SameFigure=True,
+#     plot202=True,
+#     plot204=True,
+#     plot206=True,
+#     plot207=True,
+#     plot208=True,
+#     plot232=True,
+#     plot238=True)
