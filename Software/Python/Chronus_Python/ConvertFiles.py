@@ -1,5 +1,7 @@
 from __future__ import division, print_function
-import detect_cusum
+
+from Chronus_Python import detect_cusum
+
 
 class configuration:
     '''
@@ -12,11 +14,14 @@ class configuration:
         ]
 
         self.__Constants_Neptune = {
-            'Line_IsotopeHeaders': 15,
+            'Standard_NumberCycles': 85,
+            'Line_IsotopeHeaders': 14,
             'Line_Cups': 101,
             'Line_AnalysisDate': 8,
             'Line_FirstCycle': 15,
             'Line_LastCycle': 100,
+            'Line_new_num_cycles': 1,
+            # This line sets the line where the new number of cyles (after separating blanks and samples) should be recorded
             'Column_CycleTime': 1,
             'Column_206': 2,
             'Column_208': 3,
@@ -25,8 +30,11 @@ class configuration:
             'Column_202': 6,
             'Column_204': 7,
             'Column_207': 8,
-            'NumberCycles': 85,
-            'Columns_num': 13
+            'Columns_num': 13,
+            'Column_new_num_cycles_header': 2,
+            'Column_new_num_cycles': 3,
+            'Column_split_points': 4
+            # This line sets the columns where the new number of cyles (after separating blanks and samples) should be recorded
         }
 
     def PrintSuportedEquipment(self):
@@ -49,6 +57,7 @@ class SampleData(configuration):
 
     parameters:
             Name - Name of the sample
+            folderpath - Folder where you would like to save the plots that you might generate
             File_as_Array - Array representing the raw data file
             Equipment - Equipment used to analyze the sample (it must be described by the configuration class)
             blank_together (default = False) - Is blank recorded with each sample?
@@ -67,10 +76,11 @@ class SampleData(configuration):
     def __init__(
             self,
             Name,
-            File_as_Array,
+            folderpath,
+            File_as_List,
             Equipment,
             blank_together=False,
-            breaking_points=(),
+            split_points=[],
             unit_202='cps',
             unit_204='cps',
             unit_206='mV',
@@ -79,15 +89,17 @@ class SampleData(configuration):
             unit_232='mV',
             unit_238='mV'
     ):
+
         super(SampleData, self).__init__()
 
         import datetime
 
         self.__Constants = self.GetConfigurations(Equipment)
         self.Name = Name
-        self.__RawData = File_as_Array
+        self.folderpath = folderpath
+        self.__RawData = File_as_List
         self.blank_together = blank_together
-        self.breaking_points = breaking_points
+        self.split_points = split_points
         self.unit_202 = unit_202
         self.unit_204 = unit_204
         self.unit_206 = unit_206
@@ -96,9 +108,23 @@ class SampleData(configuration):
         self.unit_232 = unit_232
         self.unit_238 = unit_238
 
-        AnalysisDate = File_as_Array[self.__Constants['Line_AnalysisDate']][0]
+        Line_new_num_cycles = self.__Constants['Line_new_num_cycles']
+        Column_split_points = self.__Constants['Column_split_points']
+        if len(self.__RawData[Line_new_num_cycles][Column_split_points]) > 0:
+            self.split_points = self.__RawData[Line_new_num_cycles][Column_split_points]
+
+        # print('self.__Constants[Line_new_num_cycles]', self.__Constants['Line_new_num_cycles'])
+        # print('self.__Constants[Column_new_num_cycles]', self.__Constants['Column_new_num_cycles'])
+
+        # print(self.__RawData)
+        numcycles = self.__RawData[self.__Constants['Line_new_num_cycles']][self.__Constants['Column_new_num_cycles']]
+        # print('numcycles',numcycles)
+        if numcycles != '':
+            self.__Constants['Standard_NumberCycles'] = numcycles
+
+        AnalysisDate = File_as_List[self.__Constants['Line_AnalysisDate']][0]
         self.AnalysisDate = datetime.datetime.strptime(AnalysisDate.split(' ')[2], "%d/%m/%Y")
-        FirstCycleTime = File_as_Array[self.__Constants['Line_FirstCycle']][self.__Constants['Column_CycleTime']]
+        FirstCycleTime = File_as_List[self.__Constants['Line_FirstCycle']][self.__Constants['Column_CycleTime']]
         self.FirstCycleTime = datetime.datetime.strptime(FirstCycleTime, '%H:%M:%S:%f')
 
         # self.__DateTimeAnalysis = datetime.datetime.combine(AnalysisDate,FirstCycleTime.time())
@@ -111,8 +137,8 @@ class SampleData(configuration):
                 print('Lines with different number of columns.')
                 exit()
 
-        Line_FirstIntensity = self.__Constants['Line_IsotopeHeaders']
-        Line_LastIntensity = Line_FirstIntensity + self.__Constants['NumberCycles']
+        Line_FirstIntensity = self.__Constants['Line_FirstCycle']
+        Line_LastIntensity = int(Line_FirstIntensity) + int(self.__Constants['Standard_NumberCycles'])
 
         self.__CyclesDateTime = []
         self.Signal_206 = []
@@ -134,39 +160,51 @@ class SampleData(configuration):
 
         for line in range(Line_FirstIntensity, Line_LastIntensity):
 
-            CyclesTime = datetime.datetime.strptime(File_as_Array[line][__Column_CycleTime], '%H:%M:%S:%f')
-            self.__CyclesDateTime.append(datetime.datetime.combine(self.AnalysisDate.date(), CyclesTime.time()))
-            # print(self.__CyclesDateTime)
             try:
-                self.Signal_206.append(float(File_as_Array[line][__Column_206]))
-                self.Signal_208.append(float(File_as_Array[line][__Column_208]))
-                self.Signal_232.append(float(File_as_Array[line][__Column_232]))
-                self.Signal_238.append(float(File_as_Array[line][__Column_238]))
-                self.Signal_202.append(float(File_as_Array[line][__Column_202]))
-                self.Signal_204.append(float(File_as_Array[line][__Column_204]))
-                self.Signal_207.append(float(File_as_Array[line][__Column_207]))
-
+                CyclesTime = datetime.datetime.strptime(File_as_List[line][__Column_CycleTime], '%H:%M:%S:%f')
             except:
                 print('Class SampleData')
                 print(self.Name)
+                print('Error while interpreting file date.')
+                print('line', line)
+                print('__Column_CycleTime', __Column_CycleTime)
+                print('File_as_Array[line][__Column_CycleTime]')
+                pass
+
+            self.__CyclesDateTime.append(datetime.datetime.combine(self.AnalysisDate.date(), CyclesTime.time()))
+
+            try:
+                self.Signal_206.append(float(File_as_List[line][__Column_206]))
+                self.Signal_208.append(float(File_as_List[line][__Column_208]))
+                self.Signal_232.append(float(File_as_List[line][__Column_232]))
+                self.Signal_238.append(float(File_as_List[line][__Column_238]))
+                self.Signal_202.append(float(File_as_List[line][__Column_202]))
+                self.Signal_204.append(float(File_as_List[line][__Column_204]))
+                self.Signal_207.append(float(File_as_List[line][__Column_207]))
+
+            except:
+                import os
+                print('Class SampleData')
+                print(self.Name)
+                print(os.path.join(self.folderpath, self.Name))
                 print('Error while converting str to float.')
                 print('File_as_Array[line][__Column_206] = ', 'File_as_Array[', line, '][', __Column_206, '] = ',
-                      File_as_Array[line][__Column_206])
+                      File_as_List[line][__Column_206])
                 print('File_as_Array[line][__Column_208] = ', 'File_as_Array[', line, '][', __Column_208, '] = ',
-                      File_as_Array[line][__Column_208])
+                      File_as_List[line][__Column_208])
                 print('File_as_Array[line][__Column_232] = ', 'File_as_Array[', line, '][', __Column_232, '] = ',
-                      File_as_Array[line][__Column_232])
+                      File_as_List[line][__Column_232])
                 print('File_as_Array[line][__Column_238] = ', 'File_as_Array[', line, '][', __Column_238, '] = ',
-                      File_as_Array[line][__Column_238])
+                      File_as_List[line][__Column_238])
                 print('File_as_Array[line][__Column_202] = ', 'File_as_Array[', line, '][', __Column_202, '] = ',
-                      File_as_Array[line][__Column_202])
+                      File_as_List[line][__Column_202])
                 print('File_as_Array[line][__Column_204] = ', 'File_as_Array[', line, '][', __Column_204, '] = ',
-                      File_as_Array[line][__Column_204])
+                      File_as_List[line][__Column_204])
                 print('File_as_Array[line][__Column_207] = ', 'File_as_Array[', line, '][', __Column_207, '] = ',
-                      File_as_Array[line][__Column_207])
+                      File_as_List[line][__Column_207])
                 exit()
 
-        if self.blank_together == True and len(self.breaking_points) == 0:  # If sample and blank were recorded togeter
+        if self.blank_together == True and len(self.split_points) == 0:  # If sample and blank were recorded togeter
             # and the user didn't indicated the breaking points, it is necessary to determine them
 
             drift_206 = 0
@@ -225,12 +263,6 @@ class SampleData(configuration):
             print(100 * 0.001 / max(self.Signal_232))
             print(100 * 0.00005 / max(self.Signal_232))
 
-            print()
-            print('238')
-            print(max(self.Signal_238))
-            print(100 * 0.05 / max(self.Signal_238))
-            print(100 * 0.005 / max(self.Signal_238))
-
             parameters_206 = [self.Signal_206, 0.005, 0.0005]
             parameters_207 = [self.Signal_207, 20000, 5000]
             parameters_232 = [self.Signal_232, max(self.Signal_232) / 2, 0.01 * max(self.Signal_232) / 2]
@@ -265,10 +297,8 @@ class SampleData(configuration):
                 ShowParameters
             )
 
-        if self.blank_together == True and len(self.breaking_points) != 0:
+        if self.blank_together == True and len(self.split_points) != 0:
             print('Prepare blank together with breaking points')
-
-
 
     def GetCyclesDateTime(self):
 
@@ -326,17 +356,33 @@ class SampleData(configuration):
 
         if SameFigure == False:
             for intensity in Plots_final:
-                fig, ax = plt.subplots()
-                ax.plot(Xs, intensity[1], color='r')
-                ax.set_title(intensity[0], fontsize=10)
+                fig, ax1 = plt.subplots()
+                ax1.plot(Xs, intensity[1], color='r', marker='8')
+                ax1.set_xlabel('Time', color='b', fontsize=12)
+                # ax1.set_title(intensity[0], fontsize=10)
                 fig.autofmt_xdate()  # I dont't know if this have another effect, but the one I wanted was it automatically rotates the x axis labels
+                plt.ylabel('Intensity', color='b', fontsize=12)
 
-                if showplot == True:
-                    fig.show()
+                ax2 = ax1.twiny()
+                Xs2 = range(1, len(Xs) + 1)
+                ax2.plot(Xs2, intensity[1], color='r', marker='8')
+                ax2.set_xlabel('Cycles', color='b', fontsize=12)
+                ax2.tick_params('y', colors='r')
 
                 if saveplots == True:
-                    print(self.Name + intensity[0] + '.pdf')
-                    plt.savefig(self.Name + intensity[0] + '.pdf')
+                    import os
+
+                    try:
+                        plt.savefig(os.path.join(self.folderpath, str(self.Name + intensity[0] + '.pdf')))
+                        print(self.Name, 'plots saved to',
+                              str(os.path.join(self.folderpath, str(self.Name + intensity[0] + '.pdf'))))
+                    except:
+                        print('Could not save', self.Name, 'plots to',
+                              str(os.path.join(self.folderpath, str(self.Name + intensity[0] + '.pdf'))))
+
+                if showplot == True:
+                    plt.show()  # This must be done after saving the figure because it creates a new figure
+                    # https://stackoverflow.com/questions/9012487/matplotlib-pyplot-savefig-outputs-blank-image
 
         elif SameFigure == True:
             num_subplots = len(Plots_final)
@@ -350,7 +396,7 @@ class SampleData(configuration):
                 # add every single subplot to the figure with a for loop
                 ax = fig.add_subplot(num_rows, num_columns, position)
                 position += 1
-                ax.plot(Xs, intensity[1])
+                ax.plot(Xs, intensity[1], marker='8')
                 ax.set_title(intensity[0], fontsize=10)
 
             fig.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top=0.9,
@@ -358,13 +404,19 @@ class SampleData(configuration):
 
             fig.autofmt_xdate()
 
-            if showplot == True:
-                plt.show()
-
             if saveplots == True:
-                print(self.Name + '.pdf')
-                plt.savefig(self.Name + '.pdf')
 
+                import os
+                try:
+                    plt.savefig(os.path.join(self.folderpath, str(self.Name + '.pdf')))
+                    print(self.Name, 'plots saved to', str(os.path.join(self.folderpath, str(self.Name + '.pdf'))))
+                except:
+                    print('Could not save', self.Name, 'plots to',
+                          str(os.path.join(self.folderpath, str(self.Name + '.pdf'))))
+
+            if showplot == True:
+                plt.show()  # This must be done after saving the figure because it creates a new figure
+                # https://stackoverflow.com/questions/9012487/matplotlib-pyplot-savefig-outputs-blank-image
 
     def print_RawData(self):
         ROW_FORMAT = '| {0!s:10s} | {1!s:10s}'
@@ -373,51 +425,123 @@ class SampleData(configuration):
             # print(ROW_FORMAT.format(self.__RawData[line]))
             print('Line ', line, ' = ', self.__RawData[line])
 
+    def update_split_points(self, new_split_points):
 
-def Set_breakingpoints(parameters_206, parameters_207, parameters_232, parameters_238, ShowParameters=False):
-    '''    
-    :param parameters_206: [list of the 206 intensities, threshold, drift]
-    :param parameters_207: [list of the 207 intensities, threshold, drift]
-    :param parameters_232: [list of the 232 intensities, threshold, drift]
-    :param parameters_238: [list of the 238 intensities, threshold, drift]
-    :return: [CUMSUM_parameters_206, CUMSUM_parameters_207, CUMSUM_parameters_232, CUMSUM_parameters_238]
-    '''
+        self.split_points = new_split_points
 
-    CUMSUM_206 = detect_cusum.detect_cusum(
-        parameters_206[0],
-        parameters_206[1],
-        parameters_206[2],
-        True,
-        ShowParameters)
+        print(self.Name, 'breaking points updated to', new_split_points)
 
-    # CUMSUM_207 = detect_cusum.detect_cusum(
-    #     parameters_207[0],
-    #     parameters_207[1],
-    #     parameters_207[2],
-    #     True,
-    #     ShowParameters)
-    #
-    # CUMSUM_232 = detect_cusum.detect_cusum(
-    #     parameters_232[0],
-    #     parameters_232[1],
-    #     parameters_232[2],
-    #     True,
-    #     ShowParameters)
-    #
-    # CUMSUM_238 = detect_cusum.detect_cusum(
-    #     parameters_238[0],
-    #     parameters_238[1],
-    #     parameters_238[2],
-    #     True,
-    #     ShowParameters)
+    def split_blank_sample(self, print_separeted_files=False, new_split_points=[]):
+        '''
+        Using the given breaking points, this procedure will split the raw data file in two (blank and sample)
+        :return: 
+        '''
+
+        from copy import deepcopy
+        import os
+        split_points = self.split_points
+
+        Line_new_num_cycles = self.__Constants['Line_new_num_cycles']
+        Column_new_num_cycles = self.__Constants['Column_new_num_cycles']
+        Column_new_num_cycles_header = self.__Constants['Column_new_num_cycles_header']
+        Column_split_points = self.__Constants['Column_split_points']
+        Line_IsotopeHeaders = self.__Constants['Line_IsotopeHeaders']
+        Line_FirstCycle = self.__Constants['Line_FirstCycle']
+
+        # print(' self.split_points', self.split_points)
+        # print(self.__RawData[Line_new_num_cycles][Column_new_num_cycles])
+        # print(type(self.__RawData[Line_new_num_cycles][Column_new_num_cycles]))
+
+        print(self.__RawData[Line_new_num_cycles][Column_new_num_cycles])
+        print(self.__RawData[Line_new_num_cycles][Column_new_num_cycles] != '')
+        print(self.folderpath)
+        if self.__RawData[Line_new_num_cycles][Column_new_num_cycles] != '':
+            print(self.Name, 'was already split using the split points', self.split_points)
+            print('You must delete the files created previously by splitting the original files.')
+            exit()
+
+        print('new_split_points', new_split_points)
+        print('self.split_points', self.split_points)
+        print(self.split_points != new_split_points)
+        if self.split_points != new_split_points:
+            self.update_split_points(new_split_points)
+            split_points = list(self.split_points)
+
+        if len(split_points) != 4:
+            print(self.Name)
+            print(
+                'You must provide 4 breaking points corresponding to the "start of the blank", "end of the blank", "start of the sample" and "end of the sample".')
+            exit()
+
+        Blank = []
+        Sample = []
+        BothFile_Header = []
+
+        for line in range(Line_IsotopeHeaders + 1):
+            BothFile_Header.append(self.__RawData[line])
+
+        for line in range(Line_FirstCycle + split_points[0] - 1, Line_FirstCycle + split_points[1]):
+            Blank.append(self.__RawData[line])
+
+        for line in range(Line_FirstCycle + split_points[2] - 1, Line_FirstCycle + split_points[3]):
+            Sample.append(self.__RawData[line])
+
+        blank_with_header = deepcopy(BothFile_Header)  # Deepcopy was necessary because my list is multidimensional and
+        # simply slicing do not solve my problema. Changes made in the higher dimensions, i.e. the lists within the
+        # original list, will be shared between the two.
+        # https://stackoverflow.com/questions/8744113/python-list-by-value-not-by-reference
+
+        sample_with_header = deepcopy(BothFile_Header)
+
+        blank_with_header.extend(Blank)
+        sample_with_header.extend(Sample)
+
+        blank_with_header[Line_new_num_cycles][Column_new_num_cycles] = split_points[1] - split_points[
+            0] + 1  # new number of cycles
+        blank_with_header[Line_new_num_cycles][Column_new_num_cycles_header] = 'Number of cycles'
+        blank_with_header[Line_new_num_cycles][Column_split_points] = self.split_points
+
+        sample_with_header[Line_new_num_cycles][Column_new_num_cycles] = split_points[3] - split_points[
+            2] + 1  # new number of cycles
+        sample_with_header[Line_new_num_cycles][Column_new_num_cycles_header] = 'Number of cycles'
+        sample_with_header[Line_new_num_cycles][Column_split_points] = self.split_points
+
+        if print_separeted_files == True:
+
+            print()
+            print('BothFile_Header')
+            for line in BothFile_Header:
+                print(line)
+
+            print()
+            print('blank_with_header')
+            for line in blank_with_header:
+                print(line)
+
+            print()
+            print('sample_with_header')
+            for line in sample_with_header:
+                print(line)
+
+            WriteTXT(blank_with_header, os.path.join(self.folderpath, 'blank_' + self.Name))
+            # print(os.path.join(self.folderpath, 'sample_' + self.Name))
+            WriteTXT(sample_with_header, os.path.join(self.folderpath, 'sample_' + self.Name))
 
 
 def WriteTXT(List, FileAddress):
-    # print(FileAddress)
-    SaveTo = open(FileAddress, 'w')
+    '''
+    
+    :param List: List to be to converted to a tab delimited file 
+    :param FileAddress: Full path (including the name of the file with its extension) of the file to be created
+    :return: nothing
+    '''
 
-    for item in List:
-        SaveTo.write("%s\n" % item)
+    import csv
+    # print(FileAddress)
+    file = open(FileAddress, 'w', newline='')
+
+    writer = csv.writer(file, delimiter='\t')
+    writer.writerows(List)
 
 
 def ListFiles(FolderPath, Extension):
@@ -504,6 +628,13 @@ def Convert_Files_to_Lists(FilesList):
 
 
 def LoadFiles(FolderPath, extension):
+    '''
+    
+    :param FolderPath: Folder where all the raw data files are stored
+    :param extension: Extension of the desired files (.exp for exported neptune files)
+    :return: A list with all files described byt the SampleData class
+    '''
+
     list_of_files = ListFiles(FolderPath, extension)
 
     list_of_files_converted_to_List = Convert_Files_to_Lists(list_of_files)
@@ -511,53 +642,10 @@ def LoadFiles(FolderPath, extension):
     loaded_files = []
 
     for file in list_of_files_converted_to_List:
-        loaded_files.append(SampleData(file[0], file[1], 'Thermo Finnigan Neptune', False))
+        loaded_files.append(SampleData(file[0], FolderPath, file[1], 'Thermo Finnigan Neptune', False))
 
     return loaded_files
 
-
-loaded_files = LoadFiles(r'D:\UnB\Projetos-Software\Chronus\Software\Blank_Test\teste91500_10042017\91500_TESTE',
-                         '.exp')
-
-loaded_files[0].plot_save_All(
-    SameFigure=False,
-    plot202=True,
-    plot204=True,
-    plot206=True,
-    plot207=True,
-    plot208=True,
-    plot232=True,
-    plot238=True,
-    showplot=True,
-    saveplots=True)
-
-
-# for file in loaded_files:
-#     file.plot_All(
-#         SameFigure=False,
-#         plot202=True,
-#         plot204=True,
-#         plot206=True,
-#         plot207=True,
-#         plot208=True,
-#         plot232=True,
-#         plot238=True)
-
-# c = SampleData(b[0][0], b[0][1], 'Thermo Finnigan Neptune',True)
-# c = SampleData(b[1][0], b[1][1], 'Thermo Finnigan Neptune',True)
-# c = SampleData(b[2][0], b[2][1], 'Thermo Finnigan Neptune',True)
-
-
-# print(c.Name)
-#
-# c.print_RawData()
-
-# c.plot_All(
-#     SameFigure=True,
-#     plot202=True,
-#     plot204=True,
-#     plot206=True,
-#     plot207=True,
-#     plot208=True,
-#     plot232=True,
-#     plot238=True)
+# a = [[1,2,3],[1,2,3],[1,2,3]]
+# folderpt = r'D:\UnB\Projetos-Software\Chronus\Software\Blank_Test\teste91500_10042017\91500_TESTE\testestest.txt'
+# WriteTXT(a,folderpt)

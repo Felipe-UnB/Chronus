@@ -10,7 +10,6 @@ __license__ = "MIT"
 
 def detect_cusum(x, threshold=1, drift=0, ending=False, show=True, ax=None):
     """Cumulative sum algorithm (CUSUM) to detect abrupt changes in data.
-
     Parameters
     ----------
     x : 1D array_like
@@ -24,7 +23,6 @@ def detect_cusum(x, threshold=1, drift=0, ending=False, show=True, ax=None):
     show : bool, optional (default = True)
         True (1) plots data in matplotlib figure, False (0) don't plot.
     ax : a matplotlib.axes.Axes instance, optional (default = None).
-
     Returns
     -------
     ta : 1D array_like [indi, indf], int
@@ -35,7 +33,6 @@ def detect_cusum(x, threshold=1, drift=0, ending=False, show=True, ax=None):
         index of when the change ended (if `ending` is True).
     amp : 1D array_like, float
         amplitude of changes (if `ending` is True).
-
     Notes
     -----
     Tuning of the CUSUM algorithm according to Gustafsson (2000)[1]_:
@@ -48,12 +45,10 @@ def detect_cusum(x, threshold=1, drift=0, ending=False, show=True, ax=None):
     If fewer false alarms are wanted, try to increase `drift`.
     If there is a subset of the change times that does not make sense,
     try to increase `drift`.
-
     Note that by default repeated sequential changes, i.e., changes that have
     the same beginning (`tai`) are not deleted because the changes were
     detected by the alarm (`ta`) at different instants. This is how the
     classical CUSUM algorithm operates.
-
     If you want to delete the repeated sequential changes and keep only the
     beginning of the first sequential change, set the parameter `ending` to
     True. In this case, the index of the ending of the change (`taf`) and the
@@ -61,14 +56,11 @@ def detect_cusum(x, threshold=1, drift=0, ending=False, show=True, ax=None):
     sequential change) are calculated and only the first change of the repeated
     sequential changes is kept. In this case, it is likely that `ta`, `tai`,
     and `taf` will have less values than when `ending` was set to False.
-
     See this IPython Notebook [2]_.
-
     References
     ----------
     .. [1] Gustafsson (2000) Adaptive Filtering and Change Detection.
     .. [2] hhttp://nbviewer.ipython.org/github/demotu/BMC/blob/master/notebooks/DetectCUSUM.ipynb
-
     Examples
     --------
     # >>> from detect_cusum import detect_cusum
@@ -96,24 +88,13 @@ def detect_cusum(x, threshold=1, drift=0, ending=False, show=True, ax=None):
         gp[i] = gp[i-1] + s - drift  # cumulative sum for + change
         gn[i] = gn[i-1] - s - drift  # cumulative sum for - change
 
-        # print()
-        # print('x[',i,'] = ',x[i])
-        # print('x[', i, '- 1 ] = ', x[i-1])
-        # print('s = ', s)
-        # print('gn[',i,'] =', gn[i])
-        # print('gp[',i,'] =', gp[i])
         if gp[i] < 0:
-            # print('gp[i] < 0')
             gp[i], tap = 0, i
         if gn[i] < 0:
-            # print('gn[i] < 0')
             gn[i], tan = 0, i
         if gp[i] > threshold or gn[i] > threshold:  # change detected!
-            # print()
             ta = np.append(ta, i)    # alarm index
-            # print('ta appended')
             tai = np.append(tai, tap if gp[i] > threshold else tan)  # start
-            # print('tai appended')
             gp[i], gn[i] = 0, 0      # reset alarm
     # THE CLASSICAL CUSUM ALGORITHM ENDS HERE
 
