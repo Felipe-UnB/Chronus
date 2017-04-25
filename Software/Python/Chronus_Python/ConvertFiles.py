@@ -204,101 +204,84 @@ class SampleData(configuration):
                       File_as_List[line][__Column_207])
                 exit()
 
-        if self.blank_together == True and len(self.split_points) == 0:  # If sample and blank were recorded togeter
-            # and the user didn't indicated the breaking points, it is necessary to determine them
-
-            drift_206 = 0
-            drift_207 = 0
-            drift_232 = 0
-            drift_238 = 0
-
-            ShowParameters = True
-
-            if self.unit_206 == 'mV':
-                drift_206 = 0.01
-            elif self.unit_206 == 'cps':
-                drift_206 = 6250000
-            else:
-                print('206 unit (', self.unit_206, ' unrecognized')
-                exit()
-
-            if self.unit_207 == 'mV':
-                drift_207 = 0.01
-            elif self.unit_207 == 'cps':
-                drift_207 = 6250000
-            else:
-                print('206 unit (', self.unit_207, ' unrecognized')
-                exit()
-
-            if self.unit_232 == 'mV':
-                drift_232 = 0.01
-            elif self.unit_232 == 'cps':
-                drift_232 = 6250000
-            else:
-                print('206 unit (', self.unit_232, ' unrecognized')
-                exit()
-
-            if self.unit_238 == 'mV':
-                drift_238 = 0.01
-            elif self.unit_238 == 'cps':
-                drift_238 = 6250000
-            else:
-                print('206 unit (', self.unit_238, ' unrecognized')
-                exit()
-
-            print('206')
-            print(max(self.Signal_206))
-            print(100 * 0.005 / max(self.Signal_206))
-            print(100 * 0.0005 / max(self.Signal_206))
-
-            print()
-            print('207')
-            print(max(self.Signal_207))
-            print(100 * 20000 / max(self.Signal_207))
-            print(100 * 5000 / max(self.Signal_207))
-
-            print()
-            print('232')
-            print(max(self.Signal_232))
-            print(100 * 0.001 / max(self.Signal_232))
-            print(100 * 0.00005 / max(self.Signal_232))
-
-            parameters_206 = [self.Signal_206, 0.005, 0.0005]
-            parameters_207 = [self.Signal_207, 20000, 5000]
-            parameters_232 = [self.Signal_232, max(self.Signal_232) / 2, 0.01 * max(self.Signal_232) / 2]
-            parameters_238 = [self.Signal_238, 0.05, 0.005]
-
-            self.__CUMSUM_Parameters_206 = detect_cusum.detect_cusum(
-                parameters_206[0],
-                parameters_206[1],
-                parameters_206[2],
-                True,
-                ShowParameters
-            )
-            self.__CUMSUM_Parameters_207 = detect_cusum.detect_cusum(
-                parameters_207[0],
-                parameters_207[1],
-                parameters_207[2],
-                True,
-                ShowParameters
-            )
-            self.__CUMSUM_Parameters_232 = detect_cusum.detect_cusum(
-                parameters_232[0],
-                parameters_232[1],
-                parameters_232[2],
-                True,
-                ShowParameters
-            )
-            self.__CUMSUM_Parameters_238 = detect_cusum.detect_cusum(
-                parameters_238[0],
-                parameters_238[1],
-                parameters_238[2],
-                True,
-                ShowParameters
-            )
-
-        if self.blank_together == True and len(self.split_points) != 0:
-            print('Prepare blank together with breaking points')
+                # if self.blank_together == True and len(self.split_points) == 0:  # If sample and blank were recorded together
+                #     # and the user didn't indicated the breaking points, it is necessary to determine them
+                #
+                #     drift_206 = 0
+                #     drift_207 = 0
+                #     drift_232 = 0
+                #     drift_238 = 0
+                #
+                #     ShowParameters = True
+                #
+                #     if self.unit_206 == 'mV':
+                #         drift_206 = 0.01
+                #     elif self.unit_206 == 'cps':
+                #         drift_206 = 6250000
+                #     else:
+                #         print('206 unit (', self.unit_206, ' unrecognized')
+                #         exit()
+                #
+                #     if self.unit_207 == 'mV':
+                #         drift_207 = 0.01
+                #     elif self.unit_207 == 'cps':
+                #         drift_207 = 6250000
+                #     else:
+                #         print('206 unit (', self.unit_207, ' unrecognized')
+                #         exit()
+                #
+                #     if self.unit_232 == 'mV':
+                #         drift_232 = 0.01
+                #     elif self.unit_232 == 'cps':
+                #         drift_232 = 6250000
+                #     else:
+                #         print('206 unit (', self.unit_232, ' unrecognized')
+                #         exit()
+                #
+                #     if self.unit_238 == 'mV':
+                #         drift_238 = 0.01
+                #     elif self.unit_238 == 'cps':
+                #         drift_238 = 6250000
+                #     else:
+                #         print('206 unit (', self.unit_238, ' unrecognized')
+                #         exit()
+                #
+                #     parameters_206 = [self.Signal_206, 0.005, 0.0005]
+                #     parameters_207 = [self.Signal_207, 20000, 5000]
+                #     parameters_232 = [self.Signal_232, max(self.Signal_232) / 2, 0.01 * max(self.Signal_232) / 2]
+                #     parameters_238 = [self.Signal_238, 0.05, 0.005]
+                #
+                #     self.__CUMSUM_Parameters_206 = detect_cusum.detect_cusum(
+                #         parameters_206[0],
+                #         parameters_206[1],
+                #         parameters_206[2],
+                #         True,
+                #         ShowParameters
+                #     )
+                #     self.__CUMSUM_Parameters_207 = detect_cusum.detect_cusum(
+                #         parameters_207[0],
+                #         parameters_207[1],
+                #         parameters_207[2],
+                #         True,
+                #         ShowParameters
+                #     )
+                #     self.__CUMSUM_Parameters_232 = detect_cusum.detect_cusum(
+                #         parameters_232[0],
+                #         parameters_232[1],
+                #         parameters_232[2],
+                #         True,
+                #         ShowParameters
+                #     )
+                #     self.__CUMSUM_Parameters_238 = detect_cusum.detect_cusum(
+                #         parameters_238[0],
+                #         parameters_238[1],
+                #         parameters_238[2],
+                #         True,
+                #         ShowParameters
+                #     )
+                #
+                # if self.blank_together == True and len(self.split_points) != 0:
+                #     print('Prepare blank together with breaking points')
 
     def GetCyclesDateTime(self):
 
