@@ -1,8 +1,8 @@
-from IsotopeConstants import Cnsts
-import numpy as np
-import matplotlib.pyplot as plt
-import tkinter as tk
 import sys
+import tkinter as tk
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 Lambda235 = 0.00098485
 Lambda238 = 0.000155125
