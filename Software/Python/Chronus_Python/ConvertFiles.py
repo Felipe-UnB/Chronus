@@ -528,7 +528,7 @@ class SampleData(configuration):
         # print(os.path.join(self.folderpath,'files_split', 'blank_' + self.Name))
         WriteTXT(blank_with_header, os.path.join(self.folderpath, 'files_split', 'blank_' + str(self.ID) + extension))
         # print(sample_with_header, os.path.join(self.folderpath,'files_split', 'sample_' + self.Name))
-        WriteTXT(sample_with_header, os.path.join(self.folderpath, 'files_split', 'sample_' + self.Name))
+        WriteTXT(sample_with_header, os.path.join(self.folderpath, 'files_split', self.Name))
 
 
 def WriteTXT(List, FileAddress):
