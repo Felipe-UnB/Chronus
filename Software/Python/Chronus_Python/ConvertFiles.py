@@ -72,6 +72,7 @@ class SampleData(configuration):
             unit_238 (default = ='mV) - Unit of the 238 mass intensities
 
     '''
+    __LastID = 1
 
     def __init__(
             self,
@@ -79,6 +80,7 @@ class SampleData(configuration):
             folderpath,
             File_as_List,
             Equipment,
+            FileExtension,
             blank_together=False,
             split_points=[],
             unit_202='cps',
@@ -91,6 +93,9 @@ class SampleData(configuration):
     ):
 
         super(SampleData, self).__init__()
+
+        self.ID = SampleData.__LastID
+        SampleData.__LastID += 1
 
         import datetime
 
@@ -414,9 +419,10 @@ class SampleData(configuration):
 
         print(self.Name, 'breaking points updated to', new_split_points)
 
-    def split_blank_sample(self, print_separeted_files=False, new_split_points=[]):
+    def split_blank_sample(self, extension, print_separeted_files=False, new_split_points=[]):
         '''
-        Using the given breaking points, this procedure will split the raw data file in two (blank and sample)
+        Using the given breaking points, this procedure will split the raw data file in two (blank and sample).
+        These files will be saved to a subfolder inside the self.folderpath
         :return: 
         '''
 
@@ -435,17 +441,19 @@ class SampleData(configuration):
         # print(self.__RawData[Line_new_num_cycles][Column_new_num_cycles])
         # print(type(self.__RawData[Line_new_num_cycles][Column_new_num_cycles]))
 
-        print(self.__RawData[Line_new_num_cycles][Column_new_num_cycles])
-        print(self.__RawData[Line_new_num_cycles][Column_new_num_cycles] != '')
-        print(self.folderpath)
+        # print(self.__RawData[Line_new_num_cycles][Column_new_num_cycles])
+        # print(self.__RawData[Line_new_num_cycles][Column_new_num_cycles] != '')
+        # print(self.folderpath)
         if self.__RawData[Line_new_num_cycles][Column_new_num_cycles] != '':
-            print(self.Name, 'was already split using the split points', self.split_points)
+            print(self.Name, 'was already split using the split points',
+                  self.__RawData[Line_new_num_cycles][Column_split_points])
             print('You must delete the files created previously by splitting the original files.')
+            print('Check the folder', self.folderpath)
             exit()
 
-        print('new_split_points', new_split_points)
-        print('self.split_points', self.split_points)
-        print(self.split_points != new_split_points)
+        # print('new_split_points', new_split_points)
+        # print('self.split_points', self.split_points)
+        # print(self.split_points != new_split_points)
         if self.split_points != new_split_points:
             self.update_split_points(new_split_points)
             split_points = list(self.split_points)
@@ -506,9 +514,21 @@ class SampleData(configuration):
             for line in sample_with_header:
                 print(line)
 
-            WriteTXT(blank_with_header, os.path.join(self.folderpath, 'blank_' + self.Name))
-            # print(os.path.join(self.folderpath, 'sample_' + self.Name))
-            WriteTXT(sample_with_header, os.path.join(self.folderpath, 'sample_' + self.Name))
+        # print(os.path.join(self.folderpath,'files_split'))
+        # print(os._exists(os.path.join(self.folderpath,'files_split')))
+
+        if os._exists(os.path.join(self.folderpath, 'files_split')) == False:
+
+            try:
+                os.makedirs(os.path.join(self.folderpath, 'files_split'))
+            except:
+                # print('exist')
+                pass
+
+        # print(os.path.join(self.folderpath,'files_split', 'blank_' + self.Name))
+        WriteTXT(blank_with_header, os.path.join(self.folderpath, 'files_split', 'blank_' + str(self.ID) + extension))
+        # print(sample_with_header, os.path.join(self.folderpath,'files_split', 'sample_' + self.Name))
+        WriteTXT(sample_with_header, os.path.join(self.folderpath, 'files_split', 'sample_' + self.Name))
 
 
 def WriteTXT(List, FileAddress):
@@ -625,7 +645,7 @@ def LoadFiles(FolderPath, extension):
     loaded_files = []
 
     for file in list_of_files_converted_to_List:
-        loaded_files.append(SampleData(file[0], FolderPath, file[1], 'Thermo Finnigan Neptune', False))
+        loaded_files.append(SampleData(file[0], FolderPath, file[1], 'Thermo Finnigan Neptune', extension, False))
 
     return loaded_files
 
