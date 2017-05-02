@@ -41,7 +41,7 @@ End Sub
 
 Private Sub CommandButton2_TestAll_Click()
 
-    Dim Counter As Long
+    Dim counter As Long
     Dim TotalTime As Double
     Dim NumAnalyses As Long
     
@@ -63,12 +63,12 @@ Private Sub CommandButton2_TestAll_Click()
     
     NumAnalyses = NumElements(PathsNamesIDsTimesCycles, 2) - 1
     
-    For Counter = 1 To NumAnalyses
+    For counter = 1 To NumAnalyses
         
         FailToOpen = False 'It is necessary to set this because if in one loop thos variables be changed to true, on the next loop
         'it has to come back to its initial state (false)
             
-            Call OpenAnalysisToPlot_ByIDs(Val(Counter), True)
+            Call OpenAnalysisToPlot_ByIDs(Val(counter), True)
 
         If FailToOpen = False Then
         

@@ -14,6 +14,16 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+Private Sub CheckBox3_blankwtsample_Change()
+   
+    If CheckBox3_blankwtsample.Value = False Then
+        BlanksRecordedSamples_UPb = False
+    Else
+        BlanksRecordedSamples_UPb = True
+    End If
+    
+End Sub
+
 'from http://stackoverflow.com/questions/11654788/vba-userform-running-twice-when-changing-caption
 
 'Even better, don't use auto-instantiating variables, convenient though they are (and don't use the New keyword
@@ -143,26 +153,27 @@ Public Sub UserForm_Initialize()
 '    Load Box4_Addresses
     
     'Code to assign values from Box1_Start to the related variables
-    Set SampleName = Me.TextBox2
-    Set ReductionDate = Me.TextBox4
-    Set ReducedBy = Me.TextBox3
-    Set FolderPath = Me.TextBox6
-    Set ExternalStandard = Me.ComboBox1_ExternalStd
-    Set InternalStandardCheck = Me.CheckBox1_InternalStandard
-    Set InternalStandardName = Me.TextBox5_InternalStandardName
-    Set Spot = Me.OptionButton3_Spot
-    Set Raster = Me.OptionButton4_Raster
-    Set Detector206MIC = Me.OptionButton1_206MIC
-    Set Detector206Faraday = Me.OptionButton2_206Faraday
-    Set CheckData = Me.CheckBox2_CheckRawData
-    Set BlankName = Me.TextBox8_BlankName
-    Set SamplesNames = Me.TextBox9_SamplesNames
-    Set ExternalStandardName = Me.TextBox10_ExternalStandardName
-    Set SecondaryStandardName = Me.TextBox5_InternalStandardName
-    Set RawNumberCycles = Me.TextBox11_HowMany
-    Set CycleDuration = Me.TextBox12_CycleDuration
+    Set Box1_Start_SampleName = Me.TextBox2
+    Set Box1_Start_ReductionDate = Me.TextBox4
+    Set Box1_Start_ReducedBy = Me.TextBox3
+    Set Box1_Start_FolderPath = Me.TextBox6
+    Set Box1_Start_ExternalStandard = Me.ComboBox1_ExternalStd
+    Set Box1_Start_InternalStandardCheck = Me.CheckBox1_InternalStandard
+    Set Box1_Start_InternalStandardName = Me.TextBox5_InternalStandardName
+    Set Box1_Start_Spot = Me.OptionButton3_Spot
+    Set Box1_Start_Raster = Me.OptionButton4_Raster
+    Set Box1_Start_Detector206MIC = Me.OptionButton1_206MIC
+    Set Box1_Start_Detector206Faraday = Me.OptionButton2_206Faraday
+    Set Box1_Start_CheckData = Me.CheckBox2_CheckRawData
+    Set Box1_Start_BlankName = Me.TextBox8_BlankName
+    Set Box1_Start_SamplesNames = Me.TextBox9_SamplesNames
+    Set Box1_Start_ExternalStandardName = Me.TextBox10_ExternalStandardName
+    Set Box1_Start_SecondaryStandardName = Me.TextBox5_InternalStandardName
+    Set Box1_Start_RawNumberCycles = Me.TextBox11_HowMany
+    Set Box1_Start_CycleDuration = Me.TextBox12_CycleDuration
+    Set Box1_Start_Blank_wt_Sample = Me.CheckBox3_blankwtsample
             
-    CheckData = True
+    Box1_Start_CheckData = True
             
     Call CheckFundamentalParameters
     
@@ -207,23 +218,23 @@ Private Sub CommandButton3_Ok_Click()
     Dim MsgBoxAlert As Variant 'Message box for for many checks done below
     Dim C As Variant 'Variable used in a for each structure
     Dim AddressRawDataFile As Variant 'Array of variables with address in Box2_UPb_Options
-    Dim Counter As Integer
+    Dim counter As Integer
     Dim StdName As Integer
     
     'The conditional clauses below are necessary because not all isotopes must have been analyzed
-    If Isotope208analyzed = True And Isotope232analyzed = True Then
+    If Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = True Then
         AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawPb208Range, RawTh232Range, RawU238Range, _
         RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, RawPb208HeaderRange, RawTh232HeaderRange, _
         RawU238HeaderRange)
-    ElseIf Isotope208analyzed = True And Isotope232analyzed = False Then
+    ElseIf Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = False Then
         AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawPb208Range, RawU238Range, _
         RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, RawPb208HeaderRange, _
         RawU238HeaderRange)
-    ElseIf Isotope208analyzed = False And Isotope232analyzed = True Then
+    ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = True Then
         AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawTh232Range, RawU238Range, _
         RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, RawTh232HeaderRange, _
         RawU238HeaderRange)
-    ElseIf Isotope208analyzed = False And Isotope232analyzed = False Then
+    ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = False Then
         AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawU238Range, _
         RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, _
         RawU238HeaderRange)
@@ -242,27 +253,27 @@ Private Sub CommandButton3_Ok_Click()
     'All the addresses
         
     'If the user checked Internal Standard, he/she must write its name!
-    If InternalStandardCheck = True And Len(TextBox5_InternalStandardName.Value) < 2 Then
+    If Box1_Start_InternalStandardCheck = True And Len(TextBox5_InternalStandardName.Value) < 2 Then
         MsgBox "What is the name of the internal standard analyzed? It must be 2 characters long or bigger."
             TextBox5_InternalStandardName.SetFocus
                 Exit Sub
     End If
             
     'The user must choose an external standard.
-    If ExternalStandard = "" Then
+    If Box1_Start_ExternalStandard = "" Then
         MsgBox "You must choose an external standard!"
             ComboBox1_ExternalStd.SetFocus
                 Exit Sub
     End If
             
     'Spot or raster and MIC or Faraday, one option in each pair, must be choosen.
-    If Spot = False And Raster = False Then
+    If Box1_Start_Spot = False And Box1_Start_Raster = False Then
         MsgBox "You must choose Spot or Raster option!"
             OptionButton3_Spot.SetFocus
                 Exit Sub
     End If
     
-    If Detector206MIC = False And Detector206Faraday = False Then
+    If Box1_Start_Detector206MIC = False And Box1_Start_Detector206Faraday = False Then
         MsgBox "You must choose MIC or Faraday cup for 206 isotope!"
             OptionButton1_206MIC.SetFocus
                 Exit Sub
@@ -272,21 +283,21 @@ Private Sub CommandButton3_Ok_Click()
     
     MsgAlert = "You must indicate the names for "
     
-            If Len(BlankName) < 2 Then
+            If Len(Box1_Start_BlankName) < 2 Then
                 MsgBoxAlert = MsgBox(MsgAlert & "blanks! It must be 2 characters long or bigger.", vbOKOnly, "Blank names")
                     TextBox8_BlankName.SetFocus
                         Exit Sub
-                ElseIf Len(SamplesNames) < 2 Then
+                ElseIf Len(Box1_Start_SamplesNames) < 2 Then
                     MsgBoxAlert = MsgBox(MsgAlert & "samples! It must be 2 characters long or bigger.", vbOKOnly, "Samples names")
                         TextBox9_SamplesNames.SetFocus
                             Exit Sub
                         
-                    ElseIf Len(ExternalStandardName) < 2 Then
+                    ElseIf Len(Box1_Start_ExternalStandardName) < 2 Then
                         MsgBoxAlert = MsgBox(MsgAlert & "primary standard analyses! It must be 2 characters long or bigger.", vbOKOnly, "Standard analyses names")
                             TextBox10_ExternalStandardName.SetFocus
                                 Exit Sub
 
-                        ElseIf CheckBox1_InternalStandard = True And Len(SecondaryStandardName) < 2 Then
+                        ElseIf CheckBox1_InternalStandard = True And Len(Box1_Start_SecondaryStandardName) < 2 Then
                             MsgBoxAlert = MsgBox(MsgAlert & "secondary standard analyses! It must be 2 characters long or bigger.", vbOKOnly, "Standard analyses names")
                                 TextBox10_ExternalStandardName.SetFocus
                                     Exit Sub
@@ -317,90 +328,95 @@ Private Sub CommandButton3_Ok_Click()
     End If
 
     'The following 4 if-then blocks were added to check, when the user press ok, all analyses names.
-    If CompareAnalysisNames(BlankName) = "ERROR" Then
+    If CompareAnalysisNames(Box1_Start_BlankName) = "ERROR" Then
         Call SmallNameMessage
             TextBox8_BlankName.SetFocus
                 Exit Sub
     End If
 
-    If CompareAnalysisNames(SamplesNames) = "ERROR" Then
+    If CompareAnalysisNames(Box1_Start_SamplesNames) = "ERROR" Then
         Call SmallNameMessage
-            SamplesNames.SetFocus
+            Box1_Start_SamplesNames.SetFocus
                 Exit Sub
     End If
     
-    If CompareAnalysisNames(ExternalStandardName) = "ERROR" Then
+    If CompareAnalysisNames(Box1_Start_ExternalStandardName) = "ERROR" Then
         Call SmallNameMessage
-            ExternalStandardName.SetFocus
+            Box1_Start_ExternalStandardName.SetFocus
                 Exit Sub
     End If
            
-    If CheckBox1_InternalStandard = True And CompareAnalysisNames(SecondaryStandardName) = False Then
+    If CheckBox1_InternalStandard = True And CompareAnalysisNames(Box1_Start_SecondaryStandardName) = False Then
         Call SmallNameMessage
-            SecondaryStandardName.SetFocus
+            Box1_Start_SecondaryStandardName.SetFocus
                 Exit Sub
     End If
     
     '-----------------------------------------------------------------------------------------------------------------
 
-    If RawNumberCycles = "" Then
+    If Box1_Start_RawNumberCycles = "" Then
         MsgBox "You must write the number of cycles per analyis."
             Box1_Start.TextBox11_HowMany.SetFocus
                 Exit Sub
     End If
     
-    If CycleDuration = "" Then
+    If Box1_Start_CycleDuration = "" Then
         MsgBox "You must indicate the cycle duration." & vbNewLine & _
         "Please, be careful, it must be inserted as ss.ms (00 to 59 . 000 to 999)."
             TextBox12_CycleDuration.SetFocus
                 Exit Sub
     End If
     
+    If CheckBox3_blankwtsample = True And Box4_Addresses.CheckBox4 = False Then
+        If MsgBox("Usually, for samples recorded with blanks in the same files, the number of cycles for each sample is " & _
+        "different. Are you sure it is not necessary to indicate the number of cyles for each sample?", vbYesNo) = vbNo Then
+            Box4_Addresses.Show
+            Exit Sub
+        End If
+    End If
+    
 '    Copying values to Workbook UPb
     
-    SampleName_UPb = SampleName
-    ReductionDate_UPb = ReductionDate
-    ReducedBy_UPb = ReducedBy
-    FolderPath_UPb = FolderPath
-    ExternalStandard_UPb = ExternalStandard
-    InternalStandardCheck_UPb = InternalStandardCheck
-    RawNumberCycles_UPb = RawNumberCycles
-    CycleDuration_UPb = CycleDuration
+    SampleName_UPb = Box1_Start_SampleName
+    ReductionDate_UPb = Box1_Start_ReductionDate
+    ReducedBy_UPb = Box1_Start_ReducedBy
+    FolderPath_UPb = Box1_Start_FolderPath
+    ExternalStandard_UPb = Box1_Start_ExternalStandard
+    InternalStandardCheck_UPb = Box1_Start_InternalStandardCheck
+    RawNumberCycles_UPb = Box1_Start_RawNumberCycles
+    CycleDuration_UPb = Box1_Start_CycleDuration
     
-    If InternalStandardCheck = True Then
-        InternalStandardCheck_UPb = InternalStandardCheck
-        InternalStandard_UPb = InternalStandardName
+    If Box1_Start_InternalStandardCheck = True Then
+        InternalStandardCheck_UPb = Box1_Start_InternalStandardCheck
+        InternalStandard_UPb = Box1_Start_InternalStandardName
         Else
         InternalStandard_UPb = "False"
     End If
 
-    If Spot = True Then
+    If Box1_Start_Spot = True Then
             SpotRaster_UPb = "Spot"
         Else
             SpotRaster_UPb = "Raster"
     End If
 
-    If Detector206MIC = True Then
+    If Box1_Start_Detector206MIC = True Then
             Detector206_UPb = "MIC"
         Else
             Detector206_UPb = "Faraday Cup"
     End If
 
-        CheckData_UPb = CheckData
+    CheckData_UPb = Box1_Start_CheckData
+    BlankName_UPb = Box1_Start_BlankName
+    SamplesNames_UPb = Box1_Start_SamplesNames
+    ExternalStandardName_UPb = Box1_Start_ExternalStandardName
         
-        BlankName_UPb = BlankName
-        
-        SamplesNames_UPb = SamplesNames
-        
-        ExternalStandardName_UPb = ExternalStandardName
-            
     'The 6 lines below are necessary to identify the number of the external standard in UpbStd
     StdName = 0
         
-        For Counter = LBound(UPbStd) To UBound(UPbStd)
-           If UPbStd(Counter).StandardName = ExternalStandard_UPb Then
-               StdName = Counter
-                   Counter = UBound(UPbStd)
+        For counter = LBound(UPbStd) To UBound(UPbStd)
+           If UPbStd(counter).StandardName = ExternalStandard_UPb Then
+               StdName = counter
+                   counter = UBound(UPbStd)
            End If
         Next
         
@@ -523,7 +539,7 @@ End Sub
 Private Sub TextBox6_Enter()
     
     Call SelectFolder
-    TextBox6.Value = FolderPath
+    TextBox6.Value = Box1_Start_FolderPath
         
 End Sub
 

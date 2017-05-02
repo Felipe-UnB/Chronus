@@ -10,7 +10,7 @@ class configuration:
 
     def __init__(self):
         self.MassSpectometersSuported = [
-            'Thermo Finnigan Neptune'
+            'Thermo Finnigan Neptune', 'Spec2'
         ]
 
         self.__Constants_Neptune = {
@@ -22,6 +22,7 @@ class configuration:
             'Line_LastCycle': 100,
             'Line_new_num_cycles': 1,
             # This line sets the line where the new number of cyles (after separating blanks and samples) should be recorded
+            'Column_AnalysisDate': 0,
             'Column_CycleTime': 1,
             'Column_206': 2,
             'Column_208': 3,
@@ -31,6 +32,28 @@ class configuration:
             'Column_204': 7,
             'Column_207': 8,
             'Columns_num': 13,
+            'Column_new_num_cycles_header': 2,
+            'Column_new_num_cycles': 3,
+            'Column_split_points': 4
+            # This line sets the columns where the new number of cyles (after separating blanks and samples) should be recorded
+        }
+
+        self.__Constants_Spec2 = {
+            'Standard_NumberCycles': 217,
+            'Line_IsotopeHeaders': 4,
+            'Line_AnalysisDate': 3,
+            'Line_FirstCycle': 5,
+            'Line_LastCycle': 221,
+            'Line_new_num_cycles': 1,
+            # This line sets the line where the new number of cyles (after separating blanks and samples) should be recorded
+            'Column_AnalysisDate': 0,
+            'Column_CycleTime': 1,
+            'Column_206': 4,
+            'Column_208': 6,
+            'Column_232': 7,
+            'Column_238': 9,
+            'Column_207': 5,
+            'Columns_num': 9,  # Number of columns in each file
             'Column_new_num_cycles_header': 2,
             'Column_new_num_cycles': 3,
             'Column_split_points': 4
@@ -102,6 +125,7 @@ class SampleData(configuration):
         self.__Constants = self.GetConfigurations(Equipment)
         self.Name = Name
         self.folderpath = folderpath
+        self.FileExtension = FileExtension
         self.__RawData = File_as_List
         self.blank_together = blank_together
         self.split_points = split_points
@@ -127,8 +151,10 @@ class SampleData(configuration):
         if numcycles != '':
             self.__Constants['Standard_NumberCycles'] = numcycles
 
-        AnalysisDate = File_as_List[self.__Constants['Line_AnalysisDate']][0]
+        AnalysisDate = File_as_List[self.__Constants['Line_AnalysisDate']][self.__Constants['Column_AnalysisDate']]
+
         self.AnalysisDate = datetime.datetime.strptime(AnalysisDate.split(' ')[2], "%d/%m/%Y")
+
         FirstCycleTime = File_as_List[self.__Constants['Line_FirstCycle']][self.__Constants['Column_CycleTime']]
         self.FirstCycleTime = datetime.datetime.strptime(FirstCycleTime, '%H:%M:%S:%f')
 
@@ -136,6 +162,7 @@ class SampleData(configuration):
         # print(self.__DateTimeAnalysis)
 
         for line in self.__RawData:
+
             if len(line) != self.__Constants['Columns_num']:
                 print('Class SampleData')
                 print(self.Name)
@@ -419,7 +446,7 @@ class SampleData(configuration):
 
         print(self.Name, 'breaking points updated to', new_split_points)
 
-    def split_blank_sample(self, extension, print_separeted_files=False, new_split_points=[]):
+    def split_blank_sample(self, print_separeted_files=False, new_split_points=[]):
         '''
         Using the given breaking points, this procedure will split the raw data file in two (blank and sample).
         These files will be saved to a subfolder inside the self.folderpath
@@ -526,7 +553,8 @@ class SampleData(configuration):
                 pass
 
         # print(os.path.join(self.folderpath,'files_split', 'blank_' + self.Name))
-        WriteTXT(blank_with_header, os.path.join(self.folderpath, 'files_split', 'blank_' + str(self.ID) + extension))
+        WriteTXT(blank_with_header,
+                 os.path.join(self.folderpath, 'files_split', 'blank_' + str(self.ID) + self.FileExtension))
         # print(sample_with_header, os.path.join(self.folderpath,'files_split', 'sample_' + self.Name))
         WriteTXT(sample_with_header, os.path.join(self.folderpath, 'files_split', self.Name))
 
@@ -635,7 +663,7 @@ def LoadFiles(FolderPath, extension):
     
     :param FolderPath: Folder where all the raw data files are stored
     :param extension: Extension of the desired files (.exp for exported neptune files)
-    :return: A list with all files described byt the SampleData class
+    :return: A list with all files described by the SampleData class
     '''
 
     list_of_files = ListFiles(FolderPath, extension)

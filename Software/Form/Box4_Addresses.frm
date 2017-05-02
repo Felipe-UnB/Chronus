@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} Box4_Addresses 
    Caption         =   "Addresses"
-   ClientHeight    =   4785
+   ClientHeight    =   5340
    ClientLeft      =   45
    ClientTop       =   375
    ClientWidth     =   3840
@@ -22,11 +22,11 @@ Private Sub CheckBox2_Change()
         RefEdit5_232.Value = ""
             RefEdit11_232Header.Enabled = False
             RefEdit11_232Header.Value = ""
-                Isotope232analyzed = False
+                Isotope232Analyzed_UPb = False
     Else
         RefEdit5_232.Enabled = True
             RefEdit11_232Header.Enabled = True
-                Isotope232analyzed = True
+                Isotope232Analyzed_UPb = True
     End If
     
 End Sub
@@ -34,17 +34,38 @@ End Sub
 Private Sub CheckBox3_Change()
     
     If CheckBox3.Value = False Then
-        RefEdit20_208.Enabled = False
-        RefEdit20_208.Value = ""
+        RefEdit23_Num_Cycles.Enabled = False
+        RefEdit23_Num_Cycles.Value = ""
             RefEdit21_208Header.Enabled = False
             RefEdit21_208Header.Value = ""
-                Isotope208analyzed = False
+                Isotope208Analyzed_UPb = False
     Else
         RefEdit20_208.Enabled = True
             RefEdit21_208Header.Enabled = True
-                Isotope208analyzed = True
+                Isotope208Analyzed_UPb = True
     End If
     
+End Sub
+
+Private Sub CheckBox4_Change()
+
+    If CheckBox4.Value = False Then
+        RefEdit23_Num_Cycles.Enabled = False
+        RefEdit23_Num_Cycles.Value = ""
+        EachSampleNumberCycles_UPb = False
+    Else
+        RefEdit23_Num_Cycles.Enabled = True
+        EachSampleNumberCycles_UPb = True
+    End If
+
+'    Public RawCyclesTimeRange As Range
+'    Public RawAnalysisDateRange As Range
+'    Public RawNumCyclesRange As Range
+'
+'    Set Box4_Addresses_RawCyclesTime = Box4_Addresses.RefEdit15_CyclesTime
+'    Set Box4_Addresses_RawAnalysisDate = Box4_Addresses.RefEdit22_AnalysisDate
+'    Set Box4_Addresses_RawNumCycles_Each_Sample = Box4_Addresses.RefEdit23_Num_Cycles
+
 End Sub
 
 Private Sub UserForm_Initialize()
@@ -54,40 +75,23 @@ Private Sub UserForm_Initialize()
     End If
     
     'Page Address controls
-    Set RawHg202 = Box4_Addresses.RefEdit1_202
-    Set RawPb204 = Box4_Addresses.RefEdit2_204
-    Set RawPb206 = Box4_Addresses.RefEdit3_206
-    Set RawPb207 = Box4_Addresses.RefEdit4_207
-    Set RawPb208 = Box4_Addresses.RefEdit20_208
-    Set RawTh232 = Box4_Addresses.RefEdit5_232
-    Set RawU238 = Box4_Addresses.RefEdit6_238
-    Set RawHg202Header = Box4_Addresses.RefEdit7_202Header
-    Set RawPb204Header = Box4_Addresses.RefEdit8_204Header
-    Set RawPb206Header = Box4_Addresses.RefEdit9_206Header
-    Set RawPb207Header = Box4_Addresses.RefEdit10_207Header
-    Set RawPb208Header = Box4_Addresses.RefEdit21_208Header
-    Set RawTh232Header = Box4_Addresses.RefEdit11_232Header
-    Set RawU238Header = Box4_Addresses.RefEdit12_238Header
-    Set RawCyclesTime = Box4_Addresses.RefEdit15_CyclesTime
-    Set AnalysisDate = Box4_Addresses.RefEdit22_AnalysisDate
-
-    'Code to set the ranges for the address of each isotope signal in raw data file based on Start-AND-Options sheet
-'    RawHg202.Value = RawHg202Range.Value
-'    RawPb204.Value = RawPb204Range.Value
-'    RawPb206.Value = RawPb206Range.Value
-'    RawPb207.Value = RawPb207Range.Value
-'    RawPb208.Value = RawPb208Range.Value
-'    RawTh232.Value = RawTh232Range.Value
-'    RawU238.Value = RawU238Range.Value
-'    RawCyclesTime.Value = RawCyclesTimeRange.Value
-'    AnalysisDate.Value = AnalysisDateRange.Value
-'    RawHg202Header.Value = RawHg202HeaderRange.Value
-'    RawPb204Header.Value = RawPb204HeaderRange.Value
-'    RawPb206Header.Value = RawPb206HeaderRange.Value
-'    RawPb207Header.Value = RawPb207HeaderRange.Value
-'    RawPb208Header.Value = RawPb208HeaderRange.Value
-'    RawTh232Header.Value = RawTh232HeaderRange.Value
-'    RawU238Header.Value = RawU238HeaderRange.Value
+    Set Box4_Addresses_RawHg202 = Box4_Addresses.RefEdit1_202
+    Set Box4_Addresses_RawPb204 = Box4_Addresses.RefEdit2_204
+    Set Box4_Addresses_RawPb206 = Box4_Addresses.RefEdit3_206
+    Set Box4_Addresses_RawPb207 = Box4_Addresses.RefEdit4_207
+    Set Box4_Addresses_RawPb208 = Box4_Addresses.RefEdit20_208
+    Set Box4_Addresses_RawTh232 = Box4_Addresses.RefEdit5_232
+    Set Box4_Addresses_RawU238 = Box4_Addresses.RefEdit6_238
+    Set Box4_Addresses_RawHg202Header = Box4_Addresses.RefEdit7_202Header
+    Set Box4_Addresses_RawPb204Header = Box4_Addresses.RefEdit8_204Header
+    Set Box4_Addresses_RawPb206Header = Box4_Addresses.RefEdit9_206Header
+    Set Box4_Addresses_RawPb207Header = Box4_Addresses.RefEdit10_207Header
+    Set Box4_Addresses_RawPb208Header = Box4_Addresses.RefEdit21_208Header
+    Set Box4_Addresses_RawTh232Header = Box4_Addresses.RefEdit11_232Header
+    Set Box4_Addresses_RawU238Header = Box4_Addresses.RefEdit12_238Header
+    Set Box4_Addresses_RawCyclesTime = Box4_Addresses.RefEdit15_CyclesTime
+    Set Box4_Addresses_RawAnalysisDate = Box4_Addresses.RefEdit22_AnalysisDate
+    Set Box4_Addresses_RawNumCycles_Each_Sample = Box4_Addresses.RefEdit23_Num_Cycles
 
 End Sub
 
@@ -105,22 +109,22 @@ Private Sub CommandButton1_Ok_Click()
     Dim RawRanges(1 To 7) As Range
     
     'The conditional clauses below are necessary because not all isotopes must have been analyzed
-    If Isotope208analyzed = True And Isotope232analyzed = True Then
-        AddressRawDataFile = Array(RawHg202, RawPb204, RawPb206, RawPb207, RawPb208, _
-        RawTh232, RawU238, RawHg202Header, RawPb204Header, RawPb206Header, RawPb207Header, _
-        RawPb208Header, RawTh232Header, RawU238Header)
-    ElseIf Isotope208analyzed = True And Isotope232analyzed = False Then
-        AddressRawDataFile = Array(RawHg202, RawPb204, RawPb206, RawPb207, RawPb208, RawU238, _
-        RawHg202Header, RawPb204Header, RawPb206Header, RawPb207Header, RawPb208Header, _
-        RawU238Header)
-    ElseIf Isotope208analyzed = False And Isotope232analyzed = True Then
-        AddressRawDataFile = Array(RawHg202, RawPb204, RawPb206, RawPb207, RawTh232, RawU238, _
-        RawHg202Header, RawPb204Header, RawPb206Header, RawPb207Header, RawTh232Header, _
-        RawU238Header)
-    ElseIf Isotope208analyzed = False And Isotope232analyzed = False Then
-        AddressRawDataFile = Array(RawHg202, RawPb204, RawPb206, RawPb207, RawU238, _
-        RawHg202Header, RawPb204Header, RawPb206Header, RawPb207Header, _
-        RawU238Header)
+    If Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = True Then
+        AddressRawDataFile = Array(Box4_Addresses_RawHg202, Box4_Addresses_RawPb204, Box4_Addresses_RawPb206, Box4_Addresses_RawPb207, Box4_Addresses_RawPb208, _
+        Box4_Addresses_RawTh232, Box4_Addresses_RawU238, Box4_Addresses_RawHg202Header, Box4_Addresses_RawPb204Header, Box4_Addresses_RawPb206Header, Box4_Addresses_RawPb207Header, _
+        Box4_Addresses_RawPb208Header, Box4_Addresses_RawTh232Header, Box4_Addresses_RawU238Header, Box4_Addresses_RawCyclesTime, Box4_Addresses_RawAnalysisDate)
+    ElseIf Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = False Then
+        AddressRawDataFile = Array(Box4_Addresses_RawHg202, Box4_Addresses_RawPb204, Box4_Addresses_RawPb206, Box4_Addresses_RawPb207, Box4_Addresses_RawPb208, Box4_Addresses_RawU238, _
+        Box4_Addresses_RawHg202Header, Box4_Addresses_RawPb204Header, Box4_Addresses_RawPb206Header, Box4_Addresses_RawPb207Header, Box4_Addresses_RawPb208Header, _
+        Box4_Addresses_RawU238Header, Box4_Addresses_RawCyclesTime, Box4_Addresses_RawAnalysisDate)
+    ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = True Then
+        AddressRawDataFile = Array(Box4_Addresses_RawHg202, Box4_Addresses_RawPb204, Box4_Addresses_RawPb206, Box4_Addresses_RawPb207, Box4_Addresses_RawTh232, Box4_Addresses_RawU238, _
+        Box4_Addresses_RawHg202Header, Box4_Addresses_RawPb204Header, Box4_Addresses_RawPb206Header, Box4_Addresses_RawPb207Header, Box4_Addresses_RawTh232Header, _
+        Box4_Addresses_RawU238Header, Box4_Addresses_RawCyclesTime, Box4_Addresses_RawAnalysisDate)
+    ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = False Then
+        AddressRawDataFile = Array(Box4_Addresses_RawHg202, Box4_Addresses_RawPb204, Box4_Addresses_RawPb206, Box4_Addresses_RawPb207, Box4_Addresses_RawU238, _
+        Box4_Addresses_RawHg202Header, Box4_Addresses_RawPb204Header, Box4_Addresses_RawPb206Header, Box4_Addresses_RawPb207Header, _
+        Box4_Addresses_RawU238Header, Box4_Addresses_RawCyclesTime, Box4_Addresses_RawAnalysisDate)
     End If
 
     'Check if all the refedit controls were used to select some address
@@ -142,38 +146,51 @@ Private Sub CommandButton1_Ok_Click()
         End If
     Next
         
+    If EachSampleNumberCycles_UPb = True And Box4_Addresses_RawNumCycles_Each_Sample = "" Then
+        MsgBoxAlert = MsgBox("Please, set all the addresses in Address tab.", vbOKOnly)
+        Box4_Addresses_RawNumCycles_Each_Sample.SetFocus
+        Exit Sub
+    End If
+    
     'The commands below copy the values from the refedit controls to the correct ranges in Start-AND-Option sheet.
     'Pay attention that the program do not copy the same value, it copies only the cell reference and not all the
     'cell address (including sheet name)
     
-    RawHg202Range = Right(RawHg202.Value, Len(RawHg202.Value) - InStr(RawHg202.Value, "!"))
-    RawPb204Range = Right(RawPb204.Value, Len(RawPb204.Value) - InStr(RawPb204.Value, "!"))
-    RawPb206Range = Right(RawPb206.Value, Len(RawPb206.Value) - InStr(RawPb206.Value, "!"))
-    RawPb207Range = Right(RawPb207.Value, Len(RawPb207.Value) - InStr(RawPb207.Value, "!"))
-    RawPb208Range = Right(RawPb208.Value, Len(RawPb208.Value) - InStr(RawPb208.Value, "!"))
-    RawTh232Range = Right(RawTh232.Value, Len(RawTh232.Value) - InStr(RawTh232.Value, "!"))
-    RawU238Range = Right(RawU238.Value, Len(RawU238.Value) - InStr(RawU238.Value, "!"))
-    RawCyclesTimeRange = Right(RawCyclesTime.Value, Len(RawCyclesTime.Value) - InStr(RawCyclesTime.Value, "!"))
-    AnalysisDateRange = Right(AnalysisDate.Value, Len(AnalysisDate.Value) - InStr(AnalysisDate.Value, "!"))
-    RawHg202HeaderRange = Right(RawHg202Header.Value, Len(RawHg202Header.Value) - InStr(RawHg202Header.Value, "!"))
-    RawPb204HeaderRange = Right(RawPb204Header.Value, Len(RawPb204Header.Value) - InStr(RawPb204Header.Value, "!"))
-    RawPb206HeaderRange = Right(RawPb206Header.Value, Len(RawPb206Header.Value) - InStr(RawPb206Header.Value, "!"))
-    RawPb207HeaderRange = Right(RawPb207Header.Value, Len(RawPb207Header.Value) - InStr(RawPb207Header.Value, "!"))
-    RawPb208HeaderRange = Right(RawPb208Header.Value, Len(RawPb208Header.Value) - InStr(RawPb208Header.Value, "!"))
-    RawTh232HeaderRange = Right(RawTh232Header.Value, Len(RawTh232Header.Value) - InStr(RawTh232Header.Value, "!"))
-    RawU238HeaderRange = Right(RawU238Header.Value, Len(RawU238Header.Value) - InStr(RawU238Header.Value, "!"))
-
+    RawHg202Range = Right(Box4_Addresses_RawHg202.Value, Len(Box4_Addresses_RawHg202.Value) - InStr(Box4_Addresses_RawHg202.Value, "!"))
+    RawPb204Range = Right(Box4_Addresses_RawPb204.Value, Len(Box4_Addresses_RawPb204.Value) - InStr(Box4_Addresses_RawPb204.Value, "!"))
+    RawPb206Range = Right(Box4_Addresses_RawPb206.Value, Len(Box4_Addresses_RawPb206.Value) - InStr(Box4_Addresses_RawPb206.Value, "!"))
+    RawPb207Range = Right(Box4_Addresses_RawPb207.Value, Len(Box4_Addresses_RawPb207.Value) - InStr(Box4_Addresses_RawPb207.Value, "!"))
+    RawPb208Range = Right(Box4_Addresses_RawPb208.Value, Len(Box4_Addresses_RawPb208.Value) - InStr(Box4_Addresses_RawPb208.Value, "!"))
+    RawTh232Range = Right(Box4_Addresses_RawTh232.Value, Len(Box4_Addresses_RawTh232.Value) - InStr(Box4_Addresses_RawTh232.Value, "!"))
+    RawU238Range = Right(Box4_Addresses_RawU238.Value, Len(Box4_Addresses_RawU238.Value) - InStr(Box4_Addresses_RawU238.Value, "!"))
+    
+    RawHg202HeaderRange = Right(Box4_Addresses_RawHg202Header.Value, Len(Box4_Addresses_RawHg202Header.Value) - InStr(Box4_Addresses_RawHg202Header.Value, "!"))
+    RawPb204HeaderRange = Right(Box4_Addresses_RawPb204Header.Value, Len(Box4_Addresses_RawPb204Header.Value) - InStr(Box4_Addresses_RawPb204Header.Value, "!"))
+    RawPb206HeaderRange = Right(Box4_Addresses_RawPb206Header.Value, Len(Box4_Addresses_RawPb206Header.Value) - InStr(Box4_Addresses_RawPb206Header.Value, "!"))
+    RawPb207HeaderRange = Right(Box4_Addresses_RawPb207Header.Value, Len(Box4_Addresses_RawPb207Header.Value) - InStr(Box4_Addresses_RawPb207Header.Value, "!"))
+    RawPb208HeaderRange = Right(Box4_Addresses_RawPb208Header.Value, Len(Box4_Addresses_RawPb208Header.Value) - InStr(Box4_Addresses_RawPb208Header.Value, "!"))
+    RawTh232HeaderRange = Right(Box4_Addresses_RawTh232Header.Value, Len(Box4_Addresses_RawTh232Header.Value) - InStr(Box4_Addresses_RawTh232Header.Value, "!"))
+    RawU238HeaderRange = Right(Box4_Addresses_RawU238Header.Value, Len(Box4_Addresses_RawU238Header.Value) - InStr(Box4_Addresses_RawU238Header.Value, "!"))
+   
+    RawNumCyclesRange = Right(Box4_Addresses_RawNumCycles_Each_Sample.Value, Len(Box4_Addresses_RawNumCycles_Each_Sample.Value) - InStr(Box4_Addresses_RawNumCycles_Each_Sample.Value, "!"))
+    RawCyclesTimeRange = Right(Box4_Addresses_RawCyclesTime.Value, Len(Box4_Addresses_RawCyclesTime.Value) - InStr(Box4_Addresses_RawCyclesTime.Value, "!"))
+    RawAnalysisDateRange = Right(Box4_Addresses_RawAnalysisDate.Value, Len(Box4_Addresses_RawAnalysisDate.Value) - InStr(Box4_Addresses_RawAnalysisDate.Value, "!"))
+    
     If CheckBox3.Value = False Then
-        Isotope208analyzed = False
+        Isotope208Analyzed_UPb = False
     Else
-        Isotope208analyzed = True
+        Isotope208Analyzed_UPb = True
     End If
 
     If CheckBox2.Value = False Then
-        Isotope232analyzed = False
+        Isotope232Analyzed_UPb = False
     Else
-        Isotope232analyzed = True
+        Isotope232Analyzed_UPb = True
     End If
+    
+'    If CheckBox4 = False Then
+'        RawNumberCycles_UPb = "" 'meaning that all analyses have the same number of cycles
+'    End If
 
     Box4_Addresses.Hide
             
