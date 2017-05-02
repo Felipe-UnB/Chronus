@@ -41,6 +41,7 @@ Sub FormatSamList()
         .Range(SamList_ID & SamList_HeadersLine2) = "ID"
         .Range(SamList_FirstCycleTime & SamList_HeadersLine2) = "First Cycle Time"
         .Range(SamList_Cycles & SamList_HeadersLine2) = "Cycles"
+        .Range(SamList_NumCycles & SamList_HeadersLine2) = "Number of Cycles"
         .Range(SamList_StdID & SamList_HeadersLine1, SamList_BlkID & SamList_HeadersLine1).Merge
             .Range(SamList_StdID & SamList_HeadersLine1, SamList_BlkID & SamList_HeadersLine1) = "Std map"
                 .Range(SamList_StdID & SamList_HeadersLine2) = "Standard"
@@ -69,19 +70,23 @@ Sub FormatSamList()
                 .TintAndShade = 0
             End With
         End With
-        
+
         .Range(SamList_ID & SamList_HeadersLine1, .Range(SamList_FilePath & SamList_FirstLine).End(xlDown)).Interior.ThemeColor = xlThemeColorAccent5  'Blue color for column A to C in SamList_Sh
         .Range(SamList_Cycles & SamList_HeadersLine1, .Range(SamList_FirstCycleTime & SamList_FirstLine).End(xlDown)).Interior.ColorIndex = 6  'Yellow color for column D to E in SamList_Sh
         .Range(SamList_StdID & SamList_HeadersLine1, .Range(SamList_BlkID & SamList_FirstLine).End(xlDown)).Interior.ColorIndex = 3  'Red color for columns F and G in SamList_Sh
         .Range(SamList_SlpID & SamList_HeadersLine1, .Range(SamList_Blk2ID & SamList_FirstLine).End(xlDown)).Interior.ColorIndex = 4  'Red color for columns H to K in SamList_Sh
-    
+        .Range(SamList_NumCycles & SamList_HeadersLine1, .Range(SamList_NumCycles & SamList_FirstLine).End(xlDown)).Interior.ColorIndex = 6  'Yellow color for column D to E in SamList_Sh
+        
         .Range(SamList_Cycles & SamList_FirstLine, .Range(SamList_Cycles & SamList_FirstLine).End(xlDown)).HorizontalAlignment = xlRight
         .Range(SamList_FilePath & SamList_FirstLine, .Range(SamList_FilePath & SamList_FirstLine).End(xlDown)).HorizontalAlignment = xlLeft
+        .Range(.Range(SamList_Cycles & SamList_HeadersLine1).Offset(1), .Range(SamList_FirstCycleTime & SamList_FirstLine).Offset(1).End(xlDown)).HorizontalAlignment = xlRight
         .Range(SamList_FileName & ":" & SamList_FirstCycleTime).HorizontalAlignment = xlCenter
         .Range(SamList_StdID & ":" & SamList_Blk2ID).HorizontalAlignment = xlCenter
         .Range(SamList_FilePath & SamList_HeadersLine1, SamList_Blk2ID & SamList_HeadersLine2).Font.Bold = True
         .Range(SamList_FilePath & SamList_HeadersLine1, SamList_Blk2ID & SamList_HeadersLine2).HorizontalAlignment = xlCenter
-
+        .Range(SamList_NumCycles & SamList_HeadersLine1, .Range(SamList_NumCycles & SamList_FirstLine).End(xlDown)).HorizontalAlignment = xlCenter
+        .Range(SamList_NumCycles & SamList_HeadersLine1, .Range(SamList_NumCycles & SamList_FirstLine).End(xlDown)).Columns.AutoFit
+        
         Application.GoTo .Range("A" & SamList_FirstLine)
             
             With ActiveWindow
@@ -1009,7 +1014,7 @@ End Sub
 
 Sub FormatStartANDOptions()
 
-    If InternalStandardCheck_UPb Is Nothing Then
+    If StartANDOptions_Sh Is Nothing Then
         Call PublicVariables
     End If
 
@@ -1066,9 +1071,9 @@ Sub FormatStartANDOptions()
             .Range("A51") = "238"
             .Range("A53") = "Cycles Time"
             .Range("A54") = "Analysis Date"
-            .Range("A55") = "Number of Cycles"
+            .Range("A55") = "Standard Number of Cycles"
             .Range("A56") = "Cycles duration (ss.ms)"
-                '.Range("A56").AddComment ("Integration Time")
+            .Range("A57") = "Blanks analyzed with samples"
             
             .Range("B32") = "Ratios"
             .Range("B38") = "Concentration"
@@ -1087,10 +1092,9 @@ Sub FormatStartANDOptions()
             .Range("D22") = "Blank"
             .Range("D23") = "Primary standard analyses"
             .Range("D24") = "Primary standard reproducibility (MSWD)"
-                '.Range("D24").HorizontalAlignment = xlRight
             .Range("D25") = "Cert. Primary standard"
-            .Range("D44") = "Analyzed"
-                
+            .Range("E44") = "Number of cycles per sample"
+               
             .Range("D32") = "1s or 2s"
             .Range("D38") = "1s or 2s"
             
@@ -1114,7 +1118,7 @@ Sub FormatStartANDOptions()
                 .PatternTintAndShade = 0
             End With
             
-            .Range("A1,A2,C2,A8,A13,A16,A20,A21,C21,A26:A27,A31,A37,A42:A43,A53:A56,D21").Font.Bold = True
+            .Range("A1,A2,C2,A8,A13,A16,A20,A21,C21,A26:A27,A31,A37,A42:A43,A53:A57,D21").Font.Bold = True
             .Range("A3:A6,C3:C5,A9:A10,A17:A18,A27:A29,A33:A35,A39:A40,A45:A51,B32:E32,B38:E38,B44:D44").Font.Italic = True
             
             With .Range("A20:G20").Interior
@@ -1139,7 +1143,7 @@ Sub FormatStartANDOptions()
             .Range("E38,E32").Columns.AutoFit
 
             
-            .Range("A53:A56").HorizontalAlignment = xlLeft
+            .Range("A53:A57").HorizontalAlignment = xlLeft
             .Range("B6").HorizontalAlignment = xlLeft
             
             With .Range("B3:B6,B9:B18,D3:D5").Font
@@ -1155,7 +1159,25 @@ Sub FormatStartANDOptions()
             .Range("B22:B24,C22:C24,B28:B29,B33:B35,C33:C35,B39:B40,C39:C40,B45:C51,B53:B56,E38,E32").HorizontalAlignment = xlCenter
                 .Range("B30").HorizontalAlignment = xlLeft
                 
+            If InternalStandardCheck_UPb Is Nothing Then
+                PublicVariables
+            End If
+            
             With InternalStandardCheck_UPb.Validation
+                .Delete
+                .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:= _
+                xlBetween, Formula1:="TRUE,FALSE"
+                .IgnoreBlank = True
+                .InCellDropdown = True
+                .InputTitle = ""
+                .ErrorTitle = "Value is not acceptable!"
+                .InputMessage = "Please, select true or false from the list."
+                .ErrorMessage = "Only true or false."
+                .ShowInput = True
+                .ShowError = True
+            End With
+            
+            With BlanksRecordedSamples_UPb.Validation
                 .Delete
                 .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:= _
                 xlBetween, Formula1:="TRUE,FALSE"
@@ -1330,7 +1352,7 @@ Sub HighlightIntStd(Sh As Worksheet)
     Dim FindCells As Object
     Dim FirstAddress As String
     Dim IntStdNames() As String
-    Dim Counter As Integer
+    Dim counter As Integer
     Dim TCnumber As Long 'ThemeColor number
     
     If InternalStandard_UPb Is Nothing Then
@@ -1342,13 +1364,13 @@ Sub HighlightIntStd(Sh As Worksheet)
     TCnumber = 1
     
     If IsArrayEmpty(IntStdNames) = False Then
-        For Counter = LBound(IntStdNames) To UBound(IntStdNames)
-            IntStdNames(Counter) = Replace(IntStdNames(Counter), " ", "")
+        For counter = LBound(IntStdNames) To UBound(IntStdNames)
+            IntStdNames(counter) = Replace(IntStdNames(counter), " ", "")
         Next
         
-        For Counter = LBound(IntStdNames) To UBound(IntStdNames)
+        For counter = LBound(IntStdNames) To UBound(IntStdNames)
             With Sh.Cells
-                Set FindCells = .Find(IntStdNames(Counter), LookIn:=xlValues)
+                Set FindCells = .Find(IntStdNames(counter), LookIn:=xlValues)
                 If Not FindCells Is Nothing Then
                     FirstAddress = FindCells.Address
                     Do
