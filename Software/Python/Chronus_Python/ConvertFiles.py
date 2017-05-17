@@ -152,6 +152,7 @@ class SampleData(configuration):
         self.unit_208 = unit_208
         self.unit_232 = unit_232
         self.unit_238 = unit_238
+        self.standard_output_extension = 'dynamic.exp'
 
         # I am thinking if the lines below were a good idea. They make the code more clean, but if I need to change
         # come self.property, the variable
@@ -192,6 +193,7 @@ class SampleData(configuration):
         try:
             self.AnalysisDate = Analysis_Date_FirstTime.date()
             self.FirstCycleTime = Analysis_Date_FirstTime.time()
+
         except:
             print()
             print('__Line_AnalysisDate =', __Line_AnalysisDate)
@@ -205,6 +207,10 @@ class SampleData(configuration):
             print('Printing raw data...')
             self.print_RawData()
             exit()
+
+        File_as_List[__Line_AnalysisDate][__Column_AnalysisDate] = 'Date: ' + Analysis_Date_FirstTime.strftime(
+            '%d/%m/%Y')
+        # print(File_as_List[__Line_AnalysisDate][__Column_AnalysisDate])
 
         for line in self.__RawData:
 
@@ -259,6 +265,9 @@ class SampleData(configuration):
                 exit()
 
             self.__CyclesDateTime.append(CyclesDateTime)
+            File_as_List[line][__Column_CycleTime] = CyclesDateTime.strftime('%H:%M:%S:%f')[
+                                                     :-3]  # Updates the cycle time to the
+            # standard format used by Chronus (e.g. 13:54:24:852). A little help from http://stackoverflow.com/a/18406412/2449724
 
             try:
                 if __Column_206 != False:
@@ -463,13 +472,16 @@ class SampleData(configuration):
         Line_IsotopeHeaders = self.__Constants['Line_IsotopeHeaders']
         Line_FirstCycle = self.__Constants['Line_FirstCycle']
 
-        # print()
-        # print('TEMP')
-        # print('Column_new_num_cycles =', Column_new_num_cycles)
-        # print('Line_new_num_cycles =', Line_new_num_cycles)
-        # print('self.__RawData[Line_new_num_cycles][Column_new_num_cycles]',self.__RawData[Line_new_num_cycles][Column_new_num_cycles])
+        # The conditinal clause below check if there is a file in the files_split folder with the name of the file that
+        # would be created (A little confuse this explanation, is not? GOSH!)
+        if os.path.exists(
+                os.path.join(
+                    self.folderpath,
+                    'files_split',
+                                    self.Name + '.' + self.standard_output_extension
+                )
+        ):
 
-        if self.__RawData[Line_new_num_cycles][Column_new_num_cycles] != '':
             print(self.Name, 'was already split using the split points',
                   self.__RawData[Line_new_num_cycles][Column_split_points])
             print('You must delete the files created previously by splitting the original files.')
@@ -545,11 +557,12 @@ class SampleData(configuration):
                 pass
 
         WriteTXT(blank_with_header,
-                 os.path.join(self.folderpath, 'files_split', 'blank_' + str(self.ID) + self.FileExtension),
+                 os.path.join(self.folderpath, 'files_split',
+                              'blank_' + str(self.ID) + self.FileExtension + '.' + self.standard_output_extension),
                  self.equipment)
 
         WriteTXT(sample_with_header,
-                 os.path.join(self.folderpath, 'files_split', self.Name),
+                 os.path.join(self.folderpath, 'files_split', self.Name + '.' + self.standard_output_extension),
                  self.equipment)
 
 
@@ -568,8 +581,7 @@ def WriteTXT(List, FileAddress,equipment):
     if equipment == 'Thermo Finnigan Neptune':
         writer = csv.writer(file, delimiter='\t')
     elif equipment == 'Spec2':
-        print()
-        writer = csv.writer(file)
+        writer = csv.writer(file, delimiter='\t')
 
     writer.writerows(List)
 
@@ -698,6 +710,8 @@ def CombineDateTime(date_str, time_str, date_fmt, time_fmt, equipment, sample_na
     :return: datetime object
     '''
 
+    #Updated based on the question at http://stackoverflow.com/q/44014424/2449724
+
     import datetime
     # print()
     if equipment == 'Spec2':
@@ -712,20 +726,30 @@ def CombineDateTime(date_str, time_str, date_fmt, time_fmt, equipment, sample_na
         date_str = date_str[remove_start:len(date_str)]
         # print('date_str', date_str)
 
-    date_obj = datetime.datetime.strptime(date_str, date_fmt)
-    # print('date_obj',date_obj)
-
     try:
+        date_obj = datetime.datetime.strptime(date_str, date_fmt)
+        date_obj_time = date_obj.time()
+
         time_obj = datetime.datetime.strptime(time_str, time_fmt)
-        # print('time_obj', time_obj)
+        time_obj += datetime.timedelta(hours=date_obj_time.hour, minutes=date_obj_time.minute,
+                                       seconds=date_obj_time.second,
+                                       microseconds=date_obj_time.microsecond)
+
+        # print()
+        # TEMP = datetime.datetime.combine(date_obj.date(), time_obj.time())
+        # print(TEMP.strftime('%H:%M:%S:%f'))
+
         return datetime.datetime.combine(date_obj.date(), time_obj.time())
 
-    except:
+    except Exception as e:
         print('Failed to combine date and time of', sample_name)
         print('time_str =', time_str)
         print('time_fmt =', time_fmt)
         print('date_str =', date_str)
         print('date_fmt =', date_fmt)
+        print()
+        print('Printing excepetion...')
+        print(e)
         return 'Error'
 
 # date_fmt = '%b %d %Y  %I:%M %p' #https://docs.python.org/3.6/library/datetime.html#strftime-strptime-behavior
