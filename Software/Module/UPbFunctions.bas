@@ -4,10 +4,10 @@ Option Explicit
 
 Function IsUDTvariableInitialized(AnyVariable As Variant) As Boolean
     
-    Dim Counter As Integer
+    Dim counter As Integer
     
     On Error Resume Next
-    Counter = LBound(AnyVariable)
+    counter = LBound(AnyVariable)
     
         If Err.Number <> 0 Then
             IsUDTvariableInitialized = False
@@ -286,15 +286,15 @@ Function SumPrudDev(rng1 As Range, Rng2 As Range)
 
 Dim Cell As Integer
 Dim a As Integer 'Number of cells not empty in rng1
-Dim B As Integer 'Number of cells not empty in rng2
+Dim b As Integer 'Number of cells not empty in rng2
 Dim C As Double 'Average of rng1
 Dim d As Double 'Average of rng2
 Dim E As Range 'Value of a specific cell in rng1
 Dim f As Range 'Value of a specific cell in rng2
     
-    a = rng1.Rows.count: B = Rng2.Rows.count
+    a = rng1.Rows.count: b = Rng2.Rows.count
         
-    If Not a = B Then 'Both ranges must be of the same size!
+    If Not a = b Then 'Both ranges must be of the same size!
         MsgBox ("rng1 and rng2 must be of equal size!")
         SumPrudDev = ""
         End
@@ -353,7 +353,7 @@ Function TimeCustomFormat(TimeCell As Range, Format As String)
         
 End Function
 
-Function DateTimeCustomFormat(WB As Workbook, TimeCell As Range, DateCell As Range, formatTime As String, formatDate As String) As Double
+Function DateTimeCustomFormat(Wb As Workbook, TimeCell As Range, DateCell As Range, formatTime As String, formatDate As String) As Double
     
     'I couldn't find way to make excel understand the Neptune time format (hh:mm:ss:ms),
     'so I had to find a way to deal with it.
@@ -382,7 +382,7 @@ Function DateTimeCustomFormat(WB As Workbook, TimeCell As Range, DateCell As Ran
         Case Else
             dTime = 0
     End Select
-        
+
     Select Case formatDate
         Case "Date: dd/mm/yyyy"
             sDate = Right(DateCell.Value, Len(DateCell.Value) - 6)
@@ -404,7 +404,19 @@ ErrHandler:
 
 End Function
 
-Public Function SheetExists(SheetName As String, WB As Workbook) As Boolean
+Public Function update_numcycles(sample_workbook As Workbook)
+    
+    Dim numcycles As Integer
+
+    If EachSampleNumberCycles_UPb = True Then 'If True, the number of cycles of each sample will be stored in SamList sheet
+        update_numcycles = sample_workbook.Worksheets(1).Range(RawNumCyclesRange).Value
+    Else
+        update_numcycles = RawNumberCycles_UPb.Value
+    End If
+    
+End Function
+
+Public Function SheetExists(SheetName As String, Wb As Workbook) As Boolean
 
     'Modified from http://www.cpearson.com/excel/SheetNameFunctions.aspx
     'This function is better than SheetExists2 because it's not necessary
@@ -418,7 +430,7 @@ Public Function SheetExists(SheetName As String, WB As Workbook) As Boolean
         
         On Error Resume Next
         Err.Clear
-        Set Ws = WB.Worksheets(SheetName)
+        Set Ws = Wb.Worksheets(SheetName)
         
         If Err.Number = 0 Then
             SheetExists = True
@@ -454,7 +466,7 @@ Public Function SheetExists(SheetName As String, WB As Workbook) As Boolean
 
     End Function
 
-Function SheetExists2(n As String, WB As Workbook) As Boolean
+Function SheetExists2(N As String, Wb As Workbook) As Boolean
     'This function takes a name (n as string) and
     'and checks if this is the name of any of the
     'worksheets in a choosen workbook
@@ -463,9 +475,9 @@ Function SheetExists2(n As String, WB As Workbook) As Boolean
   
   SheetExists2 = False
   
-  For Each Ws In WB.Sheets
+  For Each Ws In Wb.Sheets
     
-    If n = Ws.Name Then
+    If N = Ws.Name Then
       
       SheetExists2 = True
       
@@ -483,12 +495,12 @@ Function IntegerToStringArray(ByRef IntegerArray() As Integer)
     'of SamListMap I can only use strings.
 
     Dim a As Integer
-    Dim B As Integer
+    Dim b As Integer
     Dim NewArray() As String
     ReDim NewArray(UBound(IntegerArray)) As String
-    B = LBound(IntegerArray)
+    b = LBound(IntegerArray)
     
-    For a = B To UBound(IntegerArray)
+    For a = b To UBound(IntegerArray)
         NewArray(a) = Str(IntegerArray(a))
     Next
     
@@ -673,7 +685,7 @@ Function ColumnsRowsNumber(RangesArray As Variant)
     'This function checks if all ranges have the same number of columns and rows
     
     Dim SameNumber As Boolean
-    Dim Counter As Integer
+    Dim counter As Integer
     Dim RowNumber As Integer
     Dim ColumnNumber As Integer
     
@@ -682,9 +694,9 @@ Function ColumnsRowsNumber(RangesArray As Variant)
     RowNumber = RangesArray(1).Value
     ColumnNumber = RangesArray(1).Value
     
-    For Counter = LBound(RangesArray) To UBound(RangesArray)
+    For counter = LBound(RangesArray) To UBound(RangesArray)
     
-        Counter = Counter + 1
+        counter = counter + 1
     
     Next
         
@@ -705,20 +717,20 @@ Function TetaFactor(a As Integer)
     Dim Std2Time As Double 'Time of standard (after) first cycle
     Dim FindIDObj As Object
 
-    SlpTime = PathsNamesIDsTimesCycles(4, AnalysesList(a).sample)
+    SlpTime = PathsNamesIDsTimesCycles(4, AnalysesList(a).Sample)
     Std1Time = PathsNamesIDsTimesCycles(4, AnalysesList(a).Std1)
     Std2Time = PathsNamesIDsTimesCycles(4, AnalysesList(a).Std2)
     
     If WorksheetFunction.IsNumber(SlpTime) = False Or WorksheetFunction.IsNumber(Std1Time) = False Or _
     WorksheetFunction.IsNumber(Std2Time) = False Then
         
-        MsgBox "Please, check if the sample with ID equal to " & AnalysesList(a).sample & _
+        MsgBox "Please, check if the sample with ID equal to " & AnalysesList(a).Sample & _
         " and its external standards are correct."
             
             'SamList_Sh.Activate
                 
                 With SamList_Sh.Columns(SamList_ID)
-                    Set FindIDObj = .Find(AnalysesList(a).sample)
+                    Set FindIDObj = .Find(AnalysesList(a).Sample)
                     Application.GoTo .Range(FindIDObj.Address)
                 End With
                     
@@ -829,7 +841,7 @@ Function NonEmptyCellsRange(Rng As Range, rngFirstcell As Range, Sh As Worksheet
     Dim CountCells As Long
     Dim NewItem As Double
     Dim ArrayItem As Variant
-    Dim Counter As Integer
+    Dim counter As Integer
     Dim RedimCounter As Integer
     Dim IsThereEmptyElementArray As Boolean
     
@@ -841,7 +853,7 @@ Function NonEmptyCellsRange(Rng As Range, rngFirstcell As Range, Sh As Worksheet
     End If
     
     CountCells = Rng.count 'Number of cells in rng
-    Counter = 1
+    counter = 1
     RedimCounter = 1
     
     For ItemNumber = 1 To CountCells
@@ -949,16 +961,16 @@ Function InstalledIsoplot() As Boolean
 
     Dim AddInInList As Boolean
     Dim IsoplotAddin As AddIn
-    Dim Counter As Integer
+    Dim counter As Integer
     
     ScreenUpd = Application.ScreenUpdating
     
     Application.ScreenUpdating = False
     
-    For Counter = 1 To AddIns.count
-        If AddIns.Item(Counter).Name = "Isoplot4.15.xlam" Then
+    For counter = 1 To AddIns.count
+        If AddIns.Item(counter).Name = "Isoplot4.15.xlam" Then
             AddInInList = True
-                Counter = AddIns.count
+                counter = AddIns.count
         End If
     Next
     
@@ -1085,20 +1097,20 @@ Function StringsMatch(TargetString As String, StringsToCompare() As String)
     
     Dim FirstString As Long
     Dim LastString As Long
-    Dim n As Long
+    Dim N As Long
     
     FirstString = LBound(StringsToCompare) 'Index of the first element in StringsToCompare array
     LastString = UBound(StringsToCompare) ''Index of the last element in StringsToCompare array
     
     StringsMatch = False
     
-    For n = FirstString To LastString
+    For N = FirstString To LastString
 '        Debug.Print TargetString & " - " & StringsToCompare(n)
 '        Debug.Print TargetString = StringsToCompare(n)
 '        Debug.Print "CONTAINS " & InStr(1, StringsToCompare(n), TargetString, vbBinaryCompare)
         
-        If UCase(TargetString) = UCase(StringsToCompare(n)) Or _
-            InStr(1, StringsToCompare(n), TargetString, vbBinaryCompare) <> 0 Then
+        If UCase(TargetString) = UCase(StringsToCompare(N)) Or _
+            InStr(1, StringsToCompare(N), TargetString, vbBinaryCompare) <> 0 Then
             'First the program cheack if the strings are equal, then if the string in array contains the TargetString.
             
                 StringsMatch = True
@@ -1199,20 +1211,21 @@ Function Chronus_AgePb76( _
     Dim EstimatedAge As Double
     Dim Equation As Double
     Dim Equation_Dt As Double
+    Dim IsoplotEstimated As Double
         
     If Lambda235 = 0 Then
         Lambda235 = Decay235U_yrs * 1000000
     End If
     
     If Lambda238 = 0 Then
-        Lambda238 = Decay235U_yrs * 1000000
+        Lambda238 = Decay238U_yrs * 1000000
     End If
     
     If RatioU = 0 Then
         If TW_RatioUranium_UPb Is Nothing Then
             Main_WB_TW
         End If
-        RatioU = TW_RatioUranium_UPb.Value
+        RatioU = 1 / TW_RatioUranium_UPb.Value
     End If
     
     If TypeName(Ratio76) <> "Double" Then
@@ -1226,23 +1239,58 @@ Function Chronus_AgePb76( _
     End If
 
     Delta = 0.000000001
-    Guess = 1
+    Guess = 10000
+    
+    Debug.Print
     
     For Interation = 1 To MaxInterations
         
-        Equation = (TW_RatioUranium_UPb * (Exp(Lambda235 * Guess) - 1) / (Exp(Lambda238 * Guess) - 1) - Ratio76)
-        Equation_Dt = (TW_RatioUranium_UPb * (((Lambda235 - Lambda238) * Exp(Lambda238 * Guess) - Lambda235) * Exp(Lambda235 * Guess) + Lambda235 * Exp(Lambda235 * Lambda238)) / (WorksheetFunction.Power((Exp(Lambda235 * Guess) - 1), 2)))
-        
-        EstimatedAge = Guess - (Equation / Equation_Dt)
-        Debug.Print EstimatedAge
-
-        If Abs(EstimatedAge - 0 < Delta) Then
-            Chronus_AgePb76 = EstimatedAge
+        On Error Resume Next
+            Equation = (RatioU * (Exp(Lambda235 * Guess) - 1) / (Exp(Lambda238 * Guess) - 1) - Ratio76)
+            
+            Equation_Dt = Exp(Guess * Lambda235) * Lambda235 * RatioU * 1 / (Exp(Guess * Lambda238) - 1) _
+                        - Exp(Guess * Lambda238) * Lambda238 * RatioU * (Exp(Guess * Lambda235) - 1) * 1 / _
+                         (Exp(Guess * Lambda238) - 1) ^ 2
+            
+            
+            
+            EstimatedAge = Guess - (Equation / Equation_Dt)
+                
+        If Err.Number <> 0 Then
+            
+            Debug.Print "Failed to calculate the age for the ratio " & Ratio76
+            On Error GoTo 0
             Exit Function
+            
+        Else
+        
+            If Abs(Equation < Delta) Then
+                Chronus_AgePb76 = EstimatedAge
+                
+                Debug.Print
+                Debug.Print "Ratio76 = " & Ratio76
+                Debug.Print "Interations = " & Interation
+                Debug.Print "Estimated age Chronus = " & EstimatedAge
+                Debug.Print "Estimaged age isoplot = " & agepb76(Ratio76)
+                
+                IsoplotEstimated = agepb76(Ratio76)
+                
+                If EstimatedAge <> IsoplotEstimated Then
+                    MsgBox "Different estimated age for the ratio " & Ratio76, vbOKOnly
+                End If
+                
+                Exit Function
+                
+            End If
+        
+            Guess = EstimatedAge
+        
         End If
         
-        Guess = EstimatedAge
+        On Error GoTo 0
         
+        Debug.Print EstimatedAge
+
     Next
     
 
@@ -1252,10 +1300,33 @@ Sub test76agecalcilator()
 
     Dim a As Double
     Dim x As Double
+    Dim Ratios() As Double
+    Dim Ratio As Double
+    Dim Delta As Double
+    Dim NumTests As Long
+    Dim count As Long
     
-    a = 2
-    x = Chronus_AgePb76(a)
-
+    Ratio = 0.001
+    NumTests = 200
+    Delta = 0.01
+    
+    ReDim Ratios(NumTests)
+    
+    Debug.Print
+    
+    For count = 1 To NumTests
+        
+        Ratios(count) = Ratio
+        Ratio = Ratio + Delta
+        
+        Debug.Print Ratios(count)
+    
+    Next
+        
+    For count = 1 To UBound(Ratios)
+        Chronus_AgePb76 (Ratios(count))
+    Next
+    
 End Sub
 
 
@@ -1375,4 +1446,150 @@ Sub TestAgePb6U8()
     Application.ScreenUpdating = True
     
 End Sub
+
+Function MSWD_Zi(sigma_Xi As Double, _
+                 sigma_Yi As Double, _
+                 m As Double, _
+                 ri As Double)
+
+    'Based on Harmer and Eglington (1990) apud Faure and Messing (2005) - Equation 4.17
+    
+    'Wx " Wy• = weighting factors for X-and Y -coordinates of any data Point i
+    'ri correlation between analytical errors of X and Y for any sample i
+    
+    On Error Resume Next
+    
+        MSWD_Zi = 1 / (m ^ 2 * sigma_Xi ^ 2 + sigma_Yi ^ 2 - 2 * m * ri * sigma_Xi * sigma_Yi)
+        
+        If Err.Number <> 0 Then
+            Debug.Print "MSWD_Zi - " & Err.Number
+            Debug.Print "MSWD_Zi - " & Err.Description
+            MSWD_Zi = "Error"
+            Exit Function
+        End If
+        
+    On Error GoTo 0
+    
+End Function
+
+Function MSWD_S(Xi() As Double, _
+                Yi() As Double, _
+                Zi() As Double, _
+                m As Double, _
+                b As Double)
+
+    'Based on Harmer and Eglington (1990) apud Faure and Messing (2005) - Equation 4.14
+    
+    'Yi , Xi = measured values of the X and Y parameters of each data point
+    'm = slope of the best-fit straight line
+    'b = intercept on the Y -axis of the best-fit straight line
+    'Zi = weighting term for each sample in the regression
+    
+    Dim Summation As Long
+    Dim counter As Long
+    Dim UXi As Long
+    Dim UYi As Long
+    Dim UZi As Long
+    
+'    For counter = 1 To UBound(Xi)
+'        Debug.Print "Xi - " & Xi(counter)
+'        Debug.Print "Yi - " & Yi(counter)
+'        Debug.Print "Zi - " & Zi(counter)
+'    Next
+    
+'    Debug.Print "m - " & m
+'    Debug.Print "b - " & b
+    
+    If IsArrayEmpty(Xi) = True Then
+        Debug.Print
+        Debug.Print "Function MSWD_S - Array Xi is empty"
+        Exit Function
+    ElseIf IsArrayEmpty(Yi) = True Then
+        Debug.Print
+        Debug.Print "Function MSWD_S - Array Yi is empty"
+        Exit Function
+    ElseIf IsArrayEmpty(Zi) = True Then
+        Debug.Print
+        Debug.Print "Function MSWD_S - Array Zi is empty"
+        Exit Function
+    End If
+    
+    UXi = UBound(Xi)
+    UYi = UBound(Yi)
+    UZi = UBound(Zi)
+    
+    If UXi <> UYi Or UXi <> UZi Then
+        Debug.Print
+        Debug.Print "Function MSWD_S - Arrays Xi, Yi and Zi ahev different sizes"
+        Exit Function
+    End If
+    
+    Summation = 0
+    
+    For counter = 1 To UBound(Xi)
+        
+        Summation = Summation + (Yi(counter) - m * Xi(counter) - b) ^ 2 * Zi(counter)
+        
+    Next
+    
+    MSWD_S = Summation
+    
+End Function
+
+Function MSWD_W(sigma)
+    
+    'Based on Harmer and Eglington (1990) apud Faure and Messing (2005) - Equation 4.16
+    
+    'sigma is the variance of the analytical errors of X and Y.
+    
+    MSWD_W = 1 / sigma ^ 2
+
+End Function
+Sub testMSWD_S()
+
+    Dim Xi(1 To 10) As Double
+    Dim Yi(1 To 10) As Double
+    Dim Zi(1 To 10) As Double
+    Dim m As Double
+    Dim b As Double
+    
+    Dim counter As Long
+    Dim Delta As Double
+    
+    Delta = 0
+    m = 1
+    b = 2
+    
+    For counter = 1 To 10
+        Xi(counter) = Delta
+        Yi(counter) = Delta
+        Zi(counter) = Delta
+        
+        Delta = Delta + 0.2
+    Next
+    
+    
+    Debug.Print MSWD_S(Xi, Yi, Zi, m, b)
+    
+End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
