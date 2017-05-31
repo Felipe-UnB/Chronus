@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} Box1_Start 
-   ClientHeight    =   8535
+   ClientHeight    =   9135
    ClientLeft      =   45
    ClientTop       =   375
    ClientWidth     =   5625
@@ -14,14 +14,134 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Sub CheckBox3_blankwtsample_Change()
-   
-    If CheckBox3_blankwtsample.Value = False Then
-        BlanksRecordedSamples_UPb = False
-    Else
-        BlanksRecordedSamples_UPb = True
+
+
+Private Sub CheckBox_202Faraday_Click()
+
+    If Me.CheckBox_202Faraday = True Then
+        Me.CheckBox_202MIC = False
+    End If
+
+End Sub
+
+Private Sub CheckBox_204Faraday_Click()
+
+    If Me.CheckBox_204Faraday = True Then
+        Me.CheckBox_204MIC = False
+    End If
+
+End Sub
+
+Private Sub CheckBox_206Faraday_Click()
+
+    If Me.CheckBox_206Faraday = True Then
+        Me.CheckBox_206MIC = False
+    End If
+
+End Sub
+
+Private Sub CheckBox_207Faraday_Click()
+
+    If Me.CheckBox_207Faraday = True Then
+        Me.CheckBox_207MIC = False
+    End If
+
+End Sub
+
+Private Sub CheckBox_208Faraday_Click()
+
+    If Me.CheckBox_208Faraday = True Then
+        Me.CheckBox_208MIC = False
+    End If
+
+End Sub
+
+Private Sub CheckBox_232Faraday_Click()
+
+    If Me.CheckBox_232Faraday = True Then
+        Me.CheckBox_232MIC = False
+    End If
+
+End Sub
+
+Private Sub CheckBox_238Faraday_Click()
+
+    If Me.CheckBox_238Faraday = True Then
+        Me.CheckBox_238MIC = False
     End If
     
+End Sub
+
+Private Sub CheckBox_202MIC_Change()
+    
+    If Me.CheckBox_202MIC = True Then
+        Me.CheckBox_202Faraday = False
+    End If
+    
+End Sub
+
+Private Sub CheckBox_204MIC_Change()
+    
+    If Me.CheckBox_204MIC = True Then
+        Me.CheckBox_204Faraday = False
+    End If
+    
+End Sub
+
+Private Sub CheckBox_206MIC_Change()
+    
+    If Me.CheckBox_206MIC = True Then
+        Me.CheckBox_206Faraday = False
+    End If
+    
+End Sub
+
+Private Sub CheckBox_207MIC_Change()
+    
+    If Me.CheckBox_207MIC = True Then
+        Me.CheckBox_207Faraday = False
+    End If
+        
+End Sub
+
+Private Sub CheckBox_208MIC_Change()
+    
+    If Me.CheckBox_208MIC = True Then
+        Me.CheckBox_208Faraday = False
+    End If
+    
+End Sub
+
+Private Sub CheckBox_232MIC_Change()
+    
+    If Me.CheckBox_232MIC = True Then
+        Me.CheckBox_232Faraday = False
+    End If
+    
+End Sub
+
+Private Sub CheckBox_238MIC_Change()
+    
+    If Me.CheckBox_238MIC = True Then
+        Me.CheckBox_238Faraday = False
+    End If
+    
+End Sub
+
+Private Sub CheckBox3_blankwtsample_Change()
+   
+'    If CheckBox3_blankwtsample.Value = False Then
+'        BlanksRecordedSamples_UPb = False
+'        TextBox11_HowMany.Enabled = True
+'    Else
+'        BlanksRecordedSamples_UPb = True
+'        TextBox11_HowMany.Enabled = False
+'    End If
+    
+End Sub
+
+Private Sub CheckBox4_Click()
+
 End Sub
 
 'from http://stackoverflow.com/questions/11654788/vba-userform-running-twice-when-changing-caption
@@ -54,6 +174,7 @@ End Sub
 
 Private Sub CommandButton6_Addresses_Click()
 
+    Me.Hide
     Call SetAddressess
 
 End Sub
@@ -162,8 +283,23 @@ Public Sub UserForm_Initialize()
     Set Box1_Start_InternalStandardName = Me.TextBox5_InternalStandardName
     Set Box1_Start_Spot = Me.OptionButton3_Spot
     Set Box1_Start_Raster = Me.OptionButton4_Raster
-    Set Box1_Start_Detector206MIC = Me.OptionButton1_206MIC
-    Set Box1_Start_Detector206Faraday = Me.OptionButton2_206Faraday
+    
+    Set Box1_Start_Detector202MIC = Me.CheckBox_202MIC
+    Set Box1_Start_Detector204MIC = Me.CheckBox_204MIC
+    Set Box1_Start_Detector206MIC = Me.CheckBox_206MIC
+    Set Box1_Start_Detector207MIC = Me.CheckBox_207MIC
+    Set Box1_Start_Detector208MIC = Me.CheckBox_208MIC
+    Set Box1_Start_Detector232MIC = Me.CheckBox_232MIC
+    Set Box1_Start_Detector238MIC = Me.CheckBox_238MIC
+    
+    Set Box1_Start_Detector202Faraday = Me.CheckBox_202Faraday
+    Set Box1_Start_Detector204Faraday = Me.CheckBox_204Faraday
+    Set Box1_Start_Detector206Faraday = Me.CheckBox_206Faraday
+    Set Box1_Start_Detector207Faraday = Me.CheckBox_207Faraday
+    Set Box1_Start_Detector208Faraday = Me.CheckBox_208Faraday
+    Set Box1_Start_Detector232Faraday = Me.CheckBox_232Faraday
+    Set Box1_Start_Detector238Faraday = Me.CheckBox_238Faraday
+    
     Set Box1_Start_CheckData = Me.CheckBox2_CheckRawData
     Set Box1_Start_BlankName = Me.TextBox8_BlankName
     Set Box1_Start_SamplesNames = Me.TextBox9_SamplesNames
@@ -172,6 +308,8 @@ Public Sub UserForm_Initialize()
     Set Box1_Start_RawNumberCycles = Me.TextBox11_HowMany
     Set Box1_Start_CycleDuration = Me.TextBox12_CycleDuration
     Set Box1_Start_Blank_wt_Sample = Me.CheckBox3_blankwtsample
+    Set Box1_Start_DateFormat = Me.ComboBox2_DateFormats
+    Set Box1_Start_TimeFormat = Me.ComboBox3_TimeFormats
             
     Box1_Start_CheckData = True
             
@@ -221,33 +359,66 @@ Private Sub CommandButton3_Ok_Click()
     Dim counter As Integer
     Dim StdName As Integer
     
-    'The conditional clauses below are necessary because not all isotopes must have been analyzed
-    If Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = True Then
-        AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawPb208Range, RawTh232Range, RawU238Range, _
-        RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, RawPb208HeaderRange, RawTh232HeaderRange, _
-        RawU238HeaderRange)
-    ElseIf Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = False Then
-        AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawPb208Range, RawU238Range, _
-        RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, RawPb208HeaderRange, _
-        RawU238HeaderRange)
-    ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = True Then
-        AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawTh232Range, RawU238Range, _
-        RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, RawTh232HeaderRange, _
-        RawU238HeaderRange)
-    ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = False Then
-        AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawU238Range, _
-        RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, _
-        RawU238HeaderRange)
-    End If
+    Dim temp As Variant
     
+    'The conditional clauses below are necessary because not all isotopes must have been analyzed
+'    If Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = True Then
+'        AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawPb208Range, RawTh232Range, RawU238Range, _
+'        RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, RawPb208HeaderRange, RawTh232HeaderRange, _
+'        RawU238HeaderRange)
+'    ElseIf Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = False Then
+'        AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawPb208Range, RawU238Range, _
+'        RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, RawPb208HeaderRange, _
+'        RawU238HeaderRange)
+'    ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = True Then
+'        AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawTh232Range, RawU238Range, _
+'        RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, RawTh232HeaderRange, _
+'        RawU238HeaderRange)
+'    ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = False Then
+'        AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawU238Range, _
+'        RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, _
+'        RawU238HeaderRange)
+'    End If
+    
+'    AddressRawDataFile = Array( _
+'        Box4_Addresses_RawPb206.Value, _
+'        Box4_Addresses_RawPb207.Value, _
+'        Box4_Addresses_RawU238.Value, _
+'        Box4_Addresses_RawPb206Header.Value, _
+'        Box4_Addresses_RawPb207Header.Value, _
+'        Box4_Addresses_RawU238Header.Value, _
+'        Box4_Addresses_RawCyclesTime.Value, _
+'        Box4_Addresses_RawAnalysisDate.Value)
+'
+'    If Isotope202Analyzed_UPb = True Then
+'        temp = ConcatenateArrays(AddressRawDataFile, Array(Box4_Addresses_RawHg202.Value, Box4_Addresses_RawHg202Header.Value))
+'    End If
+'
+'    If Isotope204Analyzed_UPb = True Then
+'        temp = ConcatenateArrays(AddressRawDataFile, Array(Box4_Addresses_RawPb204.Value, Box4_Addresses_RawPb204Header.Value))
+'    End If
+'
+'    If Isotope208Analyzed_UPb = True Then
+'        temp = ConcatenateArrays(AddressRawDataFile, Array(Box4_Addresses_RawPb208.Value, Box4_Addresses_RawPb208Header.Value))
+'    End If
+'
+'    If Isotope232Analyzed_UPb = True Then
+'        temp = ConcatenateArrays(AddressRawDataFile, Array(Box4_Addresses_RawTh232.Value, Box4_Addresses_RawTh232Header.Value))
+'    End If
+
+    AddressRawDataFile = Box4_Addresses.ArrayFilledAddresses()
+
     'All of the above variables must not be = ""
-    For Each C In AddressRawDataFile
-        'on error resume Next
-        If C.Value = "" Then
-            MsgBoxAlert = MsgBox("There are one or more addresses missing in Start-AND-Options sheet. " & _
-            "Please, check it.", vbOKOnly, "Missing Address")
-                Call SetAddressess
-        End If
+    For C = 0 To UBound(AddressRawDataFile)
+
+'        On Error Resume Next
+            If AddressRawDataFile(C) = "" Then
+                MsgBoxAlert = MsgBox("There are one or more addresses missing in Start-AND-Options sheet. " & _
+                "Please, check it.", vbOKOnly, "Missing Address")
+                    Call SetAddressess
+            End If
+'        On Error GoTo 0
+       
     Next
     
     'All the addresses
@@ -273,9 +444,65 @@ Private Sub CommandButton3_Ok_Click()
                 Exit Sub
     End If
     
+    If Box4_Addresses.CheckBox_202Analyzed = True Then
+        If Box1_Start_Detector202MIC = False And Box1_Start_Detector202Faraday = False Then
+            MsgBox "You must choose MIC or Faraday cup for 202 isotope!"
+                CheckBox_202MIC.SetFocus
+                    Exit Sub
+        End If
+    Else
+        Box1_Start_Detector202MIC = False
+        Box1_Start_Detector202Faraday = False
+    End If
+    
+    If Box4_Addresses.CheckBox_204Analyzed = True Then
+        If Box1_Start_Detector204MIC = False And Box1_Start_Detector204Faraday = False Then
+            MsgBox "You must choose MIC or Faraday cup for 204 isotope!"
+                CheckBox_204MIC.SetFocus
+                    Exit Sub
+        End If
+    Else
+        Box1_Start_Detector204MIC = False
+        Box1_Start_Detector204Faraday = False
+    End If
+    
     If Box1_Start_Detector206MIC = False And Box1_Start_Detector206Faraday = False Then
         MsgBox "You must choose MIC or Faraday cup for 206 isotope!"
-            OptionButton1_206MIC.SetFocus
+            CheckBox_206MIC.SetFocus
+                Exit Sub
+    End If
+    
+        If Box1_Start_Detector207MIC = False And Box1_Start_Detector207Faraday = False Then
+        MsgBox "You must choose MIC or Faraday cup for 207 isotope!"
+            CheckBox_207MIC.SetFocus
+                Exit Sub
+    End If
+    
+    If Box4_Addresses.CheckBox_208Analyzed = True Then
+        If Box1_Start_Detector208MIC = False And Box1_Start_Detector208Faraday = False Then
+            MsgBox "You must choose MIC or Faraday cup for 208 isotope!"
+                CheckBox_208MIC.SetFocus
+                    Exit Sub
+        End If
+    Else
+        Box1_Start_Detector208MIC = False
+        Box1_Start_Detector208Faraday = False
+    End If
+    
+    If Box4_Addresses.CheckBox_232Analyzed = True Then
+        If Box1_Start_Detector232MIC = False And Box1_Start_Detector232Faraday = False Then
+            MsgBox "You must choose MIC or Faraday cup for 232 isotope!"
+                CheckBox_232MIC.SetFocus
+                    Exit Sub
+        End If
+    Else
+        Box1_Start_Detector232MIC = False
+        Box1_Start_Detector232Faraday = False
+    End If
+            
+    If Box1_Start_Detector238MIC = False And Box1_Start_Detector238Faraday = False Then
+        MsgBox "You must choose MIC or Faraday cup for 238 isotope!"
+            CheckBox_238MIC.SetFocus
                 Exit Sub
     End If
     
@@ -367,7 +594,7 @@ Private Sub CommandButton3_Ok_Click()
                 Exit Sub
     End If
     
-    If CheckBox3_blankwtsample = True And Box4_Addresses.CheckBox4 = False Then
+    If Box1_Start.CheckBox3_blankwtsample = True And Box4_Addresses.CheckBox_NumberCycles = False Then
         If MsgBox("Usually, for samples recorded with blanks in the same files, the number of cycles for each sample is " & _
         "different. Are you sure it is not necessary to indicate the number of cyles for each sample?", vbYesNo) = vbNo Then
             Box4_Addresses.Show
@@ -385,7 +612,10 @@ Private Sub CommandButton3_Ok_Click()
     InternalStandardCheck_UPb = Box1_Start_InternalStandardCheck
     RawNumberCycles_UPb = Box1_Start_RawNumberCycles
     CycleDuration_UPb = Box1_Start_CycleDuration
-    
+    TimeFormat_UPb = Box1_Start_TimeFormat
+    DateFormat_UPb = Box1_Start_DateFormat
+    BlanksRecordedSamples_UPb = Box1_Start_Blank_wt_Sample
+        
     If Box1_Start_InternalStandardCheck = True Then
         InternalStandardCheck_UPb = Box1_Start_InternalStandardCheck
         InternalStandard_UPb = Box1_Start_InternalStandardName
@@ -398,12 +628,50 @@ Private Sub CommandButton3_Ok_Click()
         Else
             SpotRaster_UPb = "Raster"
     End If
+    
+    
+    If Box1_Start_Detector202MIC = True Then
+            Detector202_UPb = "MIC"
+        Else
+            Detector202_UPb = "Faraday Cup"
+    End If
+    
+    If Box1_Start_Detector204MIC = True Then
+            Detector204_UPb = "MIC"
+        Else
+            Detector204_UPb = "Faraday Cup"
+    End If
 
     If Box1_Start_Detector206MIC = True Then
             Detector206_UPb = "MIC"
         Else
             Detector206_UPb = "Faraday Cup"
     End If
+    
+    If Box1_Start_Detector207MIC = True Then
+            Detector207_UPb = "MIC"
+        Else
+            Detector207_UPb = "Faraday Cup"
+    End If
+    
+    If Box1_Start_Detector208MIC = True Then
+            Detector208_UPb = "MIC"
+        Else
+            Detector208_UPb = "Faraday Cup"
+    End If
+    
+        If Box1_Start_Detector232MIC = True Then
+            Detector232_UPb = "MIC"
+        Else
+            Detector232_UPb = "Faraday Cup"
+    End If
+    
+    If Box1_Start_Detector238MIC = True Then
+            Detector238_UPb = "MIC"
+        Else
+            Detector238_UPb = "Faraday Cup"
+    End If
+    
 
     CheckData_UPb = Box1_Start_CheckData
     BlankName_UPb = Box1_Start_BlankName
