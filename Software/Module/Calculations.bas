@@ -390,6 +390,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
     Dim i As Double, i2 As Double, i3 As Double, i4 As Double, i5 As Double
     Dim J As Double
     Dim K As Integer 'Offset between columns in raw data file (238 to 232, 202 to 204, etc)
+    Dim factor As Double
 
     Dim E As Integer
     Dim d As Range
@@ -400,6 +401,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
     Dim SearchStr As Integer 'Variable used to search for (%) in headers
     Dim RangeUnionHeaders As Range 'Range with headers
     Dim A_Header As Range 'Variable used to loop through headers
+    Dim numcycles As Integer
     
 '    'The code below clears the entire SlpStdBlkCorr sheet and changes the uncertanties headers units to "(abs)".
 '        SearchStr = InStr(SlpStdBlkCorr_Sh.Range(StdCorr_Column681Std & HeaderRow), "(%)")
@@ -449,7 +451,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
             Call ClearCycles(WBSlp, PathsNamesIDsTimesCycles(Cycles, a)) 'Any cycles that should be discarded from the sample will be now
             
             For E = 1 To UBound(AnalysesList) 'For each structure used to find the sample or internal standard inside AnalysesList
-                If a = AnalysesList(E).sample Then 'There is a problem here because the blank for standard can be changed, it's
+                If a = AnalysesList(E).Sample Then 'There is a problem here because the blank for standard can be changed, it's
                                                    'not necessarly the same as the sample
                     AnalysesListNumber = E 'Using this variable I am able to retrieve from AnalysesList all the IDs that I must know
                     E = UBound(AnalysesList) 'A beautiful solution to end the if structure
@@ -459,7 +461,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
             With BlkCalc_Sh
                 
                 If .Range(BlkColumnID & BlkCalc_HeaderLine + 1).End(xlDown) = "" Then
-                    MsgBox ("You need at least two blanks to reduce your data.")
+                    MsgBox ("You need at least one blank to reduce your data.")
                         Application.GoTo BlkCalc_Sh.Range("A1")
                             End
                 End If
@@ -479,65 +481,102 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
             End With
             
             With WBSlp.Worksheets(1)
-            
-'                    For Each o In .Range(RawCyclesTimeRange)
-'                        o = TimeCustomFormat(o, "hh:mm:ss:ms(xxx)")
-'                    Next
                 
-                Call CyclesTime(.Range(RawCyclesTimeRange))
+                numcycles = update_numcycles(WBSlp)
+                
+                Call CyclesTime(.Range(RawCyclesTimeRange_function(numcycles)), numcycles)
                 
                 'Subtracting 202 blank average from sample (and internal standard) signal
-                For Each G In .Range(RawHg202Range)
-                    If Not G = "" Then
+                If Isotope202Analyzed_UPb = True Then
+                    If BlanksRecordedSamples_UPb = False Then
                         i = WorksheetFunction.Average(BlkCalc_Sh.Range(BlkColumn2 & Blk1), BlkCalc_Sh.Range(BlkColumn2 & Blk2)) 'UPDATE
-                        
-                        If i < 0 Then i = 0
-                        
-                        G = G - i
-                                                
-                            If G <= 0 Then
-                                G = 1
-                            End If
+                    Else
+                        i = BlkCalc_Sh.Range(BlkColumn2 & Blk1)
                     End If
-                Next
-                                
-                'Subtracting 202 blank average divided by 4.35 from sample 204 (and internal standard) signal
+                        
+                    If i < 0 Then i = 0
+                    
+                    If Detector202_UPb = "Faraday Cup" Then
+                            factor = mVtoCPS_UPb
+                    ElseIf Detector202_UPb = "MIC" Then
+                            factor = 1
+                    End If
+                    
+                    For Each G In .Range(Raw202Range(numcycles))
+                        If Not G = "" Then
+                            
+                            G = G * factor - i
+                                                    
+                                If G <= 0 Then
+                                    G = 1
+                                End If
+                        End If
+                    Next
+                End If
                 
+                'Subtracting 202 blank average divided by 4.35 from sample 204 (and internal standard) signal
+                If Isotope204Analyzed_UPb = True Then
+                
+                    If Detector204_UPb = "Faraday Cup" Then
+                            factor = mVtoCPS_UPb
+                        ElseIf Detector204_UPb = "MIC" Then
+                            factor = 1
+                    End If
+                
+                    If BlanksRecordedSamples_UPb = False Then
                         i = WorksheetFunction.Average(BlkCalc_Sh.Range(BlkColumn2 & Blk1), BlkCalc_Sh.Range(BlkColumn2 & Blk2))
                             i2 = WorksheetFunction.Average(BlkCalc_Sh.Range(BlkColumn4Comm & Blk1), BlkCalc_Sh.Range(BlkColumn4Comm & Blk2))
-                        
-                        If i < 0 Then i = 0
-                            If i2 < 0 Then i2 = 0
-
-                For Each G In .Range(RawPb204Range)
-                        
-                    If BlkSlp202 = True Then 'Means that 202 from both sample and blank will be considered below
-                        Extra202 = .Cells(G.Row, .Range(RawHg202Range).Column)
-                    ElseIf BlkSlp202 = False Then
-                        Extra202 = 0
+                    Else
+                        i = BlkCalc_Sh.Range(BlkColumn2 & Blk1)
+                            i2 = BlkCalc_Sh.Range(BlkColumn4Comm & Blk1)
                     End If
-
-                    If Not G = "" Then
-                        G = G - ((i + Extra202) / RatioMercury_UPb) - i2
-                            If G <= 0 Then
-                                G = 1
-                            End If
+                    
+                    If Isotope202Analyzed_UPb = False Then 'I am not sure if this is necessary, because if the cell is empty, then its value is 0.
+                        i = 0
                     End If
-                Next
+                    
+                    If i < 0 Then i = 0
+                        If i2 < 0 Then i2 = 0
+    
+                    For Each G In .Range(Raw204Range(numcycles))
+                            
+                        If BlkSlp202 = True And Isotope202Analyzed_UPb = True Then  'Means that 202 from both sample and blank will be considered below
+                            Extra202 = .Cells(G.Row, .Range(RawHg202Range).Column) 'The rawHg202RAnge here does not need to be updated because only its column it's necessary
+                        ElseIf BlkSlp202 = False Or Isotope202Analyzed_UPb = False Then
+                            Extra202 = 0
+                        End If
+    
+                        If Not G = "" Then
+                            G = G * factor - ((i + Extra202) / RatioMercury_UPb) - i2
+                                If G <= 0 Then
+                                    G = 1
+                                End If
+                        End If
+                    Next
+                    
+                End If
                                                     
                 'Subtracting 206 blank average from sample (and internal standard) signal and multiplying signal by mvtoCPS
                 'constant, if 206 was analysed using MIC
 '                If Detector206_UPb = "MIC" Then
-                    i = WorksheetFunction.Average(BlkCalc_Sh.Range(BlkColumn6 & Blk1), BlkCalc_Sh.Range(BlkColumn6 & Blk2))
-                        If i < 0 Then i = 0
-
-'                    Else: i = 0
-'
-'                End If
                 
-                For Each G In .Range(RawPb206Range)
+                If BlanksRecordedSamples_UPb = False Then
+                    i = WorksheetFunction.Average(BlkCalc_Sh.Range(BlkColumn6 & Blk1), BlkCalc_Sh.Range(BlkColumn6 & Blk2))
+                Else
+                    i = BlkCalc_Sh.Range(BlkColumn6 & Blk1)
+                End If
+                
+                If i < 0 Then i = 0
+                
+                If Detector206_UPb = "Faraday Cup" Then
+                        factor = mVtoCPS_UPb
+                ElseIf Detector206_UPb = "MIC" Then
+                        factor = 1
+                End If
+                
+                For Each G In .Range(Raw206Range(numcycles))
                     If Not G = "" Then
-                        G = G * H - i
+                        G = G * factor - i
                             If G <= 0 Then
                                 G = 1
                             End If
@@ -545,13 +584,23 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                 Next
                                     
                 'Subtracting 207 blank average from sample (and internal standard) signal
+                If BlanksRecordedSamples_UPb = False Then
+                    i = WorksheetFunction.Average(BlkCalc_Sh.Range(BlkColumn7 & Blk1), BlkCalc_Sh.Range(BlkColumn7 & Blk2))
+                Else
+                    i = BlkCalc_Sh.Range(BlkColumn7 & Blk1)
+                End If
                 
-                i = WorksheetFunction.Average(BlkCalc_Sh.Range(BlkColumn7 & Blk1), BlkCalc_Sh.Range(BlkColumn7 & Blk2))
                     If i < 0 Then i = 0
                     
-                For Each G In .Range(RawPb207Range)
+                If Detector207_UPb = "Faraday Cup" Then
+                        factor = mVtoCPS_UPb
+                ElseIf Detector207_UPb = "MIC" Then
+                        factor = 1
+                End If
+                    
+                For Each G In .Range(Raw207Range(numcycles))
                     If Not G = "" Then
-                        G = G - i
+                        G = G * factor - i
                             If G <= 0 Then
                                 G = 1
                             End If
@@ -559,13 +608,25 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                 Next
 
                 'Subtracting 208 blank average from sample (and internal standard) signal
-                If Isotope208analyzed = True Then
-                    i = WorksheetFunction.Average(BlkCalc_Sh.Range(BlkColumn8 & Blk1), BlkCalc_Sh.Range(BlkColumn8 & Blk2))
-                        If i < 0 Then i = 0
+                If Isotope208Analyzed_UPb = True Then
                     
-                    For Each G In .Range(RawPb208Range)
+                    If BlanksRecordedSamples_UPb = False Then
+                        i = WorksheetFunction.Average(BlkCalc_Sh.Range(BlkColumn8 & Blk1), BlkCalc_Sh.Range(BlkColumn8 & Blk2))
+                    Else
+                        i = BlkCalc_Sh.Range(BlkColumn8 & Blk1)
+                    End If
+                    
+                        If i < 0 Then i = 0
+                        
+                    If Detector208_UPb = "Faraday Cup" Then
+                            factor = mVtoCPS_UPb
+                    ElseIf Detector208_UPb = "MIC" Then
+                            factor = 1
+                    End If
+                    
+                    For Each G In .Range(Raw208Range(numcycles))
                         If Not G = "" Then
-                            G = G - i
+                            G = G * factor - i
                                 If G <= 0 Then
                                     G = 0
                                 End If
@@ -574,10 +635,17 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                 End If
                 
                 'Multiplying 232 from sample (and internal standard) signal by MvtoCPS constant
-                If Isotope232analyzed = True Then
-                    For Each G In .Range(RawTh232Range)
+                If Isotope232Analyzed_UPb = True Then
+                
+                    If Detector232_UPb = "Faraday Cup" Then
+                            factor = mVtoCPS_UPb
+                    ElseIf Detector232_UPb = "MIC" Then
+                            factor = 1
+                    End If
+                    
+                    For Each G In .Range(Raw232Range(numcycles))
                         If Not G = "" Then
-                            G = G * mVtoCPS_UPb
+                            G = G * factor
                                 If G <= 0 Then
                                     G = 1
                                 End If
@@ -586,9 +654,15 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                 End If
                 
                 'Multiplying 238 from sample (and internal standard) signal by MvtoCPS constant
-                For Each G In .Range(RawU238Range)
+                If Detector238_UPb = "Faraday Cup" Then
+                        factor = mVtoCPS_UPb
+                ElseIf Detector238_UPb = "MIC" Then
+                        factor = 1
+                End If
+                    
+                For Each G In .Range(Raw238Range(numcycles))
                     If Not G = "" Then
-                        G = G * mVtoCPS_UPb
+                        G = G * factor
                             If G <= 0 Then
                                 G = 1
                             End If
@@ -636,6 +710,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
     Dim SearchStr As Integer 'Variable used to search for (%) in headers
     Dim RangeUnionHeaders As Range 'Range with headers
     Dim A_Header As Range 'Variable used to loop through headers
+    Dim numcycles As Integer
     
     'The code below clears the entire SlpStdBlkCorr sheet and changes the uncertanties headers units to "(abs)".
         SearchStr = InStr(SlpStdBlkCorr_Sh.Range(StdCorr_Column681Std & HeaderRow), "(%)")
@@ -709,48 +784,68 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
             End With
                 'Debug.Assert a <> 2
                 With WBSlp.Worksheets(1)
-                
-'                    For Each o In .Range(RawCyclesTimeRange)
-'                        o = TimeCustomFormat(o, "hh:mm:ss:ms(xxx)")
-'                    Next
+                                   
+                    numcycles = update_numcycles(WBSlp)
                     
-                    Call CyclesTime(.Range(RawCyclesTimeRange))
+                    Call CyclesTime(.Range(RawCyclesTimeRange_function(numcycles)), numcycles)
                     
                     'Subtracting 202 blank average from external standard signal
-                    i = BlkCalc_Sh.Range(BlkColumn2 & Blk1)
-                        If i < 0 Then i = 0
-                    For Each G In .Range(RawHg202Range)
-                        If Not G = "" Then
-                            G = G - i
-                                If G <= 0 Then
-                                    G = 1
-                                End If
-                        End If
-                    Next
-                                        
+                    If Isotope202Analyzed_UPb = True Then
+                        i = BlkCalc_Sh.Range(BlkColumn2 & Blk1)
+                            If i < 0 Then i = 0
+                            
+                    If Detector202_UPb = "Faraday Cup" Then
+                            factor = mVtoCPS_UPb
+                    ElseIf Detector202_UPb = "MIC" Then
+                            factor = 1
+                    End If
+                    
+                        For Each G In .Range(Raw202Range(numcycles))
+                            If Not G = "" Then
+                                G = G * factor - i
+                                    If G <= 0 Then
+                                        G = 1
+                                    End If
+                            End If
+                        Next
+                    End If
+                    
                     '204Pb
                     'Subtracting 202 blank average divided by 4.35 from sample (and internal standard) 204 signal
                     'k = -(.Range(RawPb204Range).Column - .Range(RawHg202Range).Column / RatioMercury_UPb)
-                    i = BlkCalc_Sh.Range(BlkColumn2 & Blk1)
-                        If i < 0 Then i = 0
-                    i2 = BlkCalc_Sh.Range(BlkColumn4Comm & Blk1)
-                        If i2 < 0 Then i2 = 0
-                        
-                    For Each G In .Range(RawPb204Range)
+                    If Isotope204Analyzed_UPb = True Then
                     
-                        If BlkSlp202 = True Then 'Means that 202 from both sample and blank will be considered below
-                            Extra202 = .Cells(G.Row, .Range(RawHg202Range).Column)
-                        ElseIf BlkSlp202 = False Then
-                            Extra202 = 0
+                        If Detector204_UPb = "Faraday Cup" Then
+                                factor = mVtoCPS_UPb
+                            ElseIf Detector204_UPb = "MIC" Then
+                                factor = 1
                         End If
 
-                        If Not G = "" Then
-                            G = G - ((i + Extra202) / RatioMercury_UPb) - i2 '- ((BlkCalc_Sh.Range(BlkColumn4 & Blk1) - i / RatioMercury_UPb))
-                                If G <= 0 Then
-                                    G = 1
-                                End If
+                        i = BlkCalc_Sh.Range(BlkColumn2 & Blk1)
+                            If i < 0 Then i = 0
+                        i2 = BlkCalc_Sh.Range(BlkColumn4Comm & Blk1)
+                            If i2 < 0 Then i2 = 0
+                            
+                        If Isotope202Analyzed_UPb = False Then 'I am not sure if this is necessary, because if the cell is empty, then its value is 0.
+                            i = 0
                         End If
-                    Next
+                            
+                        For Each G In .Range(Raw204Range(numcycles))
+                        
+                            If BlkSlp202 = True Then 'Means that 202 from both sample and blank will be considered below
+                                Extra202 = .Cells(G.Row, .Range(RawHg202Range).Column)
+                            ElseIf BlkSlp202 = False Then
+                                Extra202 = 0
+                            End If
+    
+                            If Not G = "" Then
+                                G = G * factor - ((i + Extra202) / RatioMercury_UPb) - i2 '- ((BlkCalc_Sh.Range(BlkColumn4 & Blk1) - i / RatioMercury_UPb))
+                                    If G <= 0 Then
+                                        G = 1
+                                    End If
+                            End If
+                        Next
+                    End If
                                         
                     'Subtracting 206 blank average from sample (and internal standard) signal and multiplying signal by mvtoCPS
                     'constant, if 206 was analysed using MIC
@@ -761,10 +856,16 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
 '                        Else: i = 0
 '
 '                    End If
+
+                    If Detector206_UPb = "Faraday Cup" Then
+                        factor = mVtoCPS_UPb
+                    ElseIf Detector206_UPb = "MIC" Then
+                        factor = 1
+                    End If
                     
-                    For Each G In .Range(RawPb206Range)
+                    For Each G In .Range(Raw206Range(numcycles))
                         If Not G = "" Then
-                            G = G * H - i
+                            G = G * factor - i
                                 If G <= 0 Then
                                     G = 1
                                 End If
@@ -774,10 +875,16 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                     'Subtracting 207 blank average from sample (and internal standard) signal
                         i = BlkCalc_Sh.Range(BlkColumn7 & Blk1)
                             If i < 0 Then i = 0
+                            
+                    If Detector207_UPb = "Faraday Cup" Then
+                        factor = mVtoCPS_UPb
+                    ElseIf Detector207_UPb = "MIC" Then
+                        factor = 1
+                    End If
 
-                    For Each G In .Range(RawPb207Range)
+                    For Each G In .Range(Raw207Range(numcycles))
                         If Not G = "" Then
-                            G = G - i
+                            G = G * factor - i
                                 If G <= 0 Then
                                     G = 1
                                 End If
@@ -785,13 +892,19 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                     Next
 
                     'Subtracting 208 blank average from sample (and internal standard) signal
-                    If Isotope208analyzed = True Then
+                    If Isotope208Analyzed_UPb = True Then
                             i = BlkCalc_Sh.Range(BlkColumn8 & Blk1)
                                 If i < 0 Then i = 0
+                                
+                        If Detector208_UPb = "Faraday Cup" Then
+                            factor = mVtoCPS_UPb
+                        ElseIf Detector208_UPb = "MIC" Then
+                            factor = 1
+                        End If
     
-                        For Each G In .Range(RawPb208Range)
+                        For Each G In .Range(Raw208Range(numcycles))
                             If Not G = "" Then
-                                G = G - i
+                                G = G * factor - i
                                     If G <= 0 Then
                                         G = 0
                                     End If
@@ -800,10 +913,17 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                     End If
                     
                     'Multiplying 232 from sample (and internal standard) signal by MvtoCPS constant
-                    If Isotope232analyzed = True Then
-                        For Each G In .Range(RawTh232Range)
+                    If Isotope232Analyzed_UPb = True Then
+                    
+                        If Detector232_UPb = "Faraday Cup" Then
+                            factor = mVtoCPS_UPb
+                        ElseIf Detector232_UPb = "MIC" Then
+                            factor = 1
+                        End If
+                        
+                        For Each G In .Range(Raw232Range(numcycles))
                             If Not G = "" Then
-                                G = G * mVtoCPS_UPb
+                                G = G * factor
                                     If G <= 0 Then
                                         G = 1
                                     End If
@@ -812,9 +932,16 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                     End If
                     
                     'Multiplying 238 from sample (and internal standard) signal by MvtoCPS constant
-                    For Each G In .Range(RawU238Range)
+                    For Each G In .Range(Raw238Range(numcycles))
+                    
+                        If Detector238_UPb = "Faraday Cup" Then
+                            factor = mVtoCPS_UPb
+                        ElseIf Detector238_UPb = "MIC" Then
+                            factor = 1
+                        End If
+                        
                         If Not G = "" Then
-                            G = G * mVtoCPS_UPb
+                            G = G * factor
                                 If G <= 0 Then
                                     G = 1
                                 End If
@@ -849,23 +976,58 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal C As Integer, Acquisition
     'ALL UNCERTANTIES ARE CALCULATED AS PERCENTAGE
     
     Dim a As Double
-    Dim B As Double
+    Dim b As Double
     Dim OriginalY_ValuesRange As Range 'The range before calling the NonEmptyCellsRange procedure.
     Dim OriginalX_ValuesRange As Range 'The range before calling the NonEmptyCellsRange procedure.
     Dim Y_ValuesRange As Range
     Dim X_ValuesRange As Range
     Dim Y2_ValuesRange As Range
     Dim ClearRange As Range
-    Dim TEMP As Long
+    Dim temp As Long
+    Dim numcycles As Integer
+    
+    numcycles = update_numcycles(Sh.Parent)
+    
+'    Public RawPb206Range_updated As Range
+'    Public RawPb208Range_updated As Range
+'    Public RawTh232Range_updated As Range
+'    Public RawU238Range_updated As Range
+'    Public RawHg202Range_updated As Range
+'    Public RawPb204Range_updated As Range
+'    Public RawPb207Range_updated As Range
+'    Public RawCyclesTimeRange_updated As Range
+
+     RawPb206Range_updated = Raw206Range(numcycles)
+     
+     If Isotope208Analyzed_UPb = True Then
+        RawPb208Range_updated = Raw208Range(numcycles)
+     End If
+     
+     If Isotope232Analyzed_UPb = True Then
+        RawTh232Range_updated = Raw232Range(numcycles)
+     End If
+     
+     RawU238Range_updated = Raw238Range(numcycles)
+     
+     If Isotope202Analyzed_UPb = True Then
+         RawHg202Range_updated = Raw202Range(numcycles)
+     End If
+     
+     If Isotope204Analyzed_UPb = True Then
+        RawPb204Range_updated = Raw204Range(numcycles)
+     End If
+     
+     RawPb207Range_updated = Raw207Range(numcycles)
+     RawCyclesTimeRange_updated = RawCyclesTimeRange_function(numcycles)
     
     With Sh
-            
+                
         'In the beginning, Y_ValuesRange and OriginalY_ValuesRange are set to the same range but this changes during code execution
-        Set Y_ValuesRange = .Range(.Range(CalculationFirstCell), .Range(CalculationColumn & RawNumberCycles_UPb))
-        Set OriginalY_ValuesRange = .Range(.Range(CalculationFirstCell), .Range(CalculationColumn & RawNumberCycles_UPb))
+        Set Y_ValuesRange = .Range(.Range(CalculationFirstCell), .Range(CalculationColumn & numcycles))
+        Set OriginalY_ValuesRange = .Range(.Range(CalculationFirstCell), .Range(CalculationColumn & numcycles))
         
-        Set X_ValuesRange = .Range(RawCyclesTimeRange)
-        Set OriginalX_ValuesRange = .Range(RawCyclesTimeRange)
+        Set X_ValuesRange = .Range(RawCyclesTimeRange_updated)
+        Set OriginalX_ValuesRange = .Range(RawCyclesTimeRange_updated)
         
         Set ClearRange = .Range(OriginalY_ValuesRange, OriginalY_ValuesRange.Offset(, 2))
         
@@ -873,7 +1035,7 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal C As Integer, Acquisition
         
         ClearRange.ClearContents
         
-        Call MatchValidRangeItems(.Range(RawPb206Range), .Range(RawU238Range), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
+        Call MatchValidRangeItems(.Range(RawPb206Range_updated), .Range(RawU238Range_updated), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
         Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
         Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
         Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
@@ -913,7 +1075,7 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal C As Integer, Acquisition
         'Ratio 76
         ClearRange.ClearContents
         
-        Call MatchValidRangeItems(.Range(RawPb207Range), .Range(RawPb206Range), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
+        Call MatchValidRangeItems(.Range(RawPb207Range_updated), .Range(RawPb206Range_updated), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
         Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
         Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
         Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
@@ -947,74 +1109,78 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal C As Integer, Acquisition
             (SlpStdBlkCorr_Sh.Range(Column751Std & C) / SlpStdBlkCorr_Sh.Range(Column75 & C)))
 
         '202 signal intensity
-        ClearRange.ClearContents
-        
-            .Range(RawHg202Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
-                Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
-
-'            '202 average error propagation
-
-                    On Error Resume Next
-                    
-                    SlpStdBlkCorr_Sh.Range(Column2 & C) = WorksheetFunction.Average(Y_ValuesRange) '202 average
-                    
-                    If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column2 & C) = "n.a."
-                    End If
+        If Isotope202Analyzed_UPb = True Then
+            ClearRange.ClearContents
             
-            '202 average error propagation
-                    
-                    Err.Clear
-                    
-                    SlpStdBlkCorr_Sh.Range(Column21Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
-                        WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
-                            Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
-                    
-                    If SlpStdBlkCorr_Sh.Range(Column2 & C) = "n.a." Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column21Std & C) = "n.a."
-                    End If
-                    
-                    On Error GoTo 0
+                .Range(RawHg202Range_updated).Copy Destination:=OriginalY_ValuesRange.Item(1)
+                    Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
+    
+    '            '202 average error propagation
+    
+                        On Error Resume Next
+                        
+                        SlpStdBlkCorr_Sh.Range(Column2 & C) = WorksheetFunction.Average(Y_ValuesRange) '202 average
+                        
+                        If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
+                            SlpStdBlkCorr_Sh.Range(Column2 & C) = "n.a."
+                        End If
+                
+                '202 average error propagation
+                        
+                        Err.Clear
+                        
+                        SlpStdBlkCorr_Sh.Range(Column21Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                            WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
+                                Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
+                        
+                        If SlpStdBlkCorr_Sh.Range(Column2 & C) = "n.a." Or Err.Number <> 0 Then
+                            SlpStdBlkCorr_Sh.Range(Column21Std & C) = "n.a."
+                        End If
+                        
+                        On Error GoTo 0
+        End If
             
            
         '204Pb signal intensity
-        ClearRange.ClearContents
-        
-            .Range(RawPb204Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
-                Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
-
-'            '204 average error propagation
+        If Isotope204Analyzed_UPb = True Then
+            ClearRange.ClearContents
             
-                    On Error Resume Next
-                    
-                    SlpStdBlkCorr_Sh.Range(Column4 & C) = WorksheetFunction.Average(Y_ValuesRange) '204 average
-                    
-                    If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column4 & C) = "n.a."
-                    End If
-            
-            '204 average error propagation
-                    
-                    Err.Clear
-                    
-                    SlpStdBlkCorr_Sh.Range(Column41Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
-                        WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
-                            Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
-                    
-                    If SlpStdBlkCorr_Sh.Range(Column4 & C) = "n.a." Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column41Std & C) = "n.a."
-                    End If
-                    
-                    Err.Clear
-                    
-                    On Error GoTo 0
+                .Range(RawPb204Range_updated).Copy Destination:=OriginalY_ValuesRange.Item(1)
+                    Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
+    
+    '            '204 average error propagation
+                
+                        On Error Resume Next
+                        
+                        SlpStdBlkCorr_Sh.Range(Column4 & C) = WorksheetFunction.Average(Y_ValuesRange) '204 average
+                        
+                        If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
+                            SlpStdBlkCorr_Sh.Range(Column4 & C) = "n.a."
+                        End If
+                
+                '204 average error propagation
+                        
+                        Err.Clear
+                        
+                        SlpStdBlkCorr_Sh.Range(Column41Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                            WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
+                                Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
+                        
+                        If SlpStdBlkCorr_Sh.Range(Column4 & C) = "n.a." Or Err.Number <> 0 Then
+                            SlpStdBlkCorr_Sh.Range(Column41Std & C) = "n.a."
+                        End If
+                        
+                        Err.Clear
+                        
+                        On Error GoTo 0
+        End If
             
             
         '206Pb signal intensity
                             
         ClearRange.ClearContents
         
-            .Range(RawPb206Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
+            .Range(RawPb206Range_updated).Copy Destination:=OriginalY_ValuesRange.Item(1)
                 Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1).Item(1), Sh, True)
 
 '            '206 average error propagation
@@ -1044,11 +1210,11 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal C As Integer, Acquisition
             
         '207Pb signal intensity
                             
-        'SlpStdBlkCorr_Sh.Range(Column7 & c) = WorksheetFunction.Average(.Range(RawPb207Range))
+        'SlpStdBlkCorr_Sh.Range(Column7 & c) = WorksheetFunction.Average(.Range(RawPb207Range_updated))
         ClearRange.ClearContents
 '        OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
         
-            .Range(RawPb207Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
+            .Range(RawPb207Range_updated).Copy Destination:=OriginalY_ValuesRange.Item(1)
                 Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
 '                    SlpStdBlkCorr_Sh.Range(Column7 & c) = WorksheetFunction.Average(Y_ValuesRange) '207 average
 '
@@ -1079,11 +1245,11 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal C As Integer, Acquisition
                     On Error GoTo 0
 
         '208Pb signal intensity
-        If Isotope208analyzed = True Then
-            'SlpStdBlkCorr_Sh.Range(Column8 & c) = WorksheetFunction.Average(.Range(RawPb208Range))
+        If Isotope208Analyzed_UPb = True Then
+            'SlpStdBlkCorr_Sh.Range(Column8 & c) = WorksheetFunction.Average(.Range(RawPb208Range_updated))
             OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
             
-                .Range(RawPb208Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
+                .Range(RawPb208Range_updated).Copy Destination:=OriginalY_ValuesRange.Item(1)
                     Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
                         
                         On Error Resume Next
@@ -1111,12 +1277,12 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal C As Integer, Acquisition
         End If
         
         '232Th signal intensity
-        If Isotope232analyzed = True Then
+        If Isotope232Analyzed_UPb = True Then
                             
-            'SlpStdBlkCorr_Sh.Range(Column32 & c) = WorksheetFunction.Average(.Range(RawTh232Range))
+            'SlpStdBlkCorr_Sh.Range(Column32 & c) = WorksheetFunction.Average(.Range(RawTh232Range_updated))
             OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
             
-                .Range(RawTh232Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
+                .Range(RawTh232Range_updated).Copy Destination:=OriginalY_ValuesRange.Item(1)
                     Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
     '                    SlpStdBlkCorr_Sh.Range(Column32 & c) = WorksheetFunction.Average(Y_ValuesRange) '232 average
     
@@ -1148,10 +1314,10 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal C As Integer, Acquisition
             
         '238U signal intensity
                             
-        'SlpStdBlkCorr_Sh.Range(Column38 & c) = WorksheetFunction.Average(.Range(RawU238Range))
+        'SlpStdBlkCorr_Sh.Range(Column38 & c) = WorksheetFunction.Average(.Range(RawU238Range_updated))
         OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
         
-            .Range(RawU238Range).Copy Destination:=OriginalY_ValuesRange.Item(1)
+            .Range(RawU238Range_updated).Copy Destination:=OriginalY_ValuesRange.Item(1)
                 Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
                     SlpStdBlkCorr_Sh.Range(Column38 & C) = WorksheetFunction.Average(Y_ValuesRange) '238 average
 
@@ -1183,103 +1349,98 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal C As Integer, Acquisition
                     
                     On Error GoTo 0
 
-        'Ratio 64
-        
-'        OriginalY_ValuesRange.Clear 'Cleaning column used to calculate 'Cleaning columns used to calculate
-        
-'        .Range(RawPb206Range).Copy Destination:=.Range(CalculationFirstCell) 'Copying 206 signal to CalculationColumn
-'            .Range(RawPb204Range).Copy
-'                .Range(CalculationFirstCell).PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide 'Pasting 204 signal divinding 207
-'                    SlpStdBlkCorr_Sh.Range(Column64 & c) = WorksheetFunction.Average(Y_ValuesRange) 'Average of 64 ratio
-'
-        OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
-        
-        Call MatchValidRangeItems(.Range(RawPb206Range), .Range(RawPb204Range), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
-        Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
-        Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
-        Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
-        
-            Y2_ValuesRange.Copy
-                Y_ValuesRange.PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide
-                
-'                    SlpStdBlkCorr_Sh.Range(Column64 & c) = WorksheetFunction.Average(Y_ValuesRange) 'Average of 64 ratio
-'
-'            '64 average error propagation
-'            SlpStdBlkCorr_Sh.Range(Column641Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange)
-            
-                    On Error Resume Next
-                    
-                    SlpStdBlkCorr_Sh.Range(Column64 & C) = WorksheetFunction.Average(Y_ValuesRange) '64 average
-                    
-                    If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column64 & C) = "n.a."
-                    End If
-            
-            '64 average error propagation
-                    
-                    Err.Clear
-                    
-                    SlpStdBlkCorr_Sh.Range(Column641Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
-                        WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
-                            Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
-                    
-                    If SlpStdBlkCorr_Sh.Range(Column64 & C) = "n.a." Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column641Std & C) = "n.a."
-                    End If
-                    
-                    
-                    On Error GoTo 0
-        
-        'Ratio 74
-        
-'        OriginalY_ValuesRange.Clear 'Cleaning column used to calculate
-'
-'        .Range(RawPb207Range).Copy Destination:=.Range(CalculationFirstCell) 'Copying 207 signal to CalculationColumn
-'            .Range(RawPb204Range).Copy
-'                .Range(CalculationFirstCell).PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide 'Pasting 204 signal divinding 207
-                
-        OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
-        
-        Call MatchValidRangeItems(.Range(RawPb207Range), .Range(RawPb204Range), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
-        Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
-        Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
-        Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
-        
-            Y2_ValuesRange.Copy
-                Y_ValuesRange.PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide
-                
-'                    SlpStdBlkCorr_Sh.Range(Column74 & c) = WorksheetFunction.Average(Y_ValuesRange) 'Average of 74 ratio
-'
-'            '74 average error propagation
-'            SlpStdBlkCorr_Sh.Range(Column741Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange)
-            
-                    On Error Resume Next
-                    
-                    SlpStdBlkCorr_Sh.Range(Column74 & C) = WorksheetFunction.Average(Y_ValuesRange) '74 average
-                    
-                    If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column74 & C) = "n.a."
-                    End If
-            
-            '74 average error propagation
-                    
-                    Err.Clear
-                    
-                    SlpStdBlkCorr_Sh.Range(Column741Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
-                        WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
-                            Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
-                    
-                    If SlpStdBlkCorr_Sh.Range(Column74 & C) = "n.a." Or Err.Number <> 0 Then
-                        SlpStdBlkCorr_Sh.Range(Column741Std & C) = "n.a."
-                    End If
-                    
-                    On Error GoTo 0
-
-        'Ratio 28
-        If Isotope232analyzed = True Then
+        If Isotope204Analyzed_UPb = True Then
+            'Ratio 64
+    
             OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
             
-            Call MatchValidRangeItems(.Range(RawTh232Range), .Range(RawU238Range), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
+            Call MatchValidRangeItems(.Range(RawPb206Range_updated), .Range(RawPb204Range_updated), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
+            Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
+            Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
+            Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
+            
+                Y2_ValuesRange.Copy
+                    Y_ValuesRange.PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide
+                    
+    '                    SlpStdBlkCorr_Sh.Range(Column64 & c) = WorksheetFunction.Average(Y_ValuesRange) 'Average of 64 ratio
+    '
+    '            '64 average error propagation
+    '            SlpStdBlkCorr_Sh.Range(Column641Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange)
+                
+                        On Error Resume Next
+                        
+                        SlpStdBlkCorr_Sh.Range(Column64 & C) = WorksheetFunction.Average(Y_ValuesRange) '64 average
+                        
+                        If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
+                            SlpStdBlkCorr_Sh.Range(Column64 & C) = "n.a."
+                        End If
+                
+                '64 average error propagation
+                        
+                        Err.Clear
+                        
+                        SlpStdBlkCorr_Sh.Range(Column641Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                            WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
+                                Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
+                        
+                        If SlpStdBlkCorr_Sh.Range(Column64 & C) = "n.a." Or Err.Number <> 0 Then
+                            SlpStdBlkCorr_Sh.Range(Column641Std & C) = "n.a."
+                        End If
+                        
+                        
+                        On Error GoTo 0
+            
+            'Ratio 74
+            
+    '        OriginalY_ValuesRange.Clear 'Cleaning column used to calculate
+    '
+    '        .Range(RawPb207Range_updated).Copy Destination:=.Range(CalculationFirstCell) 'Copying 207 signal to CalculationColumn
+    '            .Range(RawPb204Range_updated).Copy
+    '                .Range(CalculationFirstCell).PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide 'Pasting 204 signal divinding 207
+                    
+            OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
+            
+            Call MatchValidRangeItems(.Range(RawPb207Range_updated), .Range(RawPb204Range_updated), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
+            Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
+            Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
+            Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
+            
+                Y2_ValuesRange.Copy
+                    Y_ValuesRange.PasteSpecial Paste:=xlPasteAll, Operation:=xlDivide
+                    
+    '                    SlpStdBlkCorr_Sh.Range(Column74 & c) = WorksheetFunction.Average(Y_ValuesRange) 'Average of 74 ratio
+    '
+    '            '74 average error propagation
+    '            SlpStdBlkCorr_Sh.Range(Column741Std & c) = WorksheetFunction.StDev_S(Y_ValuesRange)
+                
+                        On Error Resume Next
+                        
+                        SlpStdBlkCorr_Sh.Range(Column74 & C) = WorksheetFunction.Average(Y_ValuesRange) '74 average
+                        
+                        If WorksheetFunction.Average(Y_ValuesRange) = 0 Or Err.Number <> 0 Then
+                            SlpStdBlkCorr_Sh.Range(Column74 & C) = "n.a."
+                        End If
+                
+                '74 average error propagation
+                        
+                        Err.Clear
+                        
+                        SlpStdBlkCorr_Sh.Range(Column741Std & C) = WorksheetFunction.StDev_S(Y_ValuesRange) * _
+                            WorksheetFunction.T_Inv_2T(ConfLevel, WorksheetFunction.count(Y_ValuesRange) - 1) / _
+                                Sqr(WorksheetFunction.count(Y_ValuesRange)) 'Standard error
+                        
+                        If SlpStdBlkCorr_Sh.Range(Column74 & C) = "n.a." Or Err.Number <> 0 Then
+                            SlpStdBlkCorr_Sh.Range(Column741Std & C) = "n.a."
+                        End If
+                        
+                        On Error GoTo 0
+        End If
+
+        'Ratio 28
+        If Isotope232Analyzed_UPb = True Then
+            OriginalY_ValuesRange.Clear: OriginalY_ValuesRange.Offset(, 1).Clear 'Cleaning columns used to calculate
+            
+            Call MatchValidRangeItems(.Range(RawTh232Range_updated), .Range(RawU238Range_updated), OriginalX_ValuesRange, Sh, .Range(CalculationFirstCell))
             Set Y_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange, OriginalY_ValuesRange.Item(1), Sh, True)
             Set Y2_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 1), OriginalY_ValuesRange.Offset(, 1).Item(1), Sh, True)
             Set X_ValuesRange = NonEmptyCellsRange(OriginalY_ValuesRange.Offset(, 2), OriginalY_ValuesRange.Offset(, 2).Item(1), Sh, True)
@@ -1325,7 +1486,7 @@ Sub CalcBlank()
     
     Dim a As Variant
     Dim C As Integer
-    Dim B As Workbook 'The workbook opened
+    Dim analysis_workbook As Workbook 'The workbook opened
     Dim d As Single
     Dim E As Double
     Dim SearchStr As Integer
@@ -1333,6 +1494,7 @@ Sub CalcBlank()
     Dim RangeUnionHeaders As Range
     Dim SelectedRange As Range
     Dim CountCells As Integer
+    Dim numcycles As Integer
     
     Dim Blanks() As Integer 'Array with blanks IDs
     Dim VarCovarArray As Variant
@@ -1370,7 +1532,7 @@ Sub CalcBlank()
         C = C + 1
             
             On Error Resume Next
-                Set B = Workbooks.Open(PathsNamesIDsTimesCycles(RawDataFilesPaths, a)) 'ActiveWorkbook
+                Set analysis_workbook = Workbooks.Open(PathsNamesIDsTimesCycles(RawDataFilesPaths, a)) 'ActiveWorkbook
                     If Err.Number <> 0 Then
                         MsgBox MissingFile1 & PathsNamesIDsTimesCycles(RawDataFilesPaths, a) & MissingFile2
                             Call UpdateFilesAddresses
@@ -1379,7 +1541,7 @@ Sub CalcBlank()
                     End If
             On Error GoTo 0
 
-            Call ClearCycles(B, PathsNamesIDsTimesCycles(Cycles, a)) 'Any cycles that should be discarded from the blanks will be now
+            Call ClearCycles(analysis_workbook, PathsNamesIDsTimesCycles(Cycles, a)) 'Any cycles that should be discarded from the blanks will be now
             
             ''Application.DisplayAlerts = False
             
@@ -1388,54 +1550,71 @@ Sub CalcBlank()
                 With BlkCalc_Sh
                 
                 'On Error GoTo ErrHandler
+                
+                    numcycles = update_numcycles(analysis_workbook)
                     
                     .Range(BlkSlpName & C) = PathsNamesIDsTimesCycles(FileName, a)
                     
                     .Range(BlkColumnID & C) = a
                     
                     '202-----------------------------------------------------------------------------------
-                    Set SelectedRange = B.Sheets(1).Range(RawHg202Range)
-                    CountCells = WorksheetFunction.count(SelectedRange)
-                    
-                    E = WorksheetFunction.Average(SelectedRange)
-                    
-                        If Not E < 0 Then .Range(BlkColumn2 & C) = E Else: .Range(BlkColumn2 & C) = 0
-                            
-                        'Below it is the standard error (standard deviation divided by square root of  number os analyses)
-                        'multiplied by student's t factor of the assigned confidence
-                        E = WorksheetFunction.StDev_S(SelectedRange) * _
-                            WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
-                                Sqr(CountCells)
+                    If Isotope202Analyzed_UPb = True Then
+                        
+                        If Detector202_UPb = "Faraday Cup" Then
+                                d = mVtoCPS_UPb
+                            ElseIf Detector202_UPb = "MIC" Then
+                                d = 1
+                        End If
+                        
+                        Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw202Range(numcycles))
+                        CountCells = WorksheetFunction.count(SelectedRange)
+                        
+                        E = WorksheetFunction.Average(SelectedRange) * d
+                        
+                            If Not E < 0 Then .Range(BlkColumn2 & C) = E Else: .Range(BlkColumn2 & C) = 0
                                 
-                            If Not E < 0 Then .Range(BlkColumn21Std & C) = E Else: .Range(BlkColumn21Std & C) = 0
+                            'Below it is the standard error (standard deviation divided by square root of  number os analyses)
+                            'multiplied by student's t factor of the assigned confidence
+                            E = WorksheetFunction.StDev_S(SelectedRange) * d * _
+                                WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
+                                    Sqr(CountCells)
+                                    
+                                If Not E < 0 Then .Range(BlkColumn21Std & C) = E Else: .Range(BlkColumn21Std & C) = 0
+                                
+                    End If
                     
                     '204-----------------------------------------------------------------------------------
-                    Set SelectedRange = B.Sheets(1).Range(RawPb204Range)
-                    CountCells = WorksheetFunction.count(SelectedRange)
+                    If Isotope204Analyzed_UPb = True Then
                     
-                    E = WorksheetFunction.Average(SelectedRange)
-                        If Not E < 0 Then .Range(BlkColumn4 & C) = E Else: .Range(BlkColumn4 & C) = 0
-                    
-                        'Below it is the standard error (standard deviation divided by square root of  number os analyses)
-                        'multiplied by student's t factor of the assigned confidence
-                        E = WorksheetFunction.StDev_S(SelectedRange) * _
-                            WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
-                                Sqr(CountCells)
-                                
-                            If Not E < 0 Then .Range(BlkColumn41Std & C) = E Else: .Range(BlkColumn41Std & C) = 0
+                        If Detector204_UPb = "Faraday Cup" Then
+                                d = mVtoCPS_UPb
+                            ElseIf Detector204_UPb = "MIC" Then
+                                d = 1
+                        End If
+                        
+                        Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw204Range(numcycles))
+                        CountCells = WorksheetFunction.count(SelectedRange)
+                        
+                        E = WorksheetFunction.Average(SelectedRange) * d
+                            If Not E < 0 Then .Range(BlkColumn4 & C) = E Else: .Range(BlkColumn4 & C) = 0
+                        
+                            'Below it is the standard error (standard deviation divided by square root of  number os analyses)
+                            'multiplied by student's t factor of the assigned confidence
+                            E = WorksheetFunction.StDev_S(SelectedRange) * d * _
+                                WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
+                                    Sqr(CountCells)
+                                    
+                                If Not E < 0 Then .Range(BlkColumn41Std & C) = E Else: .Range(BlkColumn41Std & C) = 0
+                    End If
                     
                     '206-----------------------------------------------------------------------------------
                     If Detector206_UPb = "Faraday Cup" Then
                             d = mVtoCPS_UPb
                         ElseIf Detector206_UPb = "MIC" Then
                             d = 1
-                        Else
-                            MsgBox "Please, indicate if 206Pb was analyzed using Faraday cup or Ion counter."
-                                Application.GoTo StartANDOptions_Sh.Range("A1")
-                                    End
                     End If
                                         
-                    Set SelectedRange = B.Sheets(1).Range(RawPb206Range)
+                    Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw206Range(numcycles))
                     CountCells = WorksheetFunction.count(SelectedRange)
 
                         .Range(BlkColumn6 & C) = WorksheetFunction.Average(SelectedRange) * d
@@ -1447,56 +1626,82 @@ Sub CalcBlank()
                                     Sqr(CountCells)
                                         
                     '207-----------------------------------------------------------------------------------
-                    Set SelectedRange = B.Sheets(1).Range(RawPb207Range)
+                    If Detector207_UPb = "Faraday Cup" Then
+                            d = mVtoCPS_UPb
+                        ElseIf Detector207_UPb = "MIC" Then
+                            d = 1
+                    End If
+                    
+                    Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw207Range(numcycles))
                     CountCells = WorksheetFunction.count(SelectedRange)
 
-                        E = WorksheetFunction.Average(SelectedRange)
+                        E = WorksheetFunction.Average(SelectedRange) * d
                         
                             If Not E < 0 Then .Range(BlkColumn7 & C) = E Else: .Range(BlkColumn7 & C) = 0
                 
                             'Below it is the standard error (standard deviation divided by square root of  number os analyses)
                             'multiplied by student's t factor of the assigned confidence
-                            E = WorksheetFunction.StDev_S(SelectedRange) * _
+                            E = WorksheetFunction.StDev_S(SelectedRange) * d * _
                             WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
                                 Sqr(CountCells)
                                 
                             If Not E < 0 Then .Range(BlkColumn71Std & C) = E Else: .Range(BlkColumn71Std & C) = 0
                     
                     '208-----------------------------------------------------------------------------------
-                    If Isotope208analyzed = True Then
-                        Set SelectedRange = B.Sheets(1).Range(RawPb208Range)
+                    If Isotope208Analyzed_UPb = True Then
+                        
+                        If Detector208_UPb = "Faraday Cup" Then
+                                d = mVtoCPS_UPb
+                            ElseIf Detector208_UPb = "MIC" Then
+                                d = 1
+                        End If
+                    
+                        Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw208Range(numcycles))
                         CountCells = WorksheetFunction.count(SelectedRange)
                         
-                            .Range(BlkColumn8 & C) = WorksheetFunction.Average(SelectedRange) * mVtoCPS_UPb
+                            .Range(BlkColumn8 & C) = WorksheetFunction.Average(SelectedRange) * d
                             
                                 'Below it is the standard error (standard deviation divided by square root of  number os analyses)
                                 'multiplied by student's t factor of the assigned confidence
-                                .Range(BlkColumn81Std & C) = WorksheetFunction.StDev_S(SelectedRange) * mVtoCPS_UPb * _
+                                .Range(BlkColumn81Std & C) = WorksheetFunction.StDev_S(SelectedRange) * d * _
                                     WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
                                         Sqr(CountCells)
                     End If
                     '232-----------------------------------------------------------------------------------
-                    If Isotope232analyzed = True Then
-                        Set SelectedRange = B.Sheets(1).Range(RawTh232Range)
+                    If Isotope232Analyzed_UPb = True Then
+                        
+                        If Detector232_UPb = "Faraday Cup" Then
+                                d = mVtoCPS_UPb
+                            ElseIf Detector232_UPb = "MIC" Then
+                                d = 1
+                        End If
+                    
+                        Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw232Range(numcycles))
                         CountCells = WorksheetFunction.count(SelectedRange)
                                     
                             'Below it is the standard error (standard deviation divided by square root of  number os analyses)
                             'multiplied by student's t factor of the assigned confidence
-                            .Range(BlkColumn32 & C) = WorksheetFunction.Average(SelectedRange) * mVtoCPS_UPb
+                            .Range(BlkColumn32 & C) = WorksheetFunction.Average(SelectedRange) * d
         
-                                .Range(BlkColumn321Std & C) = WorksheetFunction.StDev_S(SelectedRange) * mVtoCPS_UPb * _
+                                .Range(BlkColumn321Std & C) = WorksheetFunction.StDev_S(SelectedRange) * d * _
                                     WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
                                         Sqr(CountCells) 'Standard error
                     End If
                     '238-----------------------------------------------------------------------------------
-                    Set SelectedRange = B.Sheets(1).Range(RawU238Range)
+                    If Detector238_UPb = "Faraday Cup" Then
+                            d = mVtoCPS_UPb
+                        ElseIf Detector238_UPb = "MIC" Then
+                            d = 1
+                    End If
+                    
+                    Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw238Range(numcycles))
                     CountCells = WorksheetFunction.count(SelectedRange)
                     
-                        .Range(BlkColumn38 & C) = WorksheetFunction.Average(SelectedRange) * mVtoCPS_UPb
+                        .Range(BlkColumn38 & C) = WorksheetFunction.Average(SelectedRange) * d
  
                             'Below it is the standard error (standard deviation divided by square root of  number os analyses)
                             'multiplied by student's t factor of the assigned confidence
-                            .Range(BlkColumn381Std & C) = WorksheetFunction.StDev_S(SelectedRange) * mVtoCPS_UPb * _
+                            .Range(BlkColumn381Std & C) = WorksheetFunction.StDev_S(SelectedRange) * d * _
                                 WorksheetFunction.T_Inv_2T(ConfLevel, CountCells - 1) / _
                                     Sqr(CountCells) 'Standard error
                     
@@ -1506,7 +1711,7 @@ Sub CalcBlank()
                     
                 End With
                                             
-        B.Close savechanges:=False 'Close raw blank data file without saving any modifications
+        analysis_workbook.Close savechanges:=False 'Close raw blank data file without saving any modifications
         
     Next
         
@@ -1527,9 +1732,9 @@ End Sub
 Sub CalcAllSlp_StdCorr()
     
     Dim a As Integer
-    Dim Counter As Integer
+    Dim counter As Integer
     Dim SamplesID As Range
-    Dim sample As Range
+    Dim Sample As Range
     
     If SlpStdCorr_Sh Is Nothing Then 'We need some public variables, so we must be sure that they were set
         Call PublicVariables
@@ -1547,21 +1752,21 @@ Sub CalcAllSlp_StdCorr()
     End With
 
     On Error Resume Next
-        If AnalysesList(0).sample = "" Then
+        If AnalysesList(0).Sample = "" Then
             Call LoadSamListMap
         End If
     On Error GoTo 0
     
-    Counter = StdCorr_HeaderRow + 1
+    counter = StdCorr_HeaderRow + 1
         
     'ID of sample or internal standard will be pasted to SlpStdCorr
     For a = 1 To UBound(AnalysesList) - 1
         
-        SlpStdCorr_Sh.Range(StdCorr_ColumnID & Counter) = AnalysesList(a).sample 'ID of sample or internal standard will be pasted to SlpStdCorr
+        SlpStdCorr_Sh.Range(StdCorr_ColumnID & counter) = AnalysesList(a).Sample 'ID of sample or internal standard will be pasted to SlpStdCorr
                         
-            SlpStdCorr_Sh.Range(StdCorr_TetaFactor & Counter) = TetaFactor(a)
+            SlpStdCorr_Sh.Range(StdCorr_TetaFactor & counter) = TetaFactor(a)
             
-            Counter = Counter + 1
+            counter = counter + 1
     Next
     
     If SlpStdCorr_Sh.Range(StdCorr_ColumnID & StdCorr_HeaderRow + 1).End(xlDown) = "" Then
@@ -1572,9 +1777,9 @@ Sub CalcAllSlp_StdCorr()
             Set SamplesID = SlpStdCorr_Sh.Range(StdCorr_ColumnID & StdCorr_HeaderRow + 1, SlpStdCorr_Sh.Range(StdCorr_ColumnID & StdCorr_HeaderRow + 1).End(xlDown))
     End If
     
-    For Each sample In SamplesID
+    For Each Sample In SamplesID
         
-        Call CalcSlp_StdCorr(sample, sample.Row, sample.Offset(, 2))
+        Call CalcSlp_StdCorr(Sample, Sample.Row, Sample.Offset(, 2))
     
     Next
 
@@ -1593,7 +1798,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
     'Updated 11/09/2015 - 68 75 concordance added
     
     Dim E As Integer
-    Dim Counter As Integer
+    Dim counter As Integer
     Dim AnalysesListNumber As Integer
     
     Dim P As Range 'Column68 or Column76 or Column2 or Column4 or Column64 or Column74 or Column28
@@ -1673,7 +1878,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
     End If
 
     'on error resume Next
-        If Not WorksheetFunction.IsNumber(AnalysesList(1).sample) = True Then
+        If Not WorksheetFunction.IsNumber(AnalysesList(1).Sample) = True Then
             Call LoadSamListMap
         End If
     'On Error GoTo 0
@@ -1705,28 +1910,28 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
         .Range(StdCorr_SlpName & C) = PathsNamesIDsTimesCycles(FileName, a)
     End With
     
-    Counter = 1
+    counter = 1
     
     'The following 6 lines are used just to check if UPbStd was initialized
     On Error Resume Next
-        Counter = LBound(UPbStd)
+        counter = LBound(UPbStd)
             If Err.Number <> 0 Then
                 Call Load_UPbStandardsTypeList
             End If
     On Error GoTo 0
     
     'The 6 lines below are necessary to adentify the number of the external standard in UpbStd
-    For Counter = LBound(UPbStd) To UBound(UPbStd)
-        If UPbStd(Counter).StandardName = ExternalStandard_UPb Then
-            StdName = Counter
-                Counter = UBound(UPbStd)
+    For counter = LBound(UPbStd) To UBound(UPbStd)
+        If UPbStd(counter).StandardName = ExternalStandard_UPb Then
+            StdName = counter
+                counter = UBound(UPbStd)
         End If
     Next
 
-    Counter = 2
+    counter = 2
             
     For E = 1 To UBound(AnalysesList) 'For each structure used to find the sample inside AnalysesList
-        If a = AnalysesList(E).sample Then
+        If a = AnalysesList(E).Sample Then
             AnalysesListNumber = E 'Using this variable I am able to retrieve from AnalysesList all the IDs that I must know
             E = UBound(AnalysesList) 'A beautiful solution to end the if structure
         End If
@@ -1743,7 +1948,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
 
         For Each SampleID In .Range(ColumnID & HeaderRow + 1, .Range(ColumnID & HeaderRow + 1).End(xlDown))
 
-            If AnalysesList(AnalysesListNumber).sample = SampleID Then
+            If AnalysesList(AnalysesListNumber).Sample = SampleID Then
                 Slp = SampleID.Row
             End If
 
@@ -1771,13 +1976,20 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
                 Blk1 = BlankID.Row
             End If
 
-            If AnalysesList(AnalysesListNumber).Blk2 = BlankID Then
-                Blk2 = BlankID.Row
+            If BlanksRecordedSamples_UPb = False Then
+                If AnalysesList(AnalysesListNumber).Blk2 = BlankID Then
+                    Blk2 = BlankID.Row
+                End If
             End If
 
         Next
         
-        If Blk1 = 0 Or Blk2 = 0 Then
+        If BlanksRecordedSamples_UPb = False And Blk2 = 0 Then
+            MsgBox "Blank with ID=" & BlankID & " was not found in SlpStdBlkCorr sheet."
+                End
+        End If
+        
+        If Blk1 = 0 Then
             MsgBox "Blank with ID=" & BlankID & " was not found in SlpStdBlkCorr sheet."
                 End
         End If
@@ -2407,7 +2619,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
         
         
         'Ratio 28
-        If Isotope232analyzed = True Then
+        If Isotope232Analyzed_UPb = True Then
             Set P = .Range(StdCorr_Column28 & C)
             
                 Set P2 = SlpStdBlkCorr_Sh.Range(Column28 & Slp)
@@ -2587,7 +2799,7 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
     Dim YAverage As Double 'Average of Y points
     Dim YStdDev As Double
     Dim Y68 As Range, Y76 As Range, Y28 As Range, Y74 As Range, Y64 As Range 'Ranges of dependent variables. MUST HAVE ONLY ONE AREA!
-    Dim Counter As Integer
+    Dim counter As Integer
     Dim CellInRange As Range
     Dim lineSlope As Double
     Dim lineIntercept As Double
@@ -2661,17 +2873,17 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
                 
                 StdDev68Ypts = LineFitStdDev(Y68, x)
                 
-                    For Counter = 1 To Y68.count
+                    For counter = 1 To Y68.count
                         
-                        YiPred = LineFitYiPred(Y68, x, x.Item(Counter))
+                        YiPred = LineFitYiPred(Y68, x, x.Item(counter))
                         UpperLimit = YiPred + StdDev68Ypts * StdDevLimit
                         LowerLimit = YiPred - StdDev68Ypts * StdDevLimit
                                         
-                        If Not IsEmpty(Y68.Item(Counter)) Then
+                        If Not IsEmpty(Y68.Item(counter)) Then
                         
-                            If Y68.Item(Counter) > UpperLimit Or Y68.Item(Counter) < LowerLimit Then
+                            If Y68.Item(counter) > UpperLimit Or Y68.Item(counter) < LowerLimit Then
                             
-                                ClearRowArray(UBound(ClearRowArray)) = Y68.Item(Counter).Row
+                                ClearRowArray(UBound(ClearRowArray)) = Y68.Item(counter).Row
                                     ReDim Preserve ClearRowArray(1 To UBound(ClearRowArray) + 1)
                                     
                             End If
@@ -2689,12 +2901,12 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
                     UpperLimit = YAverage + StdDevLimit * YStdDev
                     LowerLimit = YAverage - StdDevLimit * YStdDev
             
-                        For Counter = 1 To Y68.count
+                        For counter = 1 To Y68.count
                             
-                            If Not IsEmpty(Y68.Item(Counter)) Then
+                            If Not IsEmpty(Y68.Item(counter)) Then
                             
-                                If Y68.Item(Counter) > UpperLimit Or Y68.Item(Counter) < LowerLimit Then
-                                    ClearRowArray(UBound(ClearRowArray)) = Y68.Item(Counter).Row
+                                If Y68.Item(counter) > UpperLimit Or Y68.Item(counter) < LowerLimit Then
+                                    ClearRowArray(UBound(ClearRowArray)) = Y68.Item(counter).Row
                                         ReDim Preserve ClearRowArray(1 To UBound(ClearRowArray) + 1)
                                 End If
                                 
@@ -2713,12 +2925,12 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
         UpperLimit = YAverage + StdDevLimit * YStdDev
         LowerLimit = YAverage - StdDevLimit * YStdDev
         
-            For Counter = 1 To Y76.count
+            For counter = 1 To Y76.count
             
-                If Not IsEmpty(Y76.Item(Counter)) Then
+                If Not IsEmpty(Y76.Item(counter)) Then
                                            
-                    If Y76.Item(Counter) > UpperLimit Or Y76.Item(Counter) < LowerLimit Then
-                        ClearRowArray(UBound(ClearRowArray)) = Y76.Item(Counter).Row
+                    If Y76.Item(counter) > UpperLimit Or Y76.Item(counter) < LowerLimit Then
+                        ClearRowArray(UBound(ClearRowArray)) = Y76.Item(counter).Row
                             ReDim Preserve ClearRowArray(1 To UBound(ClearRowArray) + 1)
                     End If
                             
@@ -2736,12 +2948,12 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
         UpperLimit = YAverage + StdDevLimit * YStdDev
         LowerLimit = YAverage - StdDevLimit * YStdDev
         
-            For Counter = 1 To Y28.count
+            For counter = 1 To Y28.count
             
-                If Not IsEmpty(Y28.Item(Counter)) Then
+                If Not IsEmpty(Y28.Item(counter)) Then
                                                 
-                    If Y28.Item(Counter) > UpperLimit Or Y28.Item(Counter) < LowerLimit Then
-                        ClearRowArray(UBound(ClearRowArray)) = Y28.Item(Counter).Row
+                    If Y28.Item(counter) > UpperLimit Or Y28.Item(counter) < LowerLimit Then
+                        ClearRowArray(UBound(ClearRowArray)) = Y28.Item(counter).Row
                             ReDim Preserve ClearRowArray(1 To UBound(ClearRowArray) + 1)
                     End If
                             
@@ -2759,12 +2971,12 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
         UpperLimit = YAverage + StdDevLimit * YStdDev
         LowerLimit = YAverage - StdDevLimit * YStdDev
         
-            For Counter = 1 To Y74.count
+            For counter = 1 To Y74.count
                 
-                If Not IsEmpty(Y74.Item(Counter)) Then
+                If Not IsEmpty(Y74.Item(counter)) Then
                                                 
-                    If Y74.Item(Counter) > UpperLimit Or Y74.Item(Counter) < LowerLimit Then
-                        ClearRowArray(UBound(ClearRowArray)) = Y74.Item(Counter).Row
+                    If Y74.Item(counter) > UpperLimit Or Y74.Item(counter) < LowerLimit Then
+                        ClearRowArray(UBound(ClearRowArray)) = Y74.Item(counter).Row
                             ReDim Preserve ClearRowArray(1 To UBound(ClearRowArray) + 1)
                     End If
                             
@@ -2782,12 +2994,12 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
         UpperLimit = YAverage + StdDevLimit * YStdDev
         LowerLimit = YAverage - StdDevLimit * YStdDev
         
-            For Counter = 1 To Y64.count
+            For counter = 1 To Y64.count
             
-                If Not IsEmpty(Y64.Item(Counter)) Then
+                If Not IsEmpty(Y64.Item(counter)) Then
                                                 
-                    If Y64.Item(Counter) > UpperLimit Or Y64.Item(Counter) < LowerLimit Then
-                        ClearRowArray(UBound(ClearRowArray)) = Y64.Item(Counter).Row
+                    If Y64.Item(counter) > UpperLimit Or Y64.Item(counter) < LowerLimit Then
+                        ClearRowArray(UBound(ClearRowArray)) = Y64.Item(counter).Row
                             ReDim Preserve ClearRowArray(1 To UBound(ClearRowArray) + 1)
                     End If
                     
@@ -2812,7 +3024,7 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
     End If
     
     If Not IsEmpty(ClearRowArray_Unique(LBound(ClearRowArray_Unique))) = True Then
-        If (NumElements(ClearRowArray_Unique, 1) - 1) / (Counter - 1) > 0.5 Then 'The "- 1" is related to the problem that there is always one item more in ClearRowArray than necessary
+        If (NumElements(ClearRowArray_Unique, 1) - 1) / (counter - 1) > 0.5 Then 'The "- 1" is related to the problem that there is always one item more in ClearRowArray than necessary
             If MsgBox("More than 50% of rows contain data that didn't pass the " & StdDevLimit & _
                 "standard deviation test. Do you still want to clear these rows?", vbYesNo) = vbNo Then
                 Exit Sub
@@ -2831,18 +3043,18 @@ Optional Test74 As Boolean = False, Optional Test64 As Boolean = False, Optional
     End If
     
     'Deleting cells
-    Counter = 1
+    counter = 1
         
         'Enable lines below related to screenupdating if you'd like that the user be able to see
         'outliers being deleted
 '        ScreenUpdt = Application.ScreenUpdating
 '            Application.ScreenUpdating = True
-                For Counter = LBound(ClearRowArray_Unique) To UBound(ClearRowArray_Unique)
+                For counter = LBound(ClearRowArray_Unique) To UBound(ClearRowArray_Unique)
 
                     EnaEvent = Application.EnableEvents
                         Application.EnableEvents = False
                     
-                    Sh.Range(Plot_FirstColumn & ClearRowArray_Unique(Counter), Plot_LastColumn & ClearRowArray_Unique(Counter)).Clear
+                    Sh.Range(Plot_FirstColumn & ClearRowArray_Unique(counter), Plot_LastColumn & ClearRowArray_Unique(counter)).Clear
                 
                     Application.EnableEvents = EnaEvent
                 Next
@@ -2879,7 +3091,7 @@ Sub ExternalReproSamples()
     Dim C As Long
     Dim d As Long
     Dim f As Variant
-    Dim Counter As Long
+    Dim counter As Long
     Dim IDsRange As Range 'Range with IDs of all samples and standards (internal and external) are in SlpStdBlkCorr_Sh
     Dim LastRow As Integer 'Last row of IDsRange
     Dim E As Long
@@ -2941,21 +3153,21 @@ Sub ExternalReproSamples()
             C = C + 1
         Next
         
-    Counter = 1
+    counter = 1
     
     'The following 6 lines are used just to check if UPbStd was initialized
     On Error Resume Next
-        Counter = LBound(UPbStd)
+        counter = LBound(UPbStd)
             If Err.Number <> 0 Then
                 Call Load_UPbStandardsTypeList
             End If
     On Error GoTo 0
     
     'The 6 lines below are necessary to adentify the number of the external standard in UpbStd
-    For Counter = LBound(UPbStd) To UBound(UPbStd)
-        If UPbStd(Counter).StandardName = ExternalStandard_UPb Then
-            StdName = Counter
-                Counter = UBound(UPbStd)
+    For counter = LBound(UPbStd) To UBound(UPbStd)
+        If UPbStd(counter).StandardName = ExternalStandard_UPb Then
+            StdName = counter
+                counter = UBound(UPbStd)
         End If
     Next
 
