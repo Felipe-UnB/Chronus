@@ -17,30 +17,47 @@ Option Explicit
     Public Const ChronusVersion = "1.4.3" 'Version
     Public Const ChronusNameVersion = "Chronus_1.4.3.xlam" 'Name of the file
     
-    Public ShowPresentation As Range 'RAnge where the user option to show or not the Chronus presentation
+    Public ShowPresentation As Range 'Range where the user option to show or not the Chronus presentation
     
     Public StartANDOptions_Path As String
     
     'Definition of variables in Box1_Start
-    Public SampleName As Object 'Name of the samples
-    Public FolderPath As Object
-    Public ReductionDate As Object
-    Public ReducedBy As Object
-    Public ExternalStandard As Object
-    Public InternalStandardCheck As Object
-    Public InternalStandardName As Object
-    Public Spot As Object
-    Public Raster As Object
-    Public Detector206MIC As Object
-    Public Detector206Faraday As Object
-    Public CheckData As Object
-    Public BlankName As Object
-    Public SamplesNames As Object 'How the samples are named in the analyses (z, zircon, spl, etc.)
-    Public ExternalStandardName As Object
-    Public SecondaryStandardName As Object
-    Public RawNumberCycles As Object
-    Public CycleDuration As Object
-    Public AnalysisDate As Object
+    Public Box1_Start_SampleName As Object 'Name of the samples
+    Public Box1_Start_FolderPath As Object
+    Public Box1_Start_ReductionDate As Object
+    Public Box1_Start_ReducedBy As Object
+    Public Box1_Start_ExternalStandard As Object
+    Public Box1_Start_InternalStandardCheck As Object
+    Public Box1_Start_InternalStandardName As Object
+    Public Box1_Start_Spot As Object
+    Public Box1_Start_Raster As Object
+    
+    Public Box1_Start_Detector206MIC As Object
+    Public Box1_Start_Detector202MIC As Object
+    Public Box1_Start_Detector204MIC As Object
+    Public Box1_Start_Detector208MIC As Object
+    Public Box1_Start_Detector232MIC As Object
+    Public Box1_Start_Detector238MIC As Object
+    Public Box1_Start_Detector207MIC As Object
+    
+    Public Box1_Start_Detector202Faraday As Object
+    Public Box1_Start_Detector204Faraday As Object
+    Public Box1_Start_Detector206Faraday As Object
+    Public Box1_Start_Detector207Faraday As Object
+    Public Box1_Start_Detector208Faraday As Object
+    Public Box1_Start_Detector232Faraday As Object
+    Public Box1_Start_Detector238Faraday As Object
+    
+    Public Box1_Start_CheckData As Object
+    Public Box1_Start_BlankName As Object
+    Public Box1_Start_SamplesNames As Object 'How the samples are named in the analyses (z, zircon, spl, etc.)
+    Public Box1_Start_ExternalStandardName As Object
+    Public Box1_Start_SecondaryStandardName As Object
+    Public Box1_Start_RawNumberCycles As Object
+    Public Box1_Start_CycleDuration As Object
+    Public Box1_Start_Blank_wt_Sample As Object
+    Public Box1_Start_DateFormat As Object
+    Public Box1_Start_TimeFormat As Object
     
     'Definition of variables in Box2_UPb_Options
     Public ChoosenStandard As Object
@@ -73,21 +90,35 @@ Option Explicit
     Public InternalStandardCheck_UPb As Range
     Public InternalStandard_UPb As Range
     Public SpotRaster_UPb As Range
+    
+    Public Detector202_UPb As Range
+    Public Detector204_UPb As Range
     Public Detector206_UPb As Range
+    Public Detector207_UPb As Range
+    Public Detector208_UPb As Range
+    Public Detector232_UPb As Range
+    Public Detector238_UPb As Range
+    
     Public CheckData_UPb As Range
     Public BlankName_UPb As Range
     Public SamplesNames_UPb As Range
     Public ExternalStandardName_UPb As Range
     Public RawNumberCycles_UPb As Range
+    Public EachSampleNumberCycles_UPb As Range
     Public CycleDuration_UPb As Range
+    Public BlanksRecordedSamples_UPb As Range
     Public AnalysisDate_UPb As Range
     Public ErrBlank_UPb As Range
     Public ErrExtStd_UPb As Range
     Public ErrExtStdCert_UPb As Range
     Public ExtStdRepro_UPb As Range
-    Public Isotope232analyzed As Range
-    Public Isotope208analyzed As Range
+    Public Isotope202Analyzed_UPb As Range
+    Public Isotope204Analyzed_UPb As Range
+    Public Isotope208Analyzed_UPb As Range
+    Public Isotope232Analyzed_UPb As Range
     Public SelectedBins_UPb As Range
+    Public DateFormat_UPb As Range
+    Public TimeFormat_UPb As Range
     
     Public NewFolderPath As String
     Public OldFolderPath As String 'Variable used to save the actual addresses of raw data. Sub UpdateFileAddresses uses it to
@@ -131,22 +162,52 @@ Option Explicit
     'Public CovarSheet As Worksheet 'Sheet created for pasting ranges necessary to variance-covariance matrix
     
     'Ranges of isotopes signal in raw data file stored in the AddIn worksheet
-    Public TW_RawPb206Range As Range, TW_RawPb208Range As Range, TW_RawTh232Range As Range, TW_RawU238Range As Range, _
-    TW_RawHg202Range As Range, TW_RawPb204Range As Range, TW_RawPb207Range As Range, TW_RawCyclesTimeRange As Range, _
-    TW_AnalysisDateRange As Range
+    Public TW_RawPb206Range As Range
+    Public TW_RawPb208Range As Range
+    Public TW_RawTh232Range As Range
+    Public TW_RawU238Range As Range
+    Public TW_RawHg202Range As Range
+    Public TW_RawPb204Range As Range
+    Public TW_RawPb207Range As Range
     
     'Ranges of isotopes header in raw data file stored in the AddIn worksheet
-    Public TW_RawPb206HeaderRange As Range, TW_RawPb208HeaderRange As Range, TW_RawTh232HeaderRange As Range, TW_RawU238HeaderRange As Range
-    Public TW_RawHg202HeaderRange As Range, TW_RawPb204HeaderRange As Range, TW_RawPb207HeaderRange As Range
+    Public TW_RawPb206HeaderRange As Range
+    Public TW_RawPb208HeaderRange As Range
+    Public TW_RawTh232HeaderRange As Range
+    Public TW_RawU238HeaderRange As Range
+    Public TW_RawHg202HeaderRange As Range
+    Public TW_RawPb204HeaderRange As Range
+    Public TW_RawPb207HeaderRange As Range
     
+    'Ranges of important information in raw data file
+    Public TW_RawCyclesTimeRange As Range
+    Public TW_RawAnalysisDateRange As Range
+    Public TW_RawNumCyclesRange As Range
+    
+    '---------------------------------------------
     'Ranges of isotopes signal in raw data file
-    Public RawPb206Range As Range, RawPb208Range As Range, RawTh232Range As Range, RawU238Range As Range, _
-    RawHg202Range As Range, RawPb204Range As Range, RawPb207Range As Range, RawCyclesTimeRange As Range, _
-    AnalysisDateRange As Range
+    Public RawPb206Range As Range
+    Public RawPb208Range As Range
+    Public RawTh232Range As Range
+    Public RawU238Range As Range
+    Public RawHg202Range As Range
+    Public RawPb204Range As Range
+    Public RawPb207Range As Range
     
     'Ranges of isotopes header in raw data file
-    Public RawPb206HeaderRange As Range, RawPb208HeaderRange As Range, RawTh232HeaderRange As Range, RawU238HeaderRange As Range
-    Public RawHg202HeaderRange As Range, RawPb204HeaderRange As Range, RawPb207HeaderRange As Range
+    Public RawPb206HeaderRange As Range
+    Public RawPb208HeaderRange As Range
+    Public RawTh232HeaderRange As Range
+    Public RawU238HeaderRange As Range
+    Public RawHg202HeaderRange As Range
+    Public RawPb204HeaderRange As Range
+    Public RawPb207HeaderRange As Range
+    
+    'Ranges of important information in raw data file
+    Public RawCyclesTimeRange As Range
+    Public RawAnalysisDateRange As Range
+    Public RawNumCyclesRange As Range
+    '---------------------------------------------
     
     'Some collections to check if there is all the necessary information in Start-AND-Option sheet
     
@@ -179,9 +240,24 @@ Option Explicit
     Public ErrBlank As Control, ErrExtStd As Control, ExtStdRepro As Control, ErrExtStdCert As Control
     
     'Box4_Addresses
-    Public RawHg202 As Control, RawPb204 As Control, RawPb206 As Control, RawPb207 As Control, RawPb208 As Control, RawTh232 As Control, _
-    RawU238 As Control, RawCyclesTime As Control, RawHg202Header As Control, RawPb204Header As Control, RawPb206Header As Control, RawPb207Header As Control, _
-    RawPb208Header As Control, RawTh232Header As Control, RawU238Header As Control
+    Public Box4_Addresses_RawHg202 As Control
+    Public Box4_Addresses_RawPb204 As Control
+    Public Box4_Addresses_RawPb206 As Control
+    Public Box4_Addresses_RawPb207 As Control
+    Public Box4_Addresses_RawPb208 As Control
+    Public Box4_Addresses_RawTh232 As Control
+    Public Box4_Addresses_RawU238 As Control
+    Public Box4_Addresses_RawCyclesTime As Control
+    Public Box4_Addresses_NumCycles_per_sample As Control
+    Public Box4_Addresses_RawHg202Header As Control
+    Public Box4_Addresses_RawPb204Header As Control
+    Public Box4_Addresses_RawPb206Header As Control
+    Public Box4_Addresses_RawPb207Header As Control
+    Public Box4_Addresses_RawPb208Header As Control
+    Public Box4_Addresses_RawTh232Header As Control
+    Public Box4_Addresses_RawU238Header As Control
+    Public Box4_Addresses_RawAnalysisDate As Object
+    Public Box4_Addresses_RawNumCycles_Each_Sample As Object
     
     'Array with IDs of columns F to J in SamList. This array will be used during data reduction to know which standard and blank are related to a sample
     Public AnalysesList() As SamplesMap
@@ -216,11 +292,11 @@ Option Explicit
     Public MissingFile2 As String
     
     Public Type SamplesMap 'UDT used to store samples map, with IDs of every analyses
-        sample As Integer
+        Sample As Integer
         Std1 As Integer
         Std2 As Integer
-        Blk1 As Integer
-        Blk2 As Integer
+        Blk1 As Integer 'ID of the blank analyzed before the sample
+        Blk2 As Integer 'ID of the blank analyzed after the sample
     End Type
     
     Public Type ExtStandardsMap 'UDT used to store external standards map, with IDs of every analyses
@@ -272,6 +348,7 @@ Option Explicit
     Public Const SamList_Std2ID As String = "J"
     Public Const SamList_Blk1ID As String = "K"
     Public Const SamList_Blk2ID As String = "L"
+    Public Const SamList_NumCycles As String = "M" 'This will be used to deal with files that originally had blank and sample together
     
     'Constants used to set the right columns for isotopes signals or ratios in BlkCalc_Sh
     Public Const BlkCalc_HeaderLine As Integer = 1 'Row number of the headers
@@ -515,6 +592,9 @@ Option Explicit
     Public WBSlp As Workbook
     
     Public UPbStd() As UPbStandards
+    
+    Public TimeFormats() As String
+    Public DateFormats() As String
     
     Public PreserveCycles As Boolean 'This variables is used to keep the cycles stored in
                                      'SamList_Cycles column.
@@ -862,7 +942,7 @@ Sub CreateWorkbook()
     'Surprisingly, this also eliminated the screen blinking that appeared in the program after updating windows 7 to 10.
     Dim NewSample As Integer
     Dim SaveNewWorkbook As Variant
-    Dim WB As Workbook
+    Dim Wb As Workbook
 
     'Creation of the workbook used for all calculation
     NewSample = MsgBox("Would you like to start a new data reduction?", vbYesNo, "New sample")
@@ -892,8 +972,8 @@ Sub CreateWorkbook()
                             If MsgBox("There is a workbook with the same name in this folder. Would you like to overwrite it?", vbYesNo) = vbNo Then
                                     GoTo 100
                             Else
-                                For Each WB In Application.Workbooks
-                                    If WB.FullName = SaveNewWorkbook Then
+                                For Each Wb In Application.Workbooks
+                                    If Wb.FullName = SaveNewWorkbook Then
                                         MsgBox "There is an opened workbook with the same name, so there is the risk that it will be overwritten. Please, close it and then retry.", vbOKOnly
                                             mwbk.Close
                                                 Call UnloadAll
@@ -982,21 +1062,18 @@ Sub CreateWorkbook()
     Else: Call UnloadAll: End
     
     End If
-    
-'    Box1_Start.Show
 
     ScreenUpd = Application.ScreenUpdating
-                            
+
         Application.ScreenUpdating = False
         'Debug.Print Application.ScreenUpdating
-        
+
         '---> TIP: Rather than go into debug mode and type into the immediate window, you might want to add:
         'Debug.Print Application.ScreenUpdating.
         'Immediately after the the line that turns screen updating off. That way you can be sure if it is working or not.
-        
+
         Call FormatMainSh
-            Call UnloadAll
-    
+        
         Application.ScreenUpdating = ScreenUpd
     
     Application.GoTo StartANDOptions_Sh.Range("A1")
@@ -1004,6 +1081,10 @@ Sub CreateWorkbook()
 End Sub
 
 Sub Main_WB_TW()
+
+    If Not TW_RawU238HeaderRange Is Nothing Then 'I used the last variable that will be set in this procedure to be sure that all variables were set
+        Exit Sub
+    End If
 
     Set TW = ThisWorkbook
     Set mwbk = ActiveWorkbook
@@ -1032,7 +1113,8 @@ Sub Main_WB_TW()
     Set TW_RawTh232Range = StartANDOptions_TW_Sh.Range("B50")
     Set TW_RawU238Range = StartANDOptions_TW_Sh.Range("B51")
     Set TW_RawCyclesTimeRange = StartANDOptions_TW_Sh.Range("B53")
-    Set TW_AnalysisDateRange = StartANDOptions_TW_Sh.Range("B54")
+    Set TW_RawAnalysisDateRange = StartANDOptions_TW_Sh.Range("B54")
+    Set TW_RawNumCyclesRange = StartANDOptions_TW_Sh.Range("E45")
     
     'Code to set the ranges for the address of each isotope header in Start-AND-Options sheet from Addin workbook
     Set TW_RawHg202HeaderRange = StartANDOptions_TW_Sh.Range("C45")
@@ -1081,28 +1163,11 @@ Public Sub PublicVariables()
 
     On Error GoTo 0
     
-    'BELOW IS THE SECOND ATTEMPT TO CHECK IF THIS IS A VALID CHRONUS WORKBOOK
-    'Chronus tries to find its sheets, if this is not possible, this means that some
-    'of them were deleted or that this is not a valid workbook.
-    On Error Resume Next
-        'code to identify the necessary worksheets
-        Set StartANDOptions_Sh = mwbk.Sheets(StartANDOptions_Sh_Name)
-        Set SamList_Sh = mwbk.Sheets(SamList_Sh_Name)
-        Set BlkCalc_Sh = mwbk.Sheets(BlkCalc_Sh_Name)
-        Set SlpStdBlkCorr_Sh = mwbk.Sheets(SlpStdBlkCorr_Sh_Name)
-        Set SlpStdCorr_Sh = mwbk.Sheets(SlpStdCorr_Sh_Name)
-        'Set FinalReport_Sh = mwbk.Sheets(FinalReport_Sh_Name)
-        
-        If Err.Number <> 0 Then
-
-            MsgBox "This is not a valid workbook.", vbOKOnly
-                Call CreateWorkbook
-'
-'            MsgBox "Please, open a valid workbook or create a new one."
-'                Call UnloadAll
-'                    End
-        End If
-    On Error GoTo 0
+    PublicVariables_MainSh
+    
+    If Not SampleName_UPb Is Nothing Then
+        Exit Sub
+    End If
     
     'Code to define ranges where constants must be stored. All of them will be stored in a single file,
     'called Start-AND-Options
@@ -1112,41 +1177,52 @@ Public Sub PublicVariables()
     Set FolderPath_UPb = StartANDOptions_Sh.Range("B6")
     Set ExternalStandard_UPb = StartANDOptions_Sh.Range("B9")
 
-         Set StandardName_UPb = StartANDOptions_Sh.Range("B28")
-         Set Mineral_UPb = StartANDOptions_Sh.Range("B29")
-         Set Description_UPb = StartANDOptions_Sh.Range("B30")
-         Set Ratio68_UPb = StartANDOptions_Sh.Range("B33")
-         Set Ratio68Error_UPb = StartANDOptions_Sh.Range("C33")
-         Set Ratio75_UPb = StartANDOptions_Sh.Range("B34")
-         Set Ratio75Error_UPb = StartANDOptions_Sh.Range("C34")
-         Set Ratio76_UPb = StartANDOptions_Sh.Range("B35")
-         Set Ratio76Error_UPb = StartANDOptions_Sh.Range("C35")
-'         Set Ratio82_UPb =StartANDOptions_Sh.Range("
-'         Set Ratio82Error_UPb =StartANDOptions_Sh.Range("
-         Set RatioErrors12s_UPb = StartANDOptions_Sh.Range("D33")
-         Set RatioErrorsAbs_UPb = StartANDOptions_Sh.Range("E33")
-         Set UraniumConc_UPb = StartANDOptions_Sh.Range("B39")
-         Set UraniumConcError_UPb = StartANDOptions_Sh.Range("C39")
-         Set ThoriumConc_UPb = StartANDOptions_Sh.Range("B40")
-         Set ThoriumConcError_UPb = StartANDOptions_Sh.Range("C40")
-         Set ConcErrors12s_UPb = StartANDOptions_Sh.Range("D40")
-         Set ConcErrorsAbs_UPb = StartANDOptions_Sh.Range("E40")
+    Set StandardName_UPb = StartANDOptions_Sh.Range("B28")
+    Set Mineral_UPb = StartANDOptions_Sh.Range("B29")
+    Set Description_UPb = StartANDOptions_Sh.Range("B30")
+    Set Ratio68_UPb = StartANDOptions_Sh.Range("B33")
+    Set Ratio68Error_UPb = StartANDOptions_Sh.Range("C33")
+    Set Ratio75_UPb = StartANDOptions_Sh.Range("B34")
+    Set Ratio75Error_UPb = StartANDOptions_Sh.Range("C34")
+    Set Ratio76_UPb = StartANDOptions_Sh.Range("B35")
+    Set Ratio76Error_UPb = StartANDOptions_Sh.Range("C35")
+
+    Set RatioErrors12s_UPb = StartANDOptions_Sh.Range("D33")
+    Set RatioErrorsAbs_UPb = StartANDOptions_Sh.Range("E33")
+    Set UraniumConc_UPb = StartANDOptions_Sh.Range("B39")
+    Set UraniumConcError_UPb = StartANDOptions_Sh.Range("C39")
+    Set ThoriumConc_UPb = StartANDOptions_Sh.Range("B40")
+    Set ThoriumConcError_UPb = StartANDOptions_Sh.Range("C40")
+    Set ConcErrors12s_UPb = StartANDOptions_Sh.Range("D40")
+    Set ConcErrorsAbs_UPb = StartANDOptions_Sh.Range("E40")
 
     Set InternalStandardCheck_UPb = StartANDOptions_Sh.Range("B10")
     Set InternalStandard_UPb = StartANDOptions_Sh.Range("B11")
     Set SpotRaster_UPb = StartANDOptions_Sh.Range("A14")
-    Set Detector206_UPb = StartANDOptions_Sh.Range("B17")
-    Set CheckData_UPb = StartANDOptions_Sh.Range("B18")
+    
+    Set Detector202_UPb = StartANDOptions_Sh.Range("A18")
+    Set Detector204_UPb = StartANDOptions_Sh.Range("B18")
+    Set Detector206_UPb = StartANDOptions_Sh.Range("C18")
+    Set Detector207_UPb = StartANDOptions_Sh.Range("D18")
+    Set Detector208_UPb = StartANDOptions_Sh.Range("E18")
+    Set Detector232_UPb = StartANDOptions_Sh.Range("F18")
+    Set Detector238_UPb = StartANDOptions_Sh.Range("G18")
+    
+    Set CheckData_UPb = StartANDOptions_Sh.Range("D13")
     Set BlankName_UPb = StartANDOptions_Sh.Range("D3")
     Set SamplesNames_UPb = StartANDOptions_Sh.Range("D4")
     Set ExternalStandardName_UPb = StartANDOptions_Sh.Range("D5")
     Set RawNumberCycles_UPb = StartANDOptions_Sh.Range("B55")
     Set CycleDuration_UPb = StartANDOptions_Sh.Range("B56")
+    Set BlanksRecordedSamples_UPb = StartANDOptions_Sh.Range("B57") 'True or false
     Set ErrBlank_UPb = StartANDOptions_Sh.Range("E22") 'Cell that stores the option to propagate blank uncertainties into samples
     Set ErrExtStd_UPb = StartANDOptions_Sh.Range("E23") 'Cell that stores the option to propagate primary standard analyses uncertainties into samples
     Set ErrExtStdCert_UPb = StartANDOptions_Sh.Range("E24") 'Cell that stores the option to propagate primary standard certified uncertainties into samples
     Set ExtStdRepro_UPb = StartANDOptions_Sh.Range("E25") 'Cell that stores the option to propagate primary standard uncertainties into samples based on MSWD of the analyses
     Set SelectedBins_UPb = StartANDOptions_Sh.Range("B59")
+    
+    Set DateFormat_UPb = StartANDOptions_Sh.Range("D53")
+    Set TimeFormat_UPb = StartANDOptions_Sh.Range("D54")
     
     'Code to set ranges in SlpStdBlkCorr_Sh
     Call SetSlpStdBlkCorr_Sh_Variables
@@ -1163,7 +1239,8 @@ Public Sub PublicVariables()
     Set RawTh232Range = StartANDOptions_Sh.Range("B50")
     Set RawU238Range = StartANDOptions_Sh.Range("B51")
     Set RawCyclesTimeRange = StartANDOptions_Sh.Range("B53")
-    Set AnalysisDateRange = StartANDOptions_Sh.Range("B54")
+    Set RawAnalysisDateRange = StartANDOptions_Sh.Range("B54")
+    Set RawNumCyclesRange = StartANDOptions_Sh.Range("E45") 'Number of cycles per sample
     
     'Code to set the ranges for the address of each isotope header in Start-AND-Options sheet
     Set RawHg202HeaderRange = StartANDOptions_Sh.Range("C45")
@@ -1175,17 +1252,259 @@ Public Sub PublicVariables()
     Set RawU238HeaderRange = StartANDOptions_Sh.Range("C51")
     
     'Code to set the ranges where isotopes analyzed are identified
-    Set Isotope208analyzed = StartANDOptions_Sh.Range("D49")
-    Set Isotope232analyzed = StartANDOptions_Sh.Range("D50")
-    
+    Set Isotope202Analyzed_UPb = StartANDOptions_Sh.Range("D45")
+    Set Isotope204Analyzed_UPb = StartANDOptions_Sh.Range("D46")
+    Set Isotope208Analyzed_UPb = StartANDOptions_Sh.Range("D49")
+    Set Isotope232Analyzed_UPb = StartANDOptions_Sh.Range("D50")
+    Set EachSampleNumberCycles_UPb = StartANDOptions_Sh.Range("F45")
     Set RatioUranium_UPb = StartANDOptions_Sh.Range("B22")
     Set RatioMercury_UPb = StartANDOptions_Sh.Range("B23")
     Set mVtoCPS_UPb = StartANDOptions_Sh.Range("B24")
     Set RatioMercury1Std = StartANDOptions_Sh.Range("C23")
+    Set BlanksRecordedSamples_UPb = StartANDOptions_Sh.Range("B57")
 
     MissingFile1 = "File not found in "
     MissingFile2 = ". Please, check it and then retry."
         
+End Sub
+
+Sub tempppp()
+
+    Dim numcycles As Integer
+    
+    Set RawHg202Range = ActiveSheet.Range("B45")
+    Set RawPb204Range = ActiveSheet.Range("B46")
+    Set RawPb206Range = ActiveSheet.Range("B47")
+    Set RawPb207Range = ActiveSheet.Range("B48")
+    Set RawPb208Range = ActiveSheet.Range("B49")
+    Set RawTh232Range = ActiveSheet.Range("B50")
+    Set RawU238Range = ActiveSheet.Range("B51")
+    
+    numcycles = 10
+    
+    Debug.Print
+    Debug.Print Raw202Range(numcycles)
+    Debug.Print Raw204Range(numcycles)
+    Debug.Print Raw206Range(numcycles)
+    Debug.Print Raw207Range(numcycles)
+    Debug.Print Raw208Range(numcycles)
+    Debug.Print Raw232Range(numcycles)
+    Debug.Print Raw238Range(numcycles)
+    
+End Sub
+
+'REPLICATE TO OTHER MASSES
+Function Raw202Range(numcycles As Integer)
+
+    ValidateNumCycles (numcycles)
+
+    Raw202Range = RawRanges(202, numcycles)
+    
+End Function
+
+Function Raw204Range(numcycles As Integer)
+
+    ValidateNumCycles (numcycles)
+
+    Raw204Range = RawRanges(204, numcycles)
+    
+End Function
+
+Function Raw206Range(numcycles As Integer)
+
+    ValidateNumCycles (numcycles)
+
+    Raw206Range = RawRanges(206, numcycles)
+    
+End Function
+
+Function Raw207Range(numcycles As Integer)
+
+    ValidateNumCycles (numcycles)
+
+    Raw207Range = RawRanges(207, numcycles)
+    
+End Function
+
+Function Raw208Range(numcycles As Integer)
+
+    ValidateNumCycles (numcycles)
+
+    Raw208Range = RawRanges(208, numcycles)
+    
+End Function
+
+Function Raw232Range(numcycles As Integer)
+
+    ValidateNumCycles (numcycles)
+
+    Raw232Range = RawRanges(232, numcycles)
+    
+End Function
+
+Function Raw238Range(numcycles As Integer)
+
+    ValidateNumCycles (numcycles)
+
+    Raw238Range = RawRanges(238, numcycles)
+    
+End Function
+
+Function RawCyclesTimeRange_function(numcycles As Integer)
+
+    ValidateNumCycles (numcycles)
+    
+    RawCyclesTimeRange_function = RawRanges(1, numcycles)
+
+End Function
+Function RawRanges(Mass As Integer, numcycles As Integer)
+    'Ranges of isotopes signal in raw data file will be updated using the number of cycles indicated in each sample file
+    'or the standard number of all samples. This eliminates the necessity of selecting the whole range of data while
+    'setting the addresses
+    
+    'The number 1 was used to designate the cycles time range
+    
+    Dim RawRangesArray As Variant
+    Dim Masses As Variant
+    Dim TestString As Variant
+
+'    RawRangesArray = Array( _
+'                    RawHg202Range, _
+'                    RawPb204Range, _
+'                    RawPb206Range, _
+'                    RawPb207Range, _
+'                    RawPb208Range, _
+'                    RawTh232Range, _
+'                    RawU238Range _
+'                    )
+'
+'    For Each TestString In RawRangesArray
+'
+'        If TestString Is Nothing Then
+'            MsgBox "All raw ranges must be set before updating any of them."
+'            End
+'        End If
+'
+'    Next
+    
+    Select Case Mass
+        Case 1
+            RawRanges = UpdateRawRanges(RawCyclesTimeRange, numcycles)
+        
+        Case 202
+            RawRanges = UpdateRawRanges(RawHg202Range, numcycles)
+            
+        Case 204
+            RawRanges = UpdateRawRanges(RawPb204Range, numcycles)
+    
+        Case 206
+            RawRanges = UpdateRawRanges(RawPb206Range, numcycles)
+
+        Case 207
+            RawRanges = UpdateRawRanges(RawPb207Range, numcycles)
+
+        Case 208
+            RawRanges = UpdateRawRanges(RawPb208Range, numcycles)
+
+        Case 232
+            RawRanges = UpdateRawRanges(RawTh232Range, numcycles)
+
+        Case 238
+            RawRanges = UpdateRawRanges(RawU238Range, numcycles)
+            
+    End Select
+    
+End Function
+
+Sub testuprawranges()
+    Dim test_range As Range
+    Dim numcycles As Integer
+    
+    Set test_range = ActiveWorkbook.Worksheets("start-and-options").Range("B45")
+    test_range.Value = "$B$15:$B$20"
+    numcycles = 200
+    Debug.Print
+    Debug.Print test_range
+    Debug.Print UpdateRawRanges(test_range, numcycles)
+    
+End Sub
+
+Function UpdateRawRanges(RawRange As Range, numcycles As Integer)
+
+    'This procedure takes the address of the first cell in the range of mass intensities or cycles time
+    '(which the user must select manually) and updates it to cover the whole range of data
+    
+    Dim colon As Integer
+    Dim second_Cipher As Integer
+    Dim third_Cipher As Integer
+    Dim first_part As String
+    Dim first_row As Integer
+    Dim last_row As Integer
+    
+    first_part = ""
+    
+'    Debug.Print
+'    Debug.Print RawRange
+    
+    colon = InStr(1, RawRange.Value, ":")
+    second_Cipher = InStr(2, RawRange.Value, "$")
+    third_Cipher = InStr(second_Cipher, RawRange.Value, "$")
+    
+    If colon = 0 Then
+        first_part = RawRange.Value & ":"
+        first_row = Int(Right(RawRange.Value, Len(RawRange.Value) - second_Cipher))
+        UpdateRawRanges = first_part & Left(RawRange.Value, second_Cipher) & first_row + numcycles - 1
+    Else
+        first_part = Left(RawRange.Value, colon - 1)
+        first_row = Int(Mid(RawRange.Value, second_Cipher + 1, colon - second_Cipher - 1))
+        UpdateRawRanges = first_part & ":" & Left(RawRange.Value, second_Cipher) & first_row + numcycles - 1
+    End If
+       
+    'last_row = numcycles + RawRange.Item(1).Row - 1
+    
+'    Debug.Print Left(RawRange, third_Cipher) & NumCycles
+    
+'    UpdateRawRanges = first_part & ":" & Left(RawRange.Address, second_Cipher) & first_row + numcycles - 1
+
+End Function
+
+Function ValidateNumCycles(numcycles As Integer)
+
+    If numcycles < 10 Then
+        MsgBox "The number of cycles of all sample must be at least equal to 10. Please, check the number of cycles of all your samples."
+        End
+    End If
+
+End Function
+
+Sub PublicVariables_MainSh()
+    
+    'Updated 27042017
+    'BELOW IS THE SECOND ATTEMPT TO CHECK IF THIS IS A VALID CHRONUS WORKBOOK
+    'Chronus tries to find its sheets, if this is not possible, this means that some
+    'of them were deleted or that this is not a valid workbook.
+    
+    If StartANDOptions_Sh Is Nothing Then
+        On Error Resume Next
+            'code to identify the necessary worksheets
+            Set StartANDOptions_Sh = mwbk.Sheets(StartANDOptions_Sh_Name)
+            Set SamList_Sh = mwbk.Sheets(SamList_Sh_Name)
+            Set BlkCalc_Sh = mwbk.Sheets(BlkCalc_Sh_Name)
+            Set SlpStdBlkCorr_Sh = mwbk.Sheets(SlpStdBlkCorr_Sh_Name)
+            Set SlpStdCorr_Sh = mwbk.Sheets(SlpStdCorr_Sh_Name)
+            
+            If Err.Number <> 0 Then
+    
+                MsgBox "This is not a valid workbook.", vbOKOnly
+                    Call CreateWorkbook
+    '
+    '            MsgBox "Please, open a valid workbook or create a new one."
+    '                Call UnloadAll
+    '                    End
+            End If
+        On Error GoTo 0
+    End If
+
 End Sub
 
 Sub SetSlpStdBlkCorr_Sh_Variables()
@@ -1199,13 +1518,13 @@ Sub SetSlpStdBlkCorr_Sh_Variables()
         Set ExtStd75Repro = .Range(.Range(ColumnExtStd75 & ExtStdReproRow + 2), .Range(ColumnExtStd75 & ExtStdReproRow + 6))
         Set ExtStd76Repro = .Range(.Range(ColumnExtStd76 & ExtStdReproRow + 2), .Range(ColumnExtStd76 & ExtStdReproRow + 6))
         
-    Set ExtStd68MSWD = ExtStd68Repro.Item(3)
-    Set ExtStd75MSWD = ExtStd75Repro.Item(3)
-    Set ExtStd76MSWD = ExtStd76Repro.Item(3)
-
-    Set ExtStd68Repro1std = SlpStdBlkCorr_Sh.Range(ColumnExtStd68 & ExtStdReproRow + 3)
-    Set ExtStd75Repro1std = SlpStdBlkCorr_Sh.Range(ColumnExtStd75 & ExtStdReproRow + 3)
-    Set ExtStd76Repro1std = SlpStdBlkCorr_Sh.Range(ColumnExtStd76 & ExtStdReproRow + 3)
+        Set ExtStd68MSWD = ExtStd68Repro.Item(3)
+        Set ExtStd75MSWD = ExtStd75Repro.Item(3)
+        Set ExtStd76MSWD = ExtStd76Repro.Item(3)
+    
+        Set ExtStd68Repro1std = SlpStdBlkCorr_Sh.Range(ColumnExtStd68 & ExtStdReproRow + 3)
+        Set ExtStd75Repro1std = SlpStdBlkCorr_Sh.Range(ColumnExtStd75 & ExtStdReproRow + 3)
+        Set ExtStd76Repro1std = SlpStdBlkCorr_Sh.Range(ColumnExtStd76 & ExtStdReproRow + 3)
 
     End With
 
@@ -1213,7 +1532,7 @@ End Sub
 
 Sub Load_UPbStandardsTypeList()
     
-    Dim Counter As Integer
+    Dim counter As Integer
     Dim UPbNameRng As Range
     Dim CellRow As Integer
     
@@ -1229,34 +1548,34 @@ Sub Load_UPbStandardsTypeList()
             Set UPbStd_StandardsNames = StandardsUPb_TW_Sh.Range(UPbStd_StandardsNames, UPbStd_StandardsNames.End(xlDown))
         End If
     
-    Counter = 1
+    counter = 1
     ReDim UPbStd(1 To 1) As UPbStandards
         For Each UPbNameRng In UPbStd_StandardsNames
             
             CellRow = UPbNameRng.Row
             
             With StandardsUPb_TW_Sh
-                UPbStd(Counter).StandardName = .Range(UPbStd_ColumnStandardName & CellRow)
-                UPbStd(Counter).Mineral = .Range(UPbStd_ColumnMineral & CellRow)
-                UPbStd(Counter).Description = .Range(UPbStd_ColumnDescription & CellRow)
-                UPbStd(Counter).Ratio68 = Val(.Range(UPbStd_ColumnRatio68 & CellRow))
-                UPbStd(Counter).Ratio68Error = Val(.Range(UPbStd_ColumnRatio68Error & CellRow))
-                UPbStd(Counter).Ratio75 = Val(.Range(UPbStd_ColumnRatio75 & CellRow))
-                UPbStd(Counter).Ratio75Error = Val(.Range(UPbStd_ColumnRatio75Error & CellRow))
-                UPbStd(Counter).Ratio76 = Val(.Range(UPbStd_ColumnRatio76 & CellRow))
-                UPbStd(Counter).Ratio76Error = Val(.Range(UPbStd_ColumnRatio76Error & CellRow))
-                UPbStd(Counter).Ratio82 = Val(.Range(UPbStd_ColumnRatio82 & CellRow))
-                UPbStd(Counter).Ratio82Error = Val(.Range(UPbStd_ColumnRatio82Error & CellRow))
-                UPbStd(Counter).RatioErrors12s = .Range(UPbStd_ColumnRatioErrors12s & CellRow)
-                UPbStd(Counter).RatioErrorsAbs = .Range(UPbStd_ColumnRatioErrorsAbs & CellRow)
-                UPbStd(Counter).UraniumConc = Val(.Range(UPbStd_ColumnUraniumConc & CellRow))
-                UPbStd(Counter).UraniumConcError = Val(.Range(UPbStd_ColumnUraniumConcError & CellRow))
-                UPbStd(Counter).ThoriumConc = Val(.Range(UPbStd_ColumnThoriumConc & CellRow))
-                UPbStd(Counter).ThoriumConcError = Val(.Range(UPbStd_ColumnThoriumConcError & CellRow))
-                UPbStd(Counter).ConcErrors12s = .Range(UPbStd_ColumnConcErrors12s & CellRow)
-                UPbStd(Counter).ConcErrorsAbs = .Range(UPbStd_ColumnConcErrorsAbs & CellRow)
+                UPbStd(counter).StandardName = .Range(UPbStd_ColumnStandardName & CellRow)
+                UPbStd(counter).Mineral = .Range(UPbStd_ColumnMineral & CellRow)
+                UPbStd(counter).Description = .Range(UPbStd_ColumnDescription & CellRow)
+                UPbStd(counter).Ratio68 = Val(.Range(UPbStd_ColumnRatio68 & CellRow))
+                UPbStd(counter).Ratio68Error = Val(.Range(UPbStd_ColumnRatio68Error & CellRow))
+                UPbStd(counter).Ratio75 = Val(.Range(UPbStd_ColumnRatio75 & CellRow))
+                UPbStd(counter).Ratio75Error = Val(.Range(UPbStd_ColumnRatio75Error & CellRow))
+                UPbStd(counter).Ratio76 = Val(.Range(UPbStd_ColumnRatio76 & CellRow))
+                UPbStd(counter).Ratio76Error = Val(.Range(UPbStd_ColumnRatio76Error & CellRow))
+                UPbStd(counter).Ratio82 = Val(.Range(UPbStd_ColumnRatio82 & CellRow))
+                UPbStd(counter).Ratio82Error = Val(.Range(UPbStd_ColumnRatio82Error & CellRow))
+                UPbStd(counter).RatioErrors12s = .Range(UPbStd_ColumnRatioErrors12s & CellRow)
+                UPbStd(counter).RatioErrorsAbs = .Range(UPbStd_ColumnRatioErrorsAbs & CellRow)
+                UPbStd(counter).UraniumConc = Val(.Range(UPbStd_ColumnUraniumConc & CellRow))
+                UPbStd(counter).UraniumConcError = Val(.Range(UPbStd_ColumnUraniumConcError & CellRow))
+                UPbStd(counter).ThoriumConc = Val(.Range(UPbStd_ColumnThoriumConc & CellRow))
+                UPbStd(counter).ThoriumConcError = Val(.Range(UPbStd_ColumnThoriumConcError & CellRow))
+                UPbStd(counter).ConcErrors12s = .Range(UPbStd_ColumnConcErrors12s & CellRow)
+                UPbStd(counter).ConcErrorsAbs = .Range(UPbStd_ColumnConcErrorsAbs & CellRow)
             
-                Counter = Counter + 1
+                counter = counter + 1
                 
                 If Not CellRow = .Range(UPbStd_ColumnStandardName & UPbStd_CHeaderRow + 1).End(xlDown).Row Then
                     ReDim Preserve UPbStd(1 To UBound(UPbStd) + 1) As UPbStandards
@@ -1312,17 +1631,17 @@ Sub SelectFolder()
         
         'StandardFolderPath = .InitialFileName -- My objective here was to compare the InitialFileName to the SelectesItems folder, but they are always different,
         On Error Resume Next
-        FolderPath = .SelectedItems(1)
+        Box1_Start_FolderPath = .SelectedItems(1)
         NewFolderPath = .SelectedItems(1)
         
         If SelectionDone <> -1 Then 'The user has clicked on "Cancel" button
         
-            FolderPath = ""
+            Box1_Start_FolderPath = ""
                            
             End
         Else
             
-            FolderPath_UPb = FolderPath
+            FolderPath_UPb = Box1_Start_FolderPath
             
         End If
         
@@ -1444,8 +1763,8 @@ Sub DefaultValues()
     Box1_Start.TextBox4.Value = Date & " (dd/mm/yyyy)" 'Inserts the date of the day when the data reduction is done.
         
     'Lines below will add the sample name based on the name of the folder where the files are
-    SampleName = Dir(FolderPath_UPb, vbDirectory)
-    Box1_Start.TextBox2.Value = SampleName 'Inserts a name for the sample based on the name of the folder where it is stored
+    Box1_Start_SampleName = Dir(FolderPath_UPb, vbDirectory)
+    Box1_Start.TextBox2.Value = Box1_Start_SampleName 'Inserts a name for the sample based on the name of the folder where it is stored
     
     If FolderPath_UPb = "" Then
         FolderPath_UPb = ActiveWorkbook.path & "\" 'Original files folder path.
@@ -1454,6 +1773,10 @@ Sub DefaultValues()
     End If
 
     Call StandardsUPbComboBox
+    Call DateTimeFormatsComboBox
+    
+    Box1_Start.ComboBox2_DateFormats = DateFormats(1)
+    Box1_Start.ComboBox3_TimeFormats = TimeFormats(1)
 
     'Default values for Error Propagation page in Box2_UPb_Options
     On Error Resume Next
@@ -1491,8 +1814,10 @@ Sub DefaultValues()
     Box1_Start.TextBox11_HowMany.Value = 40
     Box1_Start.TextBox12_CycleDuration = 1.042
     
-    Box4_Addresses.CheckBox2 = True
-    Box4_Addresses.CheckBox3 = True
+    Box4_Addresses.CheckBox_202Analyzed = True
+    Box4_Addresses.CheckBox_204Analyzed = True
+    Box4_Addresses.CheckBox_208Analyzed = True
+    Box4_Addresses.CheckBox_232Analyzed = True
     
     Box4_Addresses.RefEdit1_202 = TW_RawHg202Range.Value
     Box4_Addresses.RefEdit2_204 = TW_RawPb204Range.Value
@@ -1509,7 +1834,11 @@ Sub DefaultValues()
     Box4_Addresses.RefEdit11_232Header = TW_RawTh232HeaderRange.Value
     Box4_Addresses.RefEdit12_238Header = TW_RawU238HeaderRange.Value
     Box4_Addresses.RefEdit15_CyclesTime = TW_RawCyclesTimeRange.Value
-    Box4_Addresses.RefEdit22_AnalysisDate = TW_AnalysisDateRange.Value
+    Box4_Addresses.RefEdit22_AnalysisDate = TW_RawAnalysisDateRange.Value
+    
+    Box4_Addresses_RawCyclesTime = Box4_Addresses.RefEdit15_CyclesTime
+    Box4_Addresses_RawAnalysisDate = Box4_Addresses.RefEdit22_AnalysisDate
+    Box4_Addresses_RawNumCycles_Each_Sample = Box4_Addresses.RefEdit23_Num_Cycles
     
     Box2_UPb_Options.CheckBox3_BlankErrors = False
     Box2_UPb_Options.CheckBox6_CertExtStd = True
@@ -1565,7 +1894,7 @@ Sub OpenSetAddresses()
                 GoTo 1
         Else
         
-            FolderPath_UPb.Value = FolderPath
+            FolderPath_UPb.Value = Box1_Start_FolderPath
             
         End If
         
@@ -1585,7 +1914,7 @@ Sub CheckRawData()
     Dim E As Integer
     Dim f As Range
     Dim CounterTotal As Integer
-    Dim Counter As Integer
+    Dim counter As Integer
     Dim SearchStr As Long
     
     Dim AddressRawDataFile() As Variant 'Array of variables with address in Box2_UPb_Options
@@ -1596,6 +1925,8 @@ Sub CheckRawData()
     Dim result1 As Variant
     Dim result2 As Variant
     Dim Result As Variant
+    
+    Dim temp As Variant
     
     If SampleName_UPb Is Nothing Then
         Call PublicVariables
@@ -1613,46 +1944,111 @@ Sub CheckRawData()
 '    Headers = Array(202, 204, 206, 207, 208, 232, 238)
 
     'The conditional clauses below are necessary because not all isotopes must have been analyzed
-        If Isotope208analyzed = True And Isotope232analyzed = True Then
-            AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, _
-            RawPb208Range, RawTh232Range, RawU238Range)
-        ElseIf Isotope208analyzed = True And Isotope232analyzed = False Then
-            AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, _
-            RawPb207Range, RawPb208Range, RawU238Range)
-        ElseIf Isotope208analyzed = False And Isotope232analyzed = True Then
-            AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, _
-            RawPb207Range, RawTh232Range, RawU238Range)
-        ElseIf Isotope208analyzed = False And Isotope232analyzed = False Then
-            AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, _
-            RawPb207Range, RawU238Range)
+'        If Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = True Then
+'            AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, _
+'            RawPb208Range, RawTh232Range, RawU238Range)
+'        ElseIf Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = False Then
+'            AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, _
+'            RawPb207Range, RawPb208Range, RawU238Range)
+'        ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = True Then
+'            AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, _
+'            RawPb207Range, RawTh232Range, RawU238Range)
+'        ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = False Then
+'            AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, _
+'            RawPb207Range, RawU238Range)
+'        End If
+        
+        AddressRawDataFile = Array( _
+            RawPb206Range, _
+            RawPb207Range, _
+            RawU238Range)
+            
+        If Isotope202Analyzed_UPb = True Then
+            temp = ConcatenateArrays(AddressRawDataFile, RawHg202Range)
         End If
         
-        If Isotope208analyzed = True And Isotope232analyzed = True Then
-            AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, _
-            RawPb207HeaderRange, RawPb208HeaderRange, RawTh232HeaderRange, RawU238HeaderRange)
-        ElseIf Isotope208analyzed = True And Isotope232analyzed = False Then
-            AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, _
-            RawPb207HeaderRange, RawPb208HeaderRange, RawU238HeaderRange)
-        ElseIf Isotope208analyzed = False And Isotope232analyzed = True Then
-            AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, _
-            RawPb207HeaderRange, RawTh232HeaderRange, RawU238HeaderRange)
-        ElseIf Isotope208analyzed = False And Isotope232analyzed = False Then
-            AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, _
-            RawPb207HeaderRange, RawU238HeaderRange)
+        If Isotope204Analyzed_UPb = True Then
+            temp = ConcatenateArrays(AddressRawDataFile, RawPb204Range)
+        End If
+        
+        If Isotope208Analyzed_UPb = True Then
+            temp = ConcatenateArrays(AddressRawDataFile, RawPb208Range)
+        End If
+        
+        If Isotope232Analyzed_UPb = True Then
+            temp = ConcatenateArrays(AddressRawDataFile, RawTh232Range)
+        End If
+        
+'        If Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = True Then
+'            AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, _
+'            RawPb207HeaderRange, RawPb208HeaderRange, RawTh232HeaderRange, RawU238HeaderRange)
+'        ElseIf Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = False Then
+'            AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, _
+'            RawPb207HeaderRange, RawPb208HeaderRange, RawU238HeaderRange)
+'        ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = True Then
+'            AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, _
+'            RawPb207HeaderRange, RawTh232HeaderRange, RawU238HeaderRange)
+'        ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = False Then
+'            AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, _
+'            RawPb207HeaderRange, RawU238HeaderRange)
+'        End If
+
+        AddressRawDataFileHeader = Array( _
+            RawPb206HeaderRange, _
+            RawPb207HeaderRange, _
+            RawU238HeaderRange)
+            
+        If Isotope202Analyzed_UPb = True Then
+            temp = ConcatenateArrays(AddressRawDataFileHeader, Array(RawHg202HeaderRange))
+        End If
+        
+        If Isotope204Analyzed_UPb = True Then
+            temp = ConcatenateArrays(AddressRawDataFileHeader, Array(RawPb204HeaderRange))
+        End If
+        
+        If Isotope208Analyzed_UPb = True Then
+            temp = ConcatenateArrays(AddressRawDataFileHeader, Array(RawPb208HeaderRange))
+        End If
+        
+        If Isotope232Analyzed_UPb = True Then
+            temp = ConcatenateArrays(AddressRawDataFileHeader, Array(RawTh232HeaderRange))
         End If
 
-
-        If Isotope208analyzed = True And Isotope232analyzed = True Then
-            Headers = Array(202, 204, 206, 207, 208, 232, 238)
-        ElseIf Isotope208analyzed = True And Isotope232analyzed = False Then
-            Headers = Array(202, 204, 206, 207, 208, 238)
-        ElseIf Isotope208analyzed = False And Isotope232analyzed = True Then
-            Headers = Array(202, 204, 206, 207, 232, 238)
-        ElseIf Isotope208analyzed = False And Isotope232analyzed = False Then
-            Headers = Array(202, 204, 206, 207, 238)
+'        If Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = True Then
+'            Headers = Array(202, 204, 206, 207, 208, 232, 238)
+'        ElseIf Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = False Then
+'            Headers = Array(202, 204, 206, 207, 208, 238)
+'        ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = True Then
+'            Headers = Array(202, 204, 206, 207, 232, 238)
+'        ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = False Then
+'            Headers = Array(202, 204, 206, 207, 238)
+'        End If
+        
+        Headers = Array( _
+            206, _
+            207, _
+            238)
+            
+        If Isotope202Analyzed_UPb = True Then
+            temp = ConcatenateArrays(Headers, Array(202))
+        End If
+        
+        If Isotope204Analyzed_UPb = True Then
+            temp = ConcatenateArrays(Headers, Array(204))
+        End If
+        
+        If Isotope208Analyzed_UPb = True Then
+            temp = ConcatenateArrays(Headers, Array(208))
+        End If
+        
+        If Isotope232Analyzed_UPb = True Then
+            temp = ConcatenateArrays(Headers, Array(232))
         End If
     
-    CyclesNumber = RawNumberCycles_UPb
+    
+    If EachSampleNumberCycles_UPb = False Then
+        CyclesNumber = RawNumberCycles_UPb
+    End If
     
     If CheckData_UPb = True Then
         
@@ -1692,51 +2088,67 @@ Sub CheckRawData()
             Next
         
             'Check if all the ranges have the same number of cells with values (the ranges must be of the same size)
-            For Each C In AddressRawDataFile
-                
-                E = WorksheetFunction.count(OpenedWorkbook.Worksheets(1).Range(C))
-                    If E <> CyclesNumber Then
-                        MsgBox ("Some cycles seem to be missing in " & OpenedWorkbook.Name & ". Please, check this file and then retry.")
-                            Application.GoTo OpenedWorkbook.Worksheets(1).Range("A1")
-                                Call UnloadAll
-                                    End
-                    End If
-                
-            Next
             
+            If EachSampleNumberCycles_UPb = True Then
+                If OpenedWorkbook.Worksheets(1).Range(RawNumCyclesRange) = "" Then
+                    MsgBox ("Could not find the number of cycles for the sample " & OpenedWorkbook.Name & ". Please, check its file and then retry.")
+                        Application.GoTo OpenedWorkbook.Worksheets(1).Range(RawNumCyclesRange)
+                            Call UnloadAll
+                                End
+                Else
+                    CyclesNumber = OpenedWorkbook.Worksheets(1).Range(RawNumCyclesRange)
+                End If
+            
+            Else
+                
+                For Each C In AddressRawDataFile
+                    
+                    E = WorksheetFunction.count(OpenedWorkbook.Worksheets(1).Range(C))
+                    
+                        If E <> CyclesNumber Then
+                            MsgBox ("Some cycles seem to be missing in " & OpenedWorkbook.Name & ". Please, check this file and then retry.")
+                                Application.GoTo OpenedWorkbook.Worksheets(1).Range("A1")
+                                    Call UnloadAll
+                                        End
+                        End If
+                    
+                Next
+
+            End If
+                        
             '206Pb signal should be > 0 in at least 50% of the cycles
             CounterTotal = 0
-            Counter = 0
+            counter = 0
             
         If SearchStr > 0 Then
-                For Each f In OpenedWorkbook.Worksheets(1).Range(RawPb206Range)
+                For Each f In OpenedWorkbook.Worksheets(1).Range(Raw206Range(CyclesNumber))
                     
                     If f <= 0 Then
-                        Counter = Counter + 1
+                        counter = counter + 1
                     End If
                     
                     CounterTotal = CounterTotal + 1
                 Next
                 
-                    If 100 * (Counter / CounterTotal) > 50 Then
-                        MsgBox ("206Pb signal is <= 0 in " & Round(100 * (Counter / CounterTotal), 2) & "% of the cycles in " & _
+                    If 100 * (counter / CounterTotal) > 50 Then
+                        MsgBox ("206Pb signal is <= 0 in " & Round(100 * (counter / CounterTotal), 2) & "% of the cycles in " & _
                         OpenedWorkbook.Name & ". Be careful with this data.")
                     End If
                 
             '238U signal should be > 0 in at least 50% of the cycles
             CounterTotal = 0
-            Counter = 0
-            For Each f In OpenedWorkbook.Worksheets(1).Range(RawU238Range)
+            counter = 0
+            For Each f In OpenedWorkbook.Worksheets(1).Range(Raw238Range(CyclesNumber))
                 
                 If f <= 0 Then
-                    Counter = Counter + 1
+                    counter = counter + 1
                 End If
                 
                 CounterTotal = CounterTotal + 1
             Next
             
-                If 100 * (Counter / CounterTotal) > 50 Then
-                    MsgBox ("238U signal is <= 0 in " & Round(100 * (Counter / CounterTotal), 2) & "% of the cycles in " & _
+                If 100 * (counter / CounterTotal) > 50 Then
+                    MsgBox ("238U signal is <= 0 in " & Round(100 * (counter / CounterTotal), 2) & "% of the cycles in " & _
                     OpenedWorkbook.Name & ". Be careful with this data.")
                 End If
 
@@ -1750,7 +2162,7 @@ Sub CheckRawData()
 
 End Sub
 
-Sub CentralMassCheck(WB As Workbook)
+Sub CentralMassCheck(Wb As Workbook)
     
 '    Dim WhatToLook1 As String
 '    Dim WhatToLook2 As String
@@ -1760,9 +2172,9 @@ Sub CentralMassCheck(WB As Workbook)
     Dim Test219 As Variant
     Dim Test220 As Variant
     
-    With WB.Sheets(1) 'Cabeçário do arquivo da amostra
+    With Wb.Sheets(1) 'Cabeçário do arquivo da amostra
         
-        With .Range("A15").EntireRow
+        With .Range(RawPb206HeaderRange).EntireRow
             Set Test219 = .Find("219") 'Check if data was correctly exported
                 Set Test220 = .Find("220") '
         End With
@@ -1783,7 +2195,7 @@ Sub SetAddressess()
     
     Dim FirstSamplePath As Range
     Dim WorkbookOpened As Workbook 'Name of the workbook opened
-
+    
     If SamList_Sh Is Nothing Then
         Call PublicVariables
     End If
@@ -1791,8 +2203,12 @@ Sub SetAddressess()
     If Len(SamList_Sh.Range(SamList_FilePath & SamList_FirstLine).Value) <> 0 Or Len(SamList_Sh.Range(SamList_FilePath & SamList_FirstLine).End(xlDown).Value) <> 0 Then
         Set AllSamplesPath = SamList_Sh.Range(SamList_FilePath & SamList_FirstLine, SamList_Sh.Range(SamList_FilePath & SamList_FirstLine).End(xlDown))
         Else
-            Call MacroFolderOffice2010
-                Set AllSamplesPath = SamList_Sh.Range(SamList_FilePath & SamList_FirstLine, SamList_Sh.Range(SamList_FilePath & SamList_FirstLine).End(xlDown))
+            MsgBox "No sample file's addresses found. Restart the data reduction!", vbOKOnly
+                UnloadAll
+                    End
+'
+'            Call MacroFolderOffice2010
+'                Set AllSamplesPath = SamList_Sh.Range(SamList_FilePath & SamList_FirstLine, SamList_Sh.Range(SamList_FilePath & SamList_FirstLine).End(xlDown))
     End If
     
     Set FirstSamplePath = AllSamplesPath.Item(1)
@@ -1816,11 +2232,19 @@ Sub SetAddressess()
                                 End
             End If
     On Error GoTo 0
-                
-    Box4_Addresses.Show
+
+    mwbk.Windows(1).Visible = False
     
-            WorkbookOpened.Close
-        
+    WorkbookOpened.Activate
+    Box4_Addresses.KeepOnTopOfApplication = True
+    Box4_Addresses.Show 'vbModeless
+    'Box4_Addresses.Show
+    
+    Set WorkbookOpened = Workbooks.Open(FileName:=FirstSamplePath)
+    WorkbookOpened.Close
+    
+    mwbk.Windows(1).Visible = True
+    
     Application.ScreenUpdating = ScreenUpd
     
 End Sub
@@ -1832,7 +2256,7 @@ Sub StandardsUPbComboBox()
     'stored in add-in workbook.
 
     Dim StandardsNamesHeader As Range 'Cell with standard names header.
-    Dim Counter As Integer 'Used to add itens to External Standard ComboBox
+    Dim counter As Integer 'Used to add itens to External Standard ComboBox
     Dim StdRng As Range
 
     Box1_Start.ComboBox1_ExternalStd = ExternalStandard_UPb.Value
@@ -1841,15 +2265,61 @@ Sub StandardsUPbComboBox()
     Box1_Start.ComboBox1_ExternalStd.Clear
     Box2_UPb_Options.ComboBox1_ExternalStd.Clear
 
-        For Counter = 1 To UBound(UPbStd)
-            Box1_Start.ComboBox1_ExternalStd.AddItem (UPbStd(Counter).StandardName)
+        For counter = 1 To UBound(UPbStd)
+            Box1_Start.ComboBox1_ExternalStd.AddItem (UPbStd(counter).StandardName)
         Next
         
-        For Counter = 1 To UBound(UPbStd)
-            Box2_UPb_Options.ComboBox1_ExternalStd.AddItem UPbStd(Counter).StandardName
+        For counter = 1 To UBound(UPbStd)
+            Box2_UPb_Options.ComboBox1_ExternalStd.AddItem UPbStd(counter).StandardName
         Next
 
 End Sub
+
+Sub DateTimeFormatsComboBox()
+
+    'This program will populate a combox from Box1_Start
+    'with the available date and time formats that Chronus currently
+    'can handle.
+
+    Dim counter As Integer 'Used to add itens to the ComboBoxes
+
+    If Box1_Start Is Nothing Then
+        Debug.Print "DateTimeFormatsComboBox"
+        Debug.Print "Box1_Start not initialized"
+        End
+    End If
+
+    DateTimeFormats_Arrays
+    
+    Box1_Start.ComboBox2_DateFormats = DateFormat_UPb.Value
+    Box1_Start.ComboBox3_TimeFormats = TimeFormat_UPb.Value
+
+    For counter = 1 To UBound(TimeFormats)
+        Box1_Start.ComboBox3_TimeFormats.AddItem TimeFormats(counter)
+    Next
+    
+    For counter = 1 To UBound(DateFormats)
+        Box1_Start.ComboBox2_DateFormats.AddItem DateFormats(counter)
+    Next
+
+End Sub
+
+Sub DateTimeFormats_Arrays()
+
+    Dim FormatPairs As Integer 'Number of pairs of formats currently supported
+    
+    FormatPairs = 1
+
+    ReDim TimeFormats(1 To FormatPairs) As String
+    ReDim DateFormats(1 To FormatPairs) As String
+    
+    TimeFormats(1) = "hh:mm:ss:ms(xxx)"
+
+    DateFormats(1) = "Date: dd/mm/yyyy"
+
+End Sub
+
+
 Sub CheckFundamentalParameters()
 
     'Updated 24-08-2015
@@ -1867,100 +2337,158 @@ Sub CheckFundamentalParameters()
         .Add "What is the sample name?"
         .Add "In which folder are the raw data files?"
         .Add "Which external standard was analyzed?"
+        
+        .Add "MIC or Faraday Cup was used to analyze 202 isotope?"
+        .Add "MIC or Faraday Cup was used to analyze 204 isotope?"
         .Add "MIC or Faraday Cup was used to analyze 206 isotope?"
+        .Add "MIC or Faraday Cup was used to analyze 207 isotope?"
+        .Add "MIC or Faraday Cup was used to analyze 208 isotope?"
+        .Add "MIC or Faraday Cup was used to analyze 232 isotope?"
+        .Add "MIC or Faraday Cup was used to analyze 238 isotope?"
+        
         .Add "How the blanks were named?"
         .Add "How the sample analyses were named?"
         .Add "The samples were analyzed using spot or raster scheme?"
         .Add "How the standard analyses were named?"
-        .Add "What is the range of 202 isotope signal in raw data file?"
-        .Add "What is the range of 204 isotope signal in raw data file?"
+        
+        If Isotope202Analyzed_UPb = True Then
+            .Add "What is the range of 202 isotope signal in raw data file?"
+        End If
+        
+        If Isotope204Analyzed_UPb = True Then
+            .Add "What is the range of 204 isotope signal in raw data file?"
+        End If
+        
         .Add "What is the range of 206 isotope signal in raw data file?"
         .Add "What is the range of 207 isotope signal in raw data file?"
         
-        If Isotope208analyzed = True Then
+        If Isotope208Analyzed_UPb = True Then
             .Add "What is the range of 208 isotope signal in raw data file?"
         End If
 
-        If Isotope232analyzed = True Then
+        If Isotope232Analyzed_UPb = True Then
             .Add "What is the range of 232 isotope signal in raw data file?"
         End If
 
         .Add "What is the range of 238 isotope signal in raw data file?"
-        .Add "What is the range of 202 isotope signal header in raw data file?"
-        .Add "What is the range of 204 isotope signal header in raw data file?"
+
+        If Isotope202Analyzed_UPb = True Then
+            .Add "What is the range of 202 isotope signal header in raw data file?"
+        End If
+        
+        If Isotope204Analyzed_UPb = True Then
+            .Add "What is the range of 204 isotope signal header in raw data file?"
+        End If
+        
         .Add "What is the range of 206 isotope signal header in raw data file?"
         .Add "What is the range of 207 isotope signal header in raw data file?"
         
-        If Isotope208analyzed = True Then
+        If Isotope208Analyzed_UPb = True Then
             .Add "What is the range of 208 isotope signal header in raw data file?"
         End If
         
-        If Isotope232analyzed = True Then
+        If Isotope232Analyzed_UPb = True Then
             .Add "What is the range of 232 isotope signal header in raw data file?"
         End If
         
         .Add "What is the range of 238 isotope signal header in raw data file?"
-        .Add "What is the 202/204 mercury ratio? The proportion, by Rosman & Taylor (1998), is 4.35."
+        
+        If Isotope202Analyzed_UPb = True Then
+            .Add "What is the 202/204 mercury ratio? The proportion, by Rosman & Taylor (1998), is 4.35."
+        End If
+        
         .Add "What is the proportion between 238U/235U?"
         .Add "What is the conversion constant between mV and counts per second (CPS)?"
         .Add "Should the blank uncertainties be propagated into samples?"
         .Add "Should the uncertainties of the standard analyses be propagated into samples?"
         .Add "Should the certified uncertainties of the standard be propagated into samples?"
         .Add "Should the over-dispersion factor (Ibanez-Mejia et al., 2014) of the standard analyses be propagated into samples?"
-    
+        .Add "Were the blanks and samples recorded in the same files?"
+        .Add "What is the date format?"
+        .Add "What is the time format?"
     End With
     
     With ii
         .Add SampleName_UPb
         .Add FolderPath_UPb
         .Add ExternalStandard_UPb
+        
+        .Add Detector202_UPb
+        .Add Detector204_UPb
         .Add Detector206_UPb
+        .Add Detector208_UPb
+        .Add Detector207_UPb
+        .Add Detector232_UPb
+        .Add Detector238_UPb
+        
         .Add BlankName_UPb
         .Add SamplesNames_UPb
         .Add SpotRaster_UPb
         .Add ExternalStandardName_UPb
-        .Add RawHg202Range
-        .Add RawPb204Range
+        
+        If Isotope202Analyzed_UPb = True Then
+            .Add RawHg202Range
+        End If
+        
+        If Isotope204Analyzed_UPb = True Then
+            .Add RawPb204Range
+        End If
+        
         .Add RawPb206Range
         .Add RawPb207Range
 
-        If Isotope208analyzed = True Then
+        If Isotope208Analyzed_UPb = True Then
             .Add RawPb208Range
         End If
 
-        If Isotope232analyzed = True Then
+        If Isotope232Analyzed_UPb = True Then
             .Add RawTh232Range
         End If
         
         .Add RawU238Range
-        .Add RawHg202HeaderRange
-        .Add RawPb204HeaderRange
+        
+        If Isotope202Analyzed_UPb = True Then
+            .Add RawHg202HeaderRange
+        End If
+        
+        If Isotope204Analyzed_UPb = True Then
+            .Add RawPb204HeaderRange
+        End If
+        
         .Add RawPb206HeaderRange
         .Add RawPb207HeaderRange
         
-        If Isotope208analyzed = True Then
+        If Isotope208Analyzed_UPb = True Then
             .Add RawPb208HeaderRange
         End If
         
-        If Isotope232analyzed = True Then
+        If Isotope232Analyzed_UPb = True Then
             .Add RawTh232HeaderRange
         End If
         
         .Add RawU238HeaderRange
-        .Add RatioMercury_UPb
+        
+        If Isotope202Analyzed_UPb = True Then
+            .Add RatioMercury_UPb
+        End If
+        
         .Add RatioUranium_UPb
         .Add mVtoCPS_UPb
         .Add ErrBlank_UPb
         .Add ErrExtStd_UPb
         .Add ErrExtStdCert_UPb
         .Add ExtStdRepro_UPb
+        .Add BlanksRecordedSamples_UPb
+        .Add DateFormat_UPb
+        .Add TimeFormat_UPb
 
     End With
     
     a = 1
         For Each P In ii
-            
+            'Debug.Print a
             If P.Value = "" Then
+            'Debug.Print IIName.Item(a)
                 IIM.Add IIName.Item(a)
             End If
             a = a + 1
@@ -1988,11 +2516,54 @@ Sub PreviousValues()
             Box1_Start.OptionButton4_Raster.Value = True
     End Select
     
+    
+    Select Case Detector202_UPb.Value
+        Case "MIC"
+            Box1_Start.CheckBox_202MIC.Value = True
+        Case "Faraday Cup"
+            Box1_Start.CheckBox_202Faraday.Value = True
+    End Select
+    
+    Select Case Detector204_UPb.Value
+        Case "MIC"
+            Box1_Start.CheckBox_204MIC.Value = True
+        Case "Faraday Cup"
+            Box1_Start.CheckBox_204Faraday.Value = True
+    End Select
+    
     Select Case Detector206_UPb.Value
         Case "MIC"
-            Box1_Start.OptionButton1_206MIC.Value = True
+            Box1_Start.CheckBox_206MIC.Value = True
         Case "Faraday Cup"
-            Box1_Start.OptionButton2_206Faraday.Value = True
+            Box1_Start.CheckBox_206Faraday.Value = True
+    End Select
+    
+    Select Case Detector207_UPb.Value
+        Case "MIC"
+            Box1_Start.CheckBox_207MIC.Value = True
+        Case "Faraday Cup"
+            Box1_Start.CheckBox_207Faraday.Value = True
+    End Select
+    
+    Select Case Detector208_UPb.Value
+        Case "MIC"
+            Box1_Start.CheckBox_208MIC.Value = True
+        Case "Faraday Cup"
+            Box1_Start.CheckBox_208Faraday.Value = True
+    End Select
+    
+    Select Case Detector232_UPb.Value
+        Case "MIC"
+            Box1_Start.CheckBox_232MIC.Value = True
+        Case "Faraday Cup"
+            Box1_Start.CheckBox_232Faraday.Value = True
+    End Select
+
+    Select Case Detector238_UPb.Value
+        Case "MIC"
+            Box1_Start.CheckBox_238MIC.Value = True
+        Case "Faraday Cup"
+            Box1_Start.CheckBox_238Faraday.Value = True
     End Select
     
     Box1_Start.TextBox8_BlankName.Value = BlankName_UPb.Value
@@ -2005,6 +2576,7 @@ Sub PreviousValues()
     End If
     
     Call StandardsUPbComboBox
+    Call DateTimeFormatsComboBox
     
     Box1_Start.ComboBox1_ExternalStd.Value = ExternalStandard_UPb.Value
     Box1_Start.TextBox2.Value = SampleName_UPb.Value
@@ -2014,6 +2586,10 @@ Sub PreviousValues()
     
     Box1_Start.TextBox11_HowMany.Value = RawNumberCycles_UPb.Value
     Box1_Start.TextBox12_CycleDuration.Value = CycleDuration_UPb.Value
+    Box1_Start.CheckBox3_blankwtsample.Value = BlanksRecordedSamples_UPb
+    
+    Box1_Start.ComboBox2_DateFormats = DateFormat_UPb
+    Box1_Start.ComboBox3_TimeFormats = TimeFormat_UPb
     
     Select Case CheckData_UPb.Value
         Case True
@@ -2023,19 +2599,23 @@ Sub PreviousValues()
     End Select
     
     'Previous addresses in Box2_UPbOptions, page addresses
-    If IsEmpty(RawHg202Range) = True And _
-        IsEmpty(RawPb204Range) = True And _
-            IsEmpty(RawPb206Range) = True And _
-                IsEmpty(RawPb207Range) = True And _
-                    IsEmpty(RawPb208Range) = True And _
-                        IsEmpty(RawTh232Range) = True And _
-                            IsEmpty(RawU238Range) = True Then
+    If IsEmpty(RawHg202Range) = True And Isotope202Analyzed_UPb = True Or _
+        IsEmpty(RawPb204Range) = True And Isotope204Analyzed_UPb = True Or _
+            IsEmpty(RawPb206Range) = True Or _
+                IsEmpty(RawPb207Range) = True Or _
+                    IsEmpty(RawPb208Range) = True And Isotope208Analyzed_UPb = True Or _
+                        IsEmpty(RawTh232Range) = True And Isotope232Analyzed_UPb = True Or _
+                            IsEmpty(RawU238Range) = True Or _
+                                IsEmpty(RawCyclesTimeRange) = True Or _
+                                    IsEmpty(RawAnalysisDateRange) = True Then
             
             If MsgBox("Would you like to use the default cell addresses in raw data files, as well as number of cycles and duration?", vbYesNo) _
                 = vbYes Then 'Aks the user if he/she wants the default values
                 
-                Box4_Addresses.CheckBox3.Value = True
-                Box4_Addresses.CheckBox2.Value = True
+                Box4_Addresses.CheckBox_202Analyzed = True
+                Box4_Addresses.CheckBox_204Analyzed = True
+                Box4_Addresses.CheckBox_208Analyzed = True
+                Box4_Addresses.CheckBox_232Analyzed = True
             
                 Box4_Addresses.RefEdit1_202.Value = TW_RawHg202Range.Value
                 Box4_Addresses.RefEdit2_204.Value = TW_RawPb204Range.Value
@@ -2052,7 +2632,7 @@ Sub PreviousValues()
                 Box4_Addresses.RefEdit11_232Header.Value = TW_RawTh232HeaderRange.Value
                 Box4_Addresses.RefEdit12_238Header.Value = TW_RawU238HeaderRange.Value
                 Box4_Addresses.RefEdit15_CyclesTime.Value = TW_RawCyclesTimeRange.Value
-                Box4_Addresses.RefEdit22_AnalysisDate.Value = TW_AnalysisDateRange.Value
+                Box4_Addresses.RefEdit22_AnalysisDate.Value = TW_RawAnalysisDateRange.Value
 
             End If
             
@@ -2061,33 +2641,51 @@ Sub PreviousValues()
         'AFTER SOME MODIFICATIONS IN OTHER  PROCEDURES, THE LINES BELOW RAISE AN ERROR:
         'Could not set the Value property. Type mismatch -2147352571 (80020005)
         'In order to solve this problem, a added .Value to both sides of the lines below.
-        Box4_Addresses.RefEdit1_202.Value = RawHg202Range.Value
+
         Box4_Addresses.RefEdit2_204.Value = RawPb204Range.Value
         Box4_Addresses.RefEdit3_206.Value = RawPb206Range.Value
         Box4_Addresses.RefEdit4_207.Value = RawPb207Range.Value
         Box4_Addresses.RefEdit6_238.Value = RawU238Range.Value
-        Box4_Addresses.RefEdit7_202Header.Value = RawHg202HeaderRange.Value
+
         Box4_Addresses.RefEdit8_204Header.Value = RawPb204HeaderRange.Value
         Box4_Addresses.RefEdit9_206Header.Value = RawPb206HeaderRange.Value
         Box4_Addresses.RefEdit10_207Header.Value = RawPb207HeaderRange.Value
         Box4_Addresses.RefEdit12_238Header.Value = RawU238HeaderRange.Value
         Box4_Addresses.RefEdit15_CyclesTime.Value = RawCyclesTimeRange.Value
-        Box4_Addresses.RefEdit22_AnalysisDate.Value = AnalysisDateRange.Value
-
-        If Isotope208analyzed = True Then
-            Box4_Addresses.CheckBox3 = True
+        Box4_Addresses.RefEdit22_AnalysisDate.Value = RawAnalysisDateRange.Value
+        Box4_Addresses.RefEdit23_Num_Cycles.Value = RawNumCyclesRange.Value 'Range where the number of cycles per each sample is found in the raw data files
+        Box4_Addresses.CheckBox_NumberCycles.Value = EachSampleNumberCycles_UPb.Value  'Each sample has an number of cyles? True or False
+        
+        If Isotope202Analyzed_UPb = True Then
+            Box4_Addresses.CheckBox_202Analyzed = True
+            Box4_Addresses.RefEdit1_202.Value = RawHg202Range.Value
+            Box4_Addresses.RefEdit7_202Header.Value = RawHg202HeaderRange.Value
+        Else
+            Box4_Addresses.CheckBox_202Analyzed = False
+        End If
+        
+        If Isotope204Analyzed_UPb = True Then
+            Box4_Addresses.CheckBox_204Analyzed = True
+            Box4_Addresses.RefEdit2_204.Value = RawPb204Range.Value
+            Box4_Addresses.RefEdit8_204Header.Value = RawPb204HeaderRange.Value
+        Else
+            Box4_Addresses.CheckBox_204Analyzed = False
+        End If
+        
+        If Isotope208Analyzed_UPb = True Then
+            Box4_Addresses.CheckBox_208Analyzed = True
             Box4_Addresses.RefEdit20_208.Value = RawPb208Range.Value
             Box4_Addresses.RefEdit21_208Header.Value = RawPb208HeaderRange.Value
         Else
-            Box4_Addresses.CheckBox3 = False
+            Box4_Addresses.CheckBox_208Analyzed = False
         End If
         
-        If Isotope232analyzed = True Then
-            Box4_Addresses.CheckBox2 = True
+        If Isotope232Analyzed_UPb = True Then
+            Box4_Addresses.CheckBox_232Analyzed = True
             Box4_Addresses.RefEdit5_232.Value = RawTh232Range.Value
             Box4_Addresses.RefEdit11_232Header.Value = RawTh232HeaderRange.Value
         Else
-            Box4_Addresses.CheckBox2 = False
+            Box4_Addresses.CheckBox_232Analyzed = False
         End If
 
     End If
@@ -2154,7 +2752,7 @@ Sub MacroFolderOffice2010()
     Dim FSO As Object 'Scripting.FileSystemObject
     Dim fld As Object 'Scripting.Folder
     Dim fl As Object 'Scripting.File
-    Dim n As Long 'Necessary to indicate where the file path and the file name with extension will be copied
+    Dim N As Long 'Necessary to indicate where the file path and the file name with extension will be copied
     Dim a As Long 'Number of files with the specified extension found
     Dim RemoveExtension As String 'String to be removed from the name of the sample
         
@@ -2182,20 +2780,20 @@ Sub MacroFolderOffice2010()
             .Cells.Clear
         End If
         
-        n = SamList_FirstLine
+        N = SamList_FirstLine
         a = 0
         For Each fl In fld.Files
             If FSO.getExtensionName(fl.path) = extension Then
-                .Cells(n, SamList_FilePath) = fl.path 'Copies the file address
-                    .Cells(n, SamList_FileName) = Replace(FSO.GetFileName(fl.path), RemoveExtension, "") 'Copy the file name (with extension)
-                        .Cells(n, SamList_ID) = n - 2 'Index for the sample
+                .Cells(N, SamList_FilePath) = fl.path 'Copies the file address
+                    .Cells(N, SamList_FileName) = Replace(FSO.GetFileName(fl.path), RemoveExtension, "") 'Copy the file name (with extension)
+                        .Cells(N, SamList_ID) = N - 2 'Index for the sample
                 
-                        n = n + 1
+                        N = N + 1
                         a = a + 1
             End If
         Next fl
         
-        Set AllSamplesPath = SamList_Sh.Range(SamList_FilePath & SamList_FirstLine, SamList_FilePath & n)
+        Set AllSamplesPath = SamList_Sh.Range(SamList_FilePath & SamList_FirstLine, SamList_FilePath & N)
         
         
     End With
@@ -2221,6 +2819,7 @@ Sub FirstCycleTime()
 
     Dim WorkbookOpened As Workbook
     Dim Cell As Range
+    Dim numcycles As Integer
 
     If FolderPath_UPb Is Nothing Then 'We need some public variables, so we must be shure that they were set
         Call PublicVariables
@@ -2238,7 +2837,7 @@ Sub FirstCycleTime()
         End If
 
         On Error Resume Next
-            Workbooks.Open FileName:=Cell
+            Set WorkbookOpened = Workbooks.Open(FileName:=Cell)
                 If Err.Number <> 0 Then
                     MsgBox MissingFile1 & Cell & MissingFile2
                         Call UpdateFilesAddresses
@@ -2246,13 +2845,21 @@ Sub FirstCycleTime()
                                 End
                 End If
         On Error GoTo 0
-    
-            Set WorkbookOpened = ActiveWorkbook
             
-                 SamList_Sh.Range("D" & Cell.Row) = DateTimeCustomFormat(WorkbookOpened, WorkbookOpened.Worksheets(1).Range(RawCyclesTimeRange).Item(1), _
-                 WorkbookOpened.Worksheets(1).Range(AnalysisDateRange), "hh:mm:ss:ms(xxx)", "Date: dd/mm/yyyy")
+                SamList_Sh.Range(SamList_FirstCycleTime & Cell.Row) = DateTimeCustomFormat(WorkbookOpened, WorkbookOpened.Worksheets(1).Range(RawCyclesTimeRange).Item(1), _
+                WorkbookOpened.Worksheets(1).Range(RawAnalysisDateRange), TimeFormat_UPb.Value, DateFormat_UPb.Value)
+                 
+                If EachSampleNumberCycles_UPb = True Then 'If True, the number of cycles of each sample will be stored in SamList sheet
+                    SamList_Sh.Range(SamList_NumCycles & Cell.Row) = WorkbookOpened.Worksheets(1).Range(RawNumCyclesRange).Value
+                    numcycles = update_numcycles(WorkbookOpened)
+                Else
+                    SamList_Sh.Range(SamList_NumCycles & Cell.Row) = RawNumberCycles_UPb.Value
+                    numcycles = RawNumberCycles_UPb.Value
+                End If
+                
+'                 Debug.Print Worksheets(1).Range(RawCyclesTimeRange).Item(1).Range(BlanksRecordedSamples_UPb)
                                 
-                    Call WriteCycles(WorkbookOpened.Sheets(1).Range(RawCyclesTimeRange), Cell.Row)
+                    Call WriteCycles(WorkbookOpened.Sheets(1).Range(RawCyclesTimeRange_function(numcycles)), Cell.Row)
 
                     WorkbookOpened.Close (False)
     Next
@@ -2274,7 +2881,7 @@ Sub WriteCycles(CyclesRange As Range, PasteRow As Integer)
 
     Dim cell2 As Range
     Dim a As Range 'Range of cycles time in raw data file (complete path)
-    Dim B As Range 'Cell address of the cycle time from the sample being verified
+    Dim b As Range 'Cell address of the cycle time from the sample being verified
     Dim C As Integer 'Correct cycle number, after removing d
     Dim d As Integer 'Integer with the difference between the row of the first cycle time in raw data file and row 1. This is
                      'necessary because the Cycles are written from 1 to n.
@@ -2284,7 +2891,7 @@ Sub WriteCycles(CyclesRange As Range, PasteRow As Integer)
         Call PublicVariables
     End If
 
-    Set B = SamList_Sh.Range(SamList_Cycles & PasteRow)
+    Set b = SamList_Sh.Range(SamList_Cycles & PasteRow)
     
     If PreserveCycles = True Then
             
@@ -2292,7 +2899,7 @@ Sub WriteCycles(CyclesRange As Range, PasteRow As Integer)
     
     ElseIf PreserveCycles = False Then
     
-        B.Clear
+        b.Clear
     
     End If
     
@@ -2308,15 +2915,15 @@ Sub WriteCycles(CyclesRange As Range, PasteRow As Integer)
         C = cell2.Row - d
                 
         If Not IsEmpty(cell2) = True Then 'If there isn't information in a specific cell, we have to skip it.
-            B = B & C & "," 'Adds the cycle number plus comma in cells from column E
+            b = b & C & "," 'Adds the cycle number plus comma in cells from column E
         End If
         
     RangeItem = RangeItem + 1
     
     Next
     
-    If Right(B.Value, 1) = "," Then
-        B = Left(B.Value, Len(B.Value) - 1)
+    If Right(b.Value, 1) = "," Then
+        b = Left(b.Value, Len(b.Value) - 1)
     End If
         
 End Sub
@@ -2335,7 +2942,7 @@ Sub CreateStdListMap()
     Dim Blanks() As Integer 'Array with blanks IDs
     Dim Samples() As Integer 'Array with samples and internals standards IDs
     Dim ExtStandards() As Integer 'Array with external standards IDs
-    Dim B As Double 'Variable used to compare times os analyses
+    Dim b As Double 'Variable used to compare times os analyses
     Dim d As Variant
     Dim FindIDObj As Object 'Variable used to find IDs in column F
     Dim Msg1 As String, msg2 As String, msg3 As String, msg4 As String
@@ -2364,7 +2971,7 @@ Sub CreateStdListMap()
     
     'Internal standards are treated like normal samples, so samples and internal standards IDs are copeid to column F in SamList_Sh
     For Each a In StdFound 'Every ID from samples will be placed in column F
-        SamList_Sh.Cells(C + 1, Range(a).Offset(, 4).Column) = SamList_Sh.Range(a).Offset(, 1)
+        SamList_Sh.Cells(C + 1, SamList_Sh.Range(a).Offset(, 4).Column) = SamList_Sh.Range(a).Offset(, 1)
             ExtStandards(C - 1) = SamList_Sh.Range(a).Offset(, 1)
         C = C + 1
     Next
@@ -2409,20 +3016,20 @@ Sub CreateStdListMap()
     ReDim After(1 To 1) As IDsTimesDifference 'Array where all blanks or standards IDs and time differences analysed after samples will be stored
     
         For Each d In Blanks
-            B = PathsNamesIDsTimesCycles(4, a) - PathsNamesIDsTimesCycles(4, d)
-                If B = 0 Then
+            b = PathsNamesIDsTimesCycles(4, a) - PathsNamesIDsTimesCycles(4, d)
+                If b = 0 Then
                     MsgBox "Analysis with ID " & PathsNamesIDsTimesCycles(3, d) & " time of analyses is exactly the same of " & PathsNamesIDsTimesCycles(3, a) & _
                     ". Please, check this and then retry"
 '                        Call UnloadAll
 '                            End
-                ElseIf B < 0 Then
+                ElseIf b < 0 Then
                     After(ca).ID = d 'ID of the blank analyses
-                    After(ca).TimeDifference = Abs(B) 'Difference of time of analyses between Blank and sample
+                    After(ca).TimeDifference = Abs(b) 'Difference of time of analyses between Blank and sample
                         ReDim Preserve After(1 To UBound(After) + 1)
                             ca = ca + 1
                 Else
                     Before(cb).ID = d 'ID of the blank analyses
-                    Before(cb).TimeDifference = B 'Difference of time of analyses between Blank and sample
+                    Before(cb).TimeDifference = b 'Difference of time of analyses between Blank and sample
                         ReDim Preserve Before(1 To UBound(Before) + 1)
                             cb = cb + 1
                 End If
@@ -2489,7 +3096,7 @@ Sub CreateSamListMap()
     Dim Blanks() As Integer 'Array with blanks IDs
     Dim Samples() As Integer 'Array with samples and internals standards IDs
     Dim ExtStandards() As Integer 'Array with external standards IDs
-    Dim B As Double 'Variable used to compare times os analyses
+    Dim b As Double 'Variable used to compare times os analyses
     Dim d As Variant
     Dim FindIDObj As Object 'Variable used to find IDs in column F
     Dim Msg1 As String, msg2 As String, msg3 As String, msg4 As String
@@ -2520,14 +3127,14 @@ Sub CreateSamListMap()
     
     'Internal standards are treated like normal samples, so samples and internal standards IDs are copeid to column F in SamList_Sh
     For Each a In SlpFound 'Every ID from samples will be placed in column F
-        SamList_Sh.Cells(C + 1, Range(a).Offset(, 6).Column) = SamList_Sh.Range(a).Offset(, 1)
+        SamList_Sh.Cells(C + 1, SamList_Sh.Range(a).Offset(, 6).Column) = SamList_Sh.Range(a).Offset(, 1)
             Samples(C - 1) = SamList_Sh.Range(a).Offset(, 1)
         C = C + 1
     Next
     
     If InternalStandardCheck_UPb = True Then
         For Each a In IntStdFound 'Every ID of internal standard will be placed in column F
-            SamList_Sh.Cells(C + 1, Range(a).Offset(, 6).Column) = SamList_Sh.Range(a).Offset(, 1)
+            SamList_Sh.Cells(C + 1, SamList_Sh.Range(a).Offset(, 6).Column) = SamList_Sh.Range(a).Offset(, 1)
                 Samples(C - 1) = SamList_Sh.Range(a).Offset(, 1)
             C = C + 1
         Next
@@ -2577,18 +3184,18 @@ Sub CreateSamListMap()
     ReDim After(1 To 1) As IDsTimesDifference 'Array where all blanks or standards IDs and time differences analysed after samples will be stored
     
         For Each d In Blanks
-            B = PathsNamesIDsTimesCycles(4, a) - PathsNamesIDsTimesCycles(4, d)
-                If B = 0 Then
+            b = PathsNamesIDsTimesCycles(4, a) - PathsNamesIDsTimesCycles(4, d)
+                If b = 0 Then
                     MsgBox PathsNamesIDsTimesCycles(3, d) & "time of analyses is exactly the same of " & PathsNamesIDsTimesCycles(3, a) & _
                     ". Please, check this and then retry."
-                ElseIf B < 0 Then
+                ElseIf b < 0 Then
                     After(ca).ID = d 'ID of the blank analyses
-                    After(ca).TimeDifference = Abs(B) 'Difference of time of analyses between Blank and sample
+                    After(ca).TimeDifference = Abs(b) 'Difference of time of analyses between Blank and sample
                         ReDim Preserve After(1 To UBound(After) + 1)
                             ca = ca + 1
                 Else
                     Before(cb).ID = d 'ID of the blank analyses
-                    Before(cb).TimeDifference = B 'Difference of time of analyses between Blank and sample
+                    Before(cb).TimeDifference = b 'Difference of time of analyses between Blank and sample
                         ReDim Preserve Before(1 To UBound(Before) + 1)
                             cb = cb + 1
                 End If
@@ -2597,16 +3204,18 @@ Sub CreateSamListMap()
         
         'There must be a blank analysis before and after the sample and this will be checked below
         If After(1).ID = 0 Then
-            
-            MsgBox "After sample " & PathsNamesIDsTimesCycles(2, a) & " there is not any " & _
-            "blank analysis. Please, check this " & _
-            "missing analysis, its name might be different than the one you selected " & _
-            "(" & BlankName_UPb & ").", vbOKOnly
-                
-                Call FormatMainSh
-                    Call UnloadAll
-                        SamList_Sh.Activate
-                            End
+        
+            If BlanksRecordedSamples_UPb = False Then
+                MsgBox "After sample " & PathsNamesIDsTimesCycles(2, a) & " there is not any " & _
+                "blank analysis. Please, check this " & _
+                "missing analysis, its name might be different than the one you selected " & _
+                "(" & BlankName_UPb & ").", vbOKOnly
+                    
+                    Call FormatMainSh
+                        Call UnloadAll
+                            SamList_Sh.Activate
+                                End
+            End If
                         
         ElseIf Before(1).ID = 0 Then
             
@@ -2643,16 +3252,18 @@ Sub CreateSamListMap()
                     .Validation.ErrorTitle = msg4
                 End With
                 
-                With SamList_Sh.Range(FindIDObj.Address).Offset(, 4)
-                    .Value = After(2).ID 'Number 2 is selected because the array was sorted and the empty element (=0) went
-                    'to the first position of the array
-                    .Validation.Delete
-                    .Validation.Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:=xlBetween, Formula1:=Join(IntegerToStringArray(Blanks), ",")
-                    .Validation.InputMessage = Msg1
-                    .Validation.InputTitle = msg2
-                    .Validation.ErrorMessage = msg3
-                    .Validation.ErrorTitle = msg4
-                End With
+                If BlanksRecordedSamples_UPb = False Then
+                    With SamList_Sh.Range(FindIDObj.Address).Offset(, 4)
+                        .Value = After(2).ID 'Number 2 is selected because the array was sorted and the empty element (=0) went
+                        'to the first position of the array
+                        .Validation.Delete
+                        .Validation.Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:=xlBetween, Formula1:=Join(IntegerToStringArray(Blanks), ",")
+                        .Validation.InputMessage = Msg1
+                        .Validation.InputTitle = msg2
+                        .Validation.ErrorMessage = msg3
+                        .Validation.ErrorTitle = msg4
+                    End With
+                End If
         End With
         
     'This is exactly the same code as above but is used to deal with external standards analyses
@@ -2663,18 +3274,18 @@ Sub CreateSamListMap()
     ReDim After(1 To 1) As IDsTimesDifference
     
         For Each d In ExtStandards
-            B = PathsNamesIDsTimesCycles(4, a) - PathsNamesIDsTimesCycles(4, d)
-                If B = 0 Then
+            b = PathsNamesIDsTimesCycles(4, a) - PathsNamesIDsTimesCycles(4, d)
+                If b = 0 Then
                     MsgBox PathsNamesIDsTimesCycles(3, d) & "time of analyses is exactly the same of " & PathsNamesIDsTimesCycles(3, a) & _
                     ". Please, check this and the retry"
-                ElseIf B < 0 Then
+                ElseIf b < 0 Then
                     After(ca).ID = d 'ID of the external standard analyses
-                    After(ca).TimeDifference = Abs(B) 'Difference of time of analyses between external standard and sample
+                    After(ca).TimeDifference = Abs(b) 'Difference of time of analyses between external standard and sample
                         ReDim Preserve After(1 To UBound(After) + 1)
                             ca = ca + 1
                 Else
                     Before(cb).ID = d 'ID of the external standardsd analyses
-                    Before(cb).TimeDifference = B 'Difference of time of analyses between external standard and sample
+                    Before(cb).TimeDifference = b 'Difference of time of analyses between external standard and sample
                         ReDim Preserve Before(1 To UBound(Before) + 1)
                             cb = cb + 1
                 End If
@@ -2845,13 +3456,13 @@ Sub SortMyData(ByRef Data() As IDsTimesDifference)
     FirstIdx = LBound(Data)
     LastIdx = UBound(Data)
 
-    Dim i As Long, J As Long, TEMP As IDsTimesDifference
+    Dim i As Long, J As Long, temp As IDsTimesDifference
     For i = FirstIdx To LastIdx - 1
         For J = i + 1 To LastIdx
             If Data(i).TimeDifference > Data(J).TimeDifference Then
-                TEMP = Data(i)
+                temp = Data(i)
                 Data(i) = Data(J)
-                Data(J) = TEMP
+                Data(J) = temp
             End If
         Next J
     Next i
@@ -2872,7 +3483,7 @@ Sub IdentifyFileType()
     Dim Message1 As Integer
     Dim Message2 As Object
     Dim d(1 To 4) As String
-    Dim B As String
+    Dim b As String
     Dim E As Integer
     
     Dim Blk_Names() As String
@@ -3038,13 +3649,10 @@ Public Sub LoadSamListMap()
 
     'This program recognizes the samples, standards and blanks IDs in SamList, creating an array (AnalysesList which is
     'equal to the SamListMap)that will be used to set the sequence in which data will be reduced.
-    
-    'THIS SUB IS NOT BEING USED BECAUSE IT NECESSARY TO UPDATE OTHER CHRONUS PROCEDURES. BY DEFAULT,
-    'THE LIST OF SAMPLES IS CREATED AGAIN BY MARCOFOLDEROFFICE2010.
-            
+               
     Dim Cell As Range
     Dim a As Integer
-    Dim Counter As Integer
+    Dim counter As Integer
     
     If SampleName_UPb Is Nothing Then
         Call PublicVariables
@@ -3057,7 +3665,7 @@ Public Sub LoadSamListMap()
     Set MapIDsRange = SamList_Sh.Range("H" & SamList_FirstLine, SamList_Sh.Range("H" & SamList_FirstLine).End(xlDown))
         
     a = SamList_FirstLine 'Row number with headers of SamList map
-    Counter = 1
+    counter = 1
     
     ReDim Preserve AnalysesList(1 To 1) As SamplesMap '''''''''''''''''''''''''CHECAR   <<<<<-------------------------------------
     
@@ -3078,25 +3686,32 @@ Public Sub LoadSamListMap()
                     ElseIf IsEmpty(SamList_Sh.Range("K" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("K" & a)) = False Then
                         Application.GoTo SamList_Sh.Range("K" & a)
                         GoTo ErrHandler
-                        ElseIf IsEmpty(SamList_Sh.Range("L" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("L" & a)) = False Then
-                            Application.GoTo SamList_Sh.Range("L" & a)
-                            GoTo ErrHandler
+                        
+                        ElseIf BlanksRecordedSamples_UPb = False Then
+                            
+                            If IsEmpty(SamList_Sh.Range("L" & a)) Or WorksheetFunction.IsNumber(SamList_Sh.Range("L" & a)) = False Then
+                                Application.GoTo SamList_Sh.Range("L" & a)
+                                GoTo ErrHandler
+                            End If
         
         End If
         
         On Error GoTo ErrHandler
         
         'Below, we make a copy of the IDs to AnalysesList so that we can access them easily during data reduction.
-        AnalysesList(Counter).sample = SamList_Sh.Range("H" & a).Value
-        AnalysesList(Counter).Std1 = SamList_Sh.Range("I" & a).Value
-        AnalysesList(Counter).Std2 = SamList_Sh.Range("J" & a).Value
-        AnalysesList(Counter).Blk1 = SamList_Sh.Range("K" & a).Value
-        AnalysesList(Counter).Blk2 = SamList_Sh.Range("L" & a).Value
+        AnalysesList(counter).Sample = SamList_Sh.Range("H" & a).Value
+        AnalysesList(counter).Std1 = SamList_Sh.Range("I" & a).Value
+        AnalysesList(counter).Std2 = SamList_Sh.Range("J" & a).Value
+        AnalysesList(counter).Blk1 = SamList_Sh.Range("K" & a).Value
+        
+        If BlanksRecordedSamples_UPb = False Then 'False means blanks were recorded separately
+            AnalysesList(counter).Blk2 = SamList_Sh.Range("L" & a).Value
+        End If
         
         ReDim Preserve AnalysesList(1 To UBound(AnalysesList) + 1) As SamplesMap
         
         a = a + 1
-        Counter = Counter + 1
+        counter = counter + 1
         
     Next
     
@@ -3117,7 +3732,7 @@ Public Sub LoadStdListMap()
             
     Dim Cell As Range
     Dim a As Integer
-    Dim Counter As Integer
+    Dim counter As Integer
     
     If SampleName_UPb Is Nothing Then
         Call PublicVariables
@@ -3130,7 +3745,7 @@ Public Sub LoadStdListMap()
     Set MapIDsRange = SamList_Sh.Range("F" & SamList_FirstLine, SamList_Sh.Range("F" & SamList_FirstLine).End(xlDown))
         
     a = SamList_FirstLine 'Row number with headers of SamList map
-    Counter = 1
+    counter = 1
     
     ReDim Preserve AnalysesList_std(1 To 1) As ExtStandardsMap '''''''''''''''''''''''''CHECAR   <<<<<-------------------------------------
     
@@ -3150,13 +3765,13 @@ Public Sub LoadStdListMap()
         On Error GoTo ErrHandler
         
         'Below, we make a copy of the IDs to AnalysesList so that we can access them easily during data reduction.
-        AnalysesList_std(Counter).Std = SamList_Sh.Range("F" & a).Value
-        AnalysesList_std(Counter).Blk1 = SamList_Sh.Range("G" & a).Value
+        AnalysesList_std(counter).Std = SamList_Sh.Range("F" & a).Value
+        AnalysesList_std(counter).Blk1 = SamList_Sh.Range("G" & a).Value
         
         ReDim Preserve AnalysesList_std(1 To UBound(AnalysesList_std) + 1) As ExtStandardsMap
         
         a = a + 1
-        Counter = Counter + 1
+        counter = counter + 1
         
     Next
     
@@ -3171,7 +3786,7 @@ ErrHandler:
 End Sub
 
 
-Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
+Sub ClearCycles(Wb As Workbook, ChoosenCycles As Variant)
     'This program is supposed to, based on an array with the selected cycles
     'stored in SamList_Sh (column E), clear all other cycles that should not be used.
     'WB is the workbook of the raw data file and ChoosenCycles is the range where the
@@ -3183,48 +3798,48 @@ Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
     Dim AllCycles() As Integer
     Dim NumberCycles As Integer
     Dim a As Variant
-    Dim B As Variant
+    Dim b As Variant
     Dim C As Boolean
     Dim d As Integer
-    Dim Counter As Integer
+    Dim counter As Integer
     
     ChoosenCyclesArray = Split(ChoosenCycles, ",")
-    NumberCycles = RawNumberCycles_UPb
+    NumberCycles = update_numcycles(Wb)
         If UBound(ChoosenCyclesArray) = 0 Then
             MsgBox "It's impossible to evaluate an analysis with only one cycle. " _
-                & "Please, check the cycles that must be considered for " & WB.Name & ". Look at column E."
-                    WB.Close savechanges:=False
+                & "Please, check the cycles that must be considered for " & Wb.Name & ". Look at column E."
+                    Wb.Close savechanges:=False
                         Application.GoTo SamList_Sh.Range("A1")
                             End
         End If
         
     ReDim AllCycles(1 To NumberCycles) As Integer
     
-    Counter = 1
+    counter = 1
     For Each a In AllCycles
-        AllCycles(Counter) = Counter
-            Counter = Counter + 1
+        AllCycles(counter) = counter
+            counter = counter + 1
     Next
         
     For Each a In AllCycles 'ChoosenCyclesArray
         C = False
         
-            For Each B In ChoosenCyclesArray
-                If Val(B) > UBound(AllCycles) Then
-                    MsgBox "You have choosen an cycle for " & WB.Name & " that doesn't exist. Please, check it."
-                        WB.Close savechanges:=False
+            For Each b In ChoosenCyclesArray
+                If Val(b) > UBound(AllCycles) Then
+                    MsgBox "You have choosen an cycle for " & Wb.Name & " that doesn't exist. Please, check it."
+                        Wb.Close savechanges:=False
                             Application.GoTo SamList_Sh.Range("A1")
                                 End
                 End If
                     
                 
-                If a = Val(B) Then
+                If a = Val(b) Then
                     C = True: GoTo 1
                 End If
             Next
         
         If C = False Then
-            WB.Worksheets(1).Range(RawCyclesTimeRange).Item(a).EntireRow.ClearContents
+            Wb.Worksheets(1).Range(RawCyclesTimeRange_function(NumberCycles)).Item(a).EntireRow.ClearContents
         End If
 1    Next
        
@@ -3232,7 +3847,7 @@ Sub ClearCycles(WB As Workbook, ChoosenCycles As Variant)
         
 End Sub
 
-Sub CyclesTime(CyclesTimeRange As Range)
+Sub CyclesTime(CyclesTimeRange As Range, numcycles As Integer)
     'This function takes the range of time of analyses of each cycle and,
     'based on cycle duration, changes the values of CyclesTimeRange by
     'multiplying CyclesDuration 1 by the index of the cycle. So we expect
@@ -3240,8 +3855,8 @@ Sub CyclesTime(CyclesTimeRange As Range)
     'close to the number of cycles.
     
     Dim a As Integer
-    
-    For a = 1 To RawNumberCycles_UPb
+            
+    For a = 1 To numcycles
         If Not CyclesTimeRange.Item(a) = "" Then
             CyclesTimeRange.Item(a) = CycleDuration_UPb * a
         End If
@@ -3336,7 +3951,7 @@ Sub MatchValidRangeItems(ByVal rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As
     
     'Returns a range with only valid pairs of cells.
     
-    Dim Counter As Long
+    Dim counter As Long
     Dim Counter2 As Long
     Dim NotValidPairItem() As Integer
     Dim ItemFrom1 As Variant
@@ -3377,11 +3992,11 @@ Sub MatchValidRangeItems(ByVal rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As
 '    Rng2.Select
 
     'All items from Range1, Range1 and Range1 will be checked.
-    For Counter = 1 To NumRows
+    For counter = 1 To NumRows
         
-        ItemFrom1 = Range1.Item(Counter)
-        ItemFrom2 = Range2.Item(Counter)
-        ItemFrom3 = Range3.Item(Counter)
+        ItemFrom1 = Range1.Item(counter)
+        ItemFrom2 = Range2.Item(counter)
+        ItemFrom3 = Range3.Item(counter)
         
         'ItemFrom1, ItemFrom2 and ItemFrom3 must be numeric and different from 0
         If WorksheetFunction.IsNumber(ItemFrom1) = False Or _
@@ -3391,9 +4006,9 @@ Sub MatchValidRangeItems(ByVal rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As
            ItemFrom2 = 0 Or _
            ItemFrom3 = 0 Then
                 
-                NotValidPairItem(UBound(NotValidPairItem)) = Counter
+                NotValidPairItem(UBound(NotValidPairItem)) = counter
                 
-                    If Not Counter = NumRows Then
+                    If Not counter = NumRows Then
                         ReDim Preserve NotValidPairItem(1 To UBound(NotValidPairItem) + 1)
                     End If
         End If
@@ -3411,9 +4026,9 @@ Sub MatchValidRangeItems(ByVal rng1 As Range, ByVal Rng2 As Range, ByVal Rng3 As
             IsThereEmptyElementArray = DeleteArrayElement(NotValidPairItem, UBound(NotValidPairItem), True)
         End If
     
-        For Counter = 1 To UBound(NotValidPairItem)
+        For counter = 1 To UBound(NotValidPairItem)
             For Counter2 = 1 To NumRows
-                If Counter2 = NotValidPairItem(Counter) Then
+                If Counter2 = NotValidPairItem(counter) Then
                     
                     Range1.Item(Counter2).ClearContents
                     Range2.Item(Counter2).ClearContents
@@ -3445,7 +4060,7 @@ End Sub
 Sub CreateFinalReport(Optional CompilingResults = False)
 
     Dim PasteRow As Long
-    Dim Counter As Long
+    Dim counter As Long
     Dim Range_SlpStdBlkCorr As Range
     Dim Range_SlpStdCorr As Range
     Dim Range_SlpStdCorrHeaders As Range
@@ -3514,7 +4129,7 @@ Sub CreateFinalReport(Optional CompilingResults = False)
     End If
 
     PasteRow = 2
-    Counter = PasteRow
+    counter = PasteRow
     
     LastItem = Range_SlpStdCorr.count
 
@@ -3659,13 +4274,13 @@ Sub CreateFinalReport(Optional CompilingResults = False)
         If Not CellRange.Row = Range_SlpStdCorr.Item(LastItem).Row Then
             With FinalReport_Sh
                 .Rows(FR_HeaderRow + PasteRow).Insert Shift:=xlDown 'Adding a new row
-                    .Rows(FR_HeaderRow + Counter + 1).EntireRow.Copy 'Copying a row with thencorrectnumber format
+                    .Rows(FR_HeaderRow + counter + 1).EntireRow.Copy 'Copying a row with thencorrectnumber format
                         .Rows(FR_HeaderRow + PasteRow).PasteSpecial Paste:=xlPasteAllExceptBorders 'pasting to the new row before it receives any valy
                             .Rows(FR_HeaderRow + PasteRow).EntireRow.ClearContents 'Cleaning the new row contents
             End With
         End If
     
-        Counter = Counter + 1
+        counter = counter + 1
     Next
     
     Call FormatFinalReport
@@ -4079,7 +4694,7 @@ Sub BackupCycles()
     
     'Created 23102015
     
-    Dim Counter As Long
+    Dim counter As Long
     Dim CyclesRange As Range
     Dim NamesRange As Range
     Dim NumberSamples1 As Long
@@ -4101,9 +4716,9 @@ Sub BackupCycles()
     
     ReDim CyclesBackUpArr(1 To 2, 1 To NumberSamples1) As String
     
-    For Counter = 1 To NumberSamples1
-        CyclesBackUpArr(1, Counter) = CyclesRange.Item(Counter)
-        CyclesBackUpArr(2, Counter) = NamesRange.Item(Counter)
+    For counter = 1 To NumberSamples1
+        CyclesBackUpArr(1, counter) = CyclesRange.Item(counter)
+        CyclesBackUpArr(2, counter) = NamesRange.Item(counter)
     Next
     
 End Sub
@@ -4268,4 +4883,3 @@ Sub UpdateFullReductionForm2( _
     Next
 
 End Sub
-
