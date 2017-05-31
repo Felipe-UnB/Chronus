@@ -87,7 +87,8 @@ Sub FormatSamList()
         .Range(SamList_NumCycles & SamList_HeadersLine1, .Range(SamList_NumCycles & SamList_FirstLine).End(xlDown)).HorizontalAlignment = xlCenter
         .Range(SamList_NumCycles & SamList_HeadersLine1, .Range(SamList_NumCycles & SamList_FirstLine).End(xlDown)).Columns.AutoFit
         
-        Application.GoTo .Range("A" & SamList_FirstLine)
+        SamList_Sh.Parent.Activate
+        Application.GoTo SamList_Sh.Range("A" & SamList_FirstLine)
             
             With ActiveWindow
                 .SplitColumn = 0
@@ -1087,12 +1088,15 @@ Sub FormatStartANDOptions()
             .Range("C32") = "Error"
             .Range("C38") = "Error"
             .Range("C44") = "Header"
-            
+            .Range("C53") = "Date Format"
+            .Range("C54") = "Time Format"
+                       
             .Range("D21") = "Error Propagation"
             .Range("D22") = "Blank"
             .Range("D23") = "Primary standard analyses"
             .Range("D24") = "Primary standard reproducibility (MSWD)"
             .Range("D25") = "Cert. Primary standard"
+            
             .Range("E44") = "Number of cycles per sample"
                
             .Range("D32") = "1s or 2s"
@@ -1100,6 +1104,16 @@ Sub FormatStartANDOptions()
             
             .Range("E38") = "abs or %"
             .Range("E32") = "abs or %"
+            
+            .Range("A17") = "Detector202"
+            .Range("B17") = "Detector204"
+            .Range("C17") = "Detector206"
+            .Range("D17") = "Detector207"
+            .Range("E17") = "Detector208"
+            .Range("F17") = "Detector232"
+            .Range("G17") = "Detector238"
+            
+            .Range("D12") = "Check data"
     
             'Cells formatting
             With .Range("A1:G1").Interior
@@ -1119,7 +1133,7 @@ Sub FormatStartANDOptions()
             End With
             
             .Range("A1,A2,C2,A8,A13,A16,A20,A21,C21,A26:A27,A31,A37,A42:A43,A53:A57,D21").Font.Bold = True
-            .Range("A3:A6,C3:C5,A9:A10,A17:A18,A27:A29,A33:A35,A39:A40,A45:A51,B32:E32,B38:E38,B44:D44").Font.Italic = True
+            .Range("A3:A6,C3:C5,A9:A10,A17:A18,A27:A29,A33:A35,A39:A40,A45:A51,B32:E32,B38:E38,B44").Font.Italic = True
             
             With .Range("A20:G20").Interior
                 .Pattern = xlSolid
@@ -1248,20 +1262,20 @@ Sub FormatStartANDOptions()
                 .ShowError = True
             End With
 
-            With Detector206_UPb.Validation
-                .Delete
-                .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:= _
-                xlBetween, Formula1:="Faraday Cup; MIC"
-                .IgnoreBlank = True
-                .InCellDropdown = True
-                .InputTitle = ""
-                .ErrorTitle = "Value is not acceptable!"
-                .InputMessage = "Please, select Faraday Cup or MIC from the list. " & _
-                "If Faraday Cup is selected, it's necessary to multiply 206 isotope signal by V to CPS factor."
-                .ErrorMessage = "Only Faraday Cup or MIC."
-                .ShowInput = True
-                .ShowError = True
-            End With
+'            With Detector206_UPb.Validation
+'                .Delete
+'                .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:= _
+'                xlBetween, Formula1:="Faraday Cup; MIC"
+'                .IgnoreBlank = True
+'                .InCellDropdown = True
+'                .InputTitle = ""
+'                .ErrorTitle = "Value is not acceptable!"
+'                .InputMessage = "Please, select Faraday Cup or MIC from the list. " & _
+'                "If Faraday Cup is selected, it's necessary to multiply 206 isotope signal by V to CPS factor."
+'                .ErrorMessage = "Only Faraday Cup or MIC."
+'                .ShowInput = True
+'                .ShowError = True
+'            End With
             
             With ErrBlank_UPb.Validation
                 .Delete
