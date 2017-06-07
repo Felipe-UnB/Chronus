@@ -401,7 +401,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
     Dim SearchStr As Integer 'Variable used to search for (%) in headers
     Dim RangeUnionHeaders As Range 'Range with headers
     Dim A_Header As Range 'Variable used to loop through headers
-    Dim numcycles As Integer
+    Dim NumCycles As Integer
     
 '    'The code below clears the entire SlpStdBlkCorr sheet and changes the uncertanties headers units to "(abs)".
 '        SearchStr = InStr(SlpStdBlkCorr_Sh.Range(StdCorr_Column681Std & HeaderRow), "(%)")
@@ -482,9 +482,9 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
             
             With WBSlp.Worksheets(1)
                 
-                numcycles = update_numcycles(WBSlp)
+                NumCycles = update_numcycles(WBSlp)
                 
-                Call CyclesTime(.Range(RawCyclesTimeRange_function(numcycles)), numcycles)
+                Call CyclesTime(.Range(RawCyclesTimeRange_function(NumCycles)), NumCycles)
                 
                 'Subtracting 202 blank average from sample (and internal standard) signal
                 If Isotope202Analyzed_UPb = True Then
@@ -497,12 +497,12 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                     If i < 0 Then i = 0
                     
                     If Detector202_UPb = "Faraday Cup" Then
-                            factor = mVtoCPS_UPb
+                        factor = mVtoCPS_UPb
                     ElseIf Detector202_UPb = "MIC" Then
-                            factor = 1
+                        factor = 1
                     End If
                     
-                    For Each G In .Range(Raw202Range(numcycles))
+                    For Each G In .Range(Raw202Range(NumCycles))
                         If Not G = "" Then
                             
                             G = G * factor - i
@@ -538,7 +538,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                     If i < 0 Then i = 0
                         If i2 < 0 Then i2 = 0
     
-                    For Each G In .Range(Raw204Range(numcycles))
+                    For Each G In .Range(Raw204Range(NumCycles))
                             
                         If BlkSlp202 = True And Isotope202Analyzed_UPb = True Then  'Means that 202 from both sample and blank will be considered below
                             Extra202 = .Cells(G.Row, .Range(RawHg202Range).Column) 'The rawHg202RAnge here does not need to be updated because only its column it's necessary
@@ -569,12 +569,12 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                 If i < 0 Then i = 0
                 
                 If Detector206_UPb = "Faraday Cup" Then
-                        factor = mVtoCPS_UPb
+                    factor = mVtoCPS_UPb
                 ElseIf Detector206_UPb = "MIC" Then
-                        factor = 1
+                    factor = 1
                 End If
                 
-                For Each G In .Range(Raw206Range(numcycles))
+                For Each G In .Range(Raw206Range(NumCycles))
                     If Not G = "" Then
                         G = G * factor - i
                             If G <= 0 Then
@@ -598,7 +598,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                         factor = 1
                 End If
                     
-                For Each G In .Range(Raw207Range(numcycles))
+                For Each G In .Range(Raw207Range(NumCycles))
                     If Not G = "" Then
                         G = G * factor - i
                             If G <= 0 Then
@@ -624,7 +624,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                             factor = 1
                     End If
                     
-                    For Each G In .Range(Raw208Range(numcycles))
+                    For Each G In .Range(Raw208Range(NumCycles))
                         If Not G = "" Then
                             G = G * factor - i
                                 If G <= 0 Then
@@ -643,7 +643,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                             factor = 1
                     End If
                     
-                    For Each G In .Range(Raw232Range(numcycles))
+                    For Each G In .Range(Raw232Range(NumCycles))
                         If Not G = "" Then
                             G = G * factor
                                 If G <= 0 Then
@@ -660,7 +660,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                         factor = 1
                 End If
                     
-                For Each G In .Range(Raw238Range(numcycles))
+                For Each G In .Range(Raw238Range(NumCycles))
                     If Not G = "" Then
                         G = G * factor
                             If G <= 0 Then
@@ -710,7 +710,8 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
     Dim SearchStr As Integer 'Variable used to search for (%) in headers
     Dim RangeUnionHeaders As Range 'Range with headers
     Dim A_Header As Range 'Variable used to loop through headers
-    Dim numcycles As Integer
+    Dim NumCycles As Integer
+    Dim factor As Long
     
     'The code below clears the entire SlpStdBlkCorr sheet and changes the uncertanties headers units to "(abs)".
         SearchStr = InStr(SlpStdBlkCorr_Sh.Range(StdCorr_Column681Std & HeaderRow), "(%)")
@@ -785,9 +786,9 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                 'Debug.Assert a <> 2
                 With WBSlp.Worksheets(1)
                                    
-                    numcycles = update_numcycles(WBSlp)
+                    NumCycles = update_numcycles(WBSlp)
                     
-                    Call CyclesTime(.Range(RawCyclesTimeRange_function(numcycles)), numcycles)
+                    Call CyclesTime(.Range(RawCyclesTimeRange_function(NumCycles)), NumCycles)
                     
                     'Subtracting 202 blank average from external standard signal
                     If Isotope202Analyzed_UPb = True Then
@@ -800,7 +801,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                             factor = 1
                     End If
                     
-                        For Each G In .Range(Raw202Range(numcycles))
+                        For Each G In .Range(Raw202Range(NumCycles))
                             If Not G = "" Then
                                 G = G * factor - i
                                     If G <= 0 Then
@@ -830,7 +831,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                             i = 0
                         End If
                             
-                        For Each G In .Range(Raw204Range(numcycles))
+                        For Each G In .Range(Raw204Range(NumCycles))
                         
                             If BlkSlp202 = True Then 'Means that 202 from both sample and blank will be considered below
                                 Extra202 = .Cells(G.Row, .Range(RawHg202Range).Column)
@@ -863,7 +864,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                         factor = 1
                     End If
                     
-                    For Each G In .Range(Raw206Range(numcycles))
+                    For Each G In .Range(Raw206Range(NumCycles))
                         If Not G = "" Then
                             G = G * factor - i
                                 If G <= 0 Then
@@ -882,7 +883,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                         factor = 1
                     End If
 
-                    For Each G In .Range(Raw207Range(numcycles))
+                    For Each G In .Range(Raw207Range(NumCycles))
                         If Not G = "" Then
                             G = G * factor - i
                                 If G <= 0 Then
@@ -902,7 +903,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                             factor = 1
                         End If
     
-                        For Each G In .Range(Raw208Range(numcycles))
+                        For Each G In .Range(Raw208Range(NumCycles))
                             If Not G = "" Then
                                 G = G * factor - i
                                     If G <= 0 Then
@@ -921,7 +922,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                             factor = 1
                         End If
                         
-                        For Each G In .Range(Raw232Range(numcycles))
+                        For Each G In .Range(Raw232Range(NumCycles))
                             If Not G = "" Then
                                 G = G * factor
                                     If G <= 0 Then
@@ -932,7 +933,7 @@ Optional ByVal C As Integer, Optional ByVal CloseAnalysis = True)
                     End If
                     
                     'Multiplying 238 from sample (and internal standard) signal by MvtoCPS constant
-                    For Each G In .Range(Raw238Range(numcycles))
+                    For Each G In .Range(Raw238Range(NumCycles))
                     
                         If Detector238_UPb = "Faraday Cup" Then
                             factor = mVtoCPS_UPb
@@ -984,47 +985,38 @@ Sub CommonCalcSlpExtStd_BlkCorr(Sh As Worksheet, ByVal C As Integer, Acquisition
     Dim Y2_ValuesRange As Range
     Dim ClearRange As Range
     Dim temp As Long
-    Dim numcycles As Integer
+    Dim NumCycles As Integer
     
-    numcycles = update_numcycles(Sh.Parent)
-    
-'    Public RawPb206Range_updated As Range
-'    Public RawPb208Range_updated As Range
-'    Public RawTh232Range_updated As Range
-'    Public RawU238Range_updated As Range
-'    Public RawHg202Range_updated As Range
-'    Public RawPb204Range_updated As Range
-'    Public RawPb207Range_updated As Range
-'    Public RawCyclesTimeRange_updated As Range
+    NumCycles = update_numcycles(Sh.Parent)
 
-     RawPb206Range_updated = Raw206Range(numcycles)
+     RawPb206Range_updated = Raw206Range(NumCycles)
      
      If Isotope208Analyzed_UPb = True Then
-        RawPb208Range_updated = Raw208Range(numcycles)
+        RawPb208Range_updated = Raw208Range(NumCycles)
      End If
      
      If Isotope232Analyzed_UPb = True Then
-        RawTh232Range_updated = Raw232Range(numcycles)
+        RawTh232Range_updated = Raw232Range(NumCycles)
      End If
      
-     RawU238Range_updated = Raw238Range(numcycles)
+     RawU238Range_updated = Raw238Range(NumCycles)
      
      If Isotope202Analyzed_UPb = True Then
-         RawHg202Range_updated = Raw202Range(numcycles)
+         RawHg202Range_updated = Raw202Range(NumCycles)
      End If
      
      If Isotope204Analyzed_UPb = True Then
-        RawPb204Range_updated = Raw204Range(numcycles)
+        RawPb204Range_updated = Raw204Range(NumCycles)
      End If
      
-     RawPb207Range_updated = Raw207Range(numcycles)
-     RawCyclesTimeRange_updated = RawCyclesTimeRange_function(numcycles)
+     RawPb207Range_updated = Raw207Range(NumCycles)
+     RawCyclesTimeRange_updated = RawCyclesTimeRange_function(NumCycles)
     
     With Sh
                 
         'In the beginning, Y_ValuesRange and OriginalY_ValuesRange are set to the same range but this changes during code execution
-        Set Y_ValuesRange = .Range(.Range(CalculationFirstCell), .Range(CalculationColumn & numcycles))
-        Set OriginalY_ValuesRange = .Range(.Range(CalculationFirstCell), .Range(CalculationColumn & numcycles))
+        Set Y_ValuesRange = .Range(.Range(CalculationFirstCell), .Range(CalculationColumn & NumCycles))
+        Set OriginalY_ValuesRange = .Range(.Range(CalculationFirstCell), .Range(CalculationColumn & NumCycles))
         
         Set X_ValuesRange = .Range(RawCyclesTimeRange_updated)
         Set OriginalX_ValuesRange = .Range(RawCyclesTimeRange_updated)
@@ -1494,7 +1486,7 @@ Sub CalcBlank()
     Dim RangeUnionHeaders As Range
     Dim SelectedRange As Range
     Dim CountCells As Integer
-    Dim numcycles As Integer
+    Dim NumCycles As Integer
     
     Dim Blanks() As Integer 'Array with blanks IDs
     Dim VarCovarArray As Variant
@@ -1551,7 +1543,7 @@ Sub CalcBlank()
                 
                 'On Error GoTo ErrHandler
                 
-                    numcycles = update_numcycles(analysis_workbook)
+                    NumCycles = update_numcycles(analysis_workbook)
                     
                     .Range(BlkSlpName & C) = PathsNamesIDsTimesCycles(FileName, a)
                     
@@ -1566,7 +1558,7 @@ Sub CalcBlank()
                                 d = 1
                         End If
                         
-                        Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw202Range(numcycles))
+                        Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw202Range(NumCycles))
                         CountCells = WorksheetFunction.count(SelectedRange)
                         
                         E = WorksheetFunction.Average(SelectedRange) * d
@@ -1592,7 +1584,7 @@ Sub CalcBlank()
                                 d = 1
                         End If
                         
-                        Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw204Range(numcycles))
+                        Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw204Range(NumCycles))
                         CountCells = WorksheetFunction.count(SelectedRange)
                         
                         E = WorksheetFunction.Average(SelectedRange) * d
@@ -1614,7 +1606,7 @@ Sub CalcBlank()
                             d = 1
                     End If
                                         
-                    Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw206Range(numcycles))
+                    Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw206Range(NumCycles))
                     CountCells = WorksheetFunction.count(SelectedRange)
 
                         .Range(BlkColumn6 & C) = WorksheetFunction.Average(SelectedRange) * d
@@ -1632,7 +1624,7 @@ Sub CalcBlank()
                             d = 1
                     End If
                     
-                    Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw207Range(numcycles))
+                    Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw207Range(NumCycles))
                     CountCells = WorksheetFunction.count(SelectedRange)
 
                         E = WorksheetFunction.Average(SelectedRange) * d
@@ -1656,7 +1648,7 @@ Sub CalcBlank()
                                 d = 1
                         End If
                     
-                        Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw208Range(numcycles))
+                        Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw208Range(NumCycles))
                         CountCells = WorksheetFunction.count(SelectedRange)
                         
                             .Range(BlkColumn8 & C) = WorksheetFunction.Average(SelectedRange) * d
@@ -1676,7 +1668,7 @@ Sub CalcBlank()
                                 d = 1
                         End If
                     
-                        Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw232Range(numcycles))
+                        Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw232Range(NumCycles))
                         CountCells = WorksheetFunction.count(SelectedRange)
                                     
                             'Below it is the standard error (standard deviation divided by square root of  number os analyses)
@@ -1694,7 +1686,7 @@ Sub CalcBlank()
                             d = 1
                     End If
                     
-                    Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw238Range(numcycles))
+                    Set SelectedRange = analysis_workbook.Sheets(1).Range(Raw238Range(NumCycles))
                     CountCells = WorksheetFunction.count(SelectedRange)
                     
                         .Range(BlkColumn38 & C) = WorksheetFunction.Average(SelectedRange) * d
@@ -2632,148 +2624,147 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
                 Q = SlpStdBlkCorr_Sh.Range(Column281Std & Slp)
         End If
             
-        'The code below depends on Isoplot 4.15 to calculate 6/4 from stacey & Krammers single stage model and
-        'the ages in Ma based on 68, 75 and 76 ratios.
+        'The code below used to depends on Isoplot 4.15 to calculate 6/4 from stacey & Krammers single stage model and
+        'the ages in Ma based on 68, 75 and 76 ratios. However, these function were implemented in Chronus
         
-        If InstalledIsoplot = True Then
+        '206* (%) - Common 206Pb based on Stacey & Kramers single stage model implemented by Ludwig
+        Set P = .Range(StdCorr_ColumnF206 & C)
+        Set Q = .Range(StdCorr_Column64 & C)
+        
+            If Q = "n.a." Then
+                P = "n.a."
+            Else
+                On Error Resume Next
+                    P = 100 * (Chronus_SingleStagePbR(AgePb6U8(.Range(StdCorr_Column68 & C)), 1) / Q)
+                        If Err.Number <> 0 Then
+                            P = "n.a."
+                        End If
+                On Error GoTo 0
+            End If
+                
+        'Age 68
+        Set P = .Range(StdCorr_Column68AgeMa & C)
+        Set Q = .Range(StdCorr_Column68 & C)
+
+            If Q = "n.a." Then
+                P = "n.a."
+            Else
+                On Error Resume Next
+'                        P = AgePb6U8(Q)
+                    P = Chronus_AgePb6U8(Q.Value)
+                        If Err.Number <> 0 Then
+                            P = "n.a."
+                        End If
+                On Error GoTo 0
+            End If
+
+        'Age 68 1 std
+        Set P = .Range(StdCorr_Column68AgeMa1std & C)
+        Set Q = .Range(StdCorr_Column681Std & C)
+        Set P2 = .Range(StdCorr_Column68 & C)
+
+            If Q = "n.a." Then
+                P = "n.a."
+            Else
+                On Error Resume Next
+'                        P = AgePb6U8(P2 + Q) - AgePb6U8(P2)
+                    P = Chronus_AgePb6U8(P2.Value + Q.Value) - Chronus_AgePb6U8(P2.Value)
+                        If Err.Number <> 0 Then
+                            P = "n.a."
+                        End If
+                On Error GoTo 0
+            End If
+
+
+        'Age 75
+        Set P = .Range(StdCorr_Column75AgeMa & C)
+        Set Q = .Range(StdCorr_Column75 & C)
+
+            If Q = "n.a." Then
+                P = "n.a."
+            Else
+                On Error Resume Next
+'                        P = AgePb7U5(Q)
+                    P = Chronus_AgePb7U5(Q.Value)
+                        If Err.Number <> 0 Then
+                            P = "n.a."
+                        End If
+                On Error GoTo 0
+            End If
+
+        'Age 75 1 std
+        Set P = .Range(StdCorr_Column75AgeMa1std & C)
+        Set Q = .Range(StdCorr_Column751Std & C)
+        Set P2 = .Range(StdCorr_Column75 & C)
+
+            If Q = "n.a." Then
+                P = "n.a."
+            Else
+                On Error Resume Next
+'                        P = AgePb7U5(P2 + Q) - AgePb7U5(P2)
+                        P = Chronus_AgePb7U5(P2.Value + Q.Value) - Chronus_AgePb7U5(P2.Value)
+                        If Err.Number <> 0 Then
+                            P = "n.a."
+                        End If
+                On Error GoTo 0
+            End If
+
+        'Age 76
+        Set P = .Range(StdCorr_Column76AgeMa & C)
+        Set Q = .Range(StdCorr_Column76 & C)
+
+            If Q = "n.a." Then
+                P = "n.a."
+            Else
+                On Error Resume Next
+'                        P = agepb76(Q)
+                    P = Chronus_AgePb76(Q.Value)
+                        If Err.Number <> 0 Then
+                            P = "n.a."
+                        End If
+                On Error GoTo 0
+            End If
+
+        'Age 76 1 std
+        Set P = .Range(StdCorr_Column76AgeMa1std & C)
+        Set Q = .Range(StdCorr_Column761Std & C)
+        Set P2 = .Range(StdCorr_Column76 & C)
+
+            If Q = "n.a." Then
+                P = "n.a."
+            Else
+                On Error Resume Next
+'                        P = agepb76(P2 + Q) - agepb76(P2)
+                    P = Chronus_AgePb76(P2.Value + Q.Value) - Chronus_AgePb76(P2.Value)
+                        If Err.Number <> 0 Then
+                            P = "n.a."
+                        End If
+                On Error GoTo 0
+            End If
             
-            'IMPORTANT - In order to use the functions from isoplot below, it's necessary to use the
-            'Tools.References command in the VBE to enable a reference to isoplot.
+        '68 and 76 age concordance
+        On Error Resume Next
             
-            '206* (%) - Common 206Pb based on Stacey & Kramers single stage model implemented by Ludwig
-            Set P = .Range(StdCorr_ColumnF206 & C)
-            Set Q = .Range(StdCorr_Column64 & C)
+            .Range(StdCorr_Column6876Conc & C) = _
+                100 * _
+                (1 - (.Range(StdCorr_Column68AgeMa & C) / _
+                .Range(StdCorr_Column76AgeMa & C)))
+                        
+            If Err.Number <> 0 Then
+                .Range(StdCorr_Column6876Conc & C) = "n.a."
+            End If
             
-                If Q = "n.a." Then
-                    P = "n.a."
-                Else
-                    On Error Resume Next
-                        P = 100 * (SingleStagePbR(AgePb6U8(.Range(StdCorr_Column68 & C)), 1) / Q)
-                            If Err.Number <> 0 Then
-                                P = "n.a."
-                            End If
-                    On Error GoTo 0
-                End If
-                
-            'Age 68
-            Set P = .Range(StdCorr_Column68AgeMa & C)
-            Set Q = .Range(StdCorr_Column68 & C)
-
-                If Q = "n.a." Then
-                    P = "n.a."
-                Else
-                    On Error Resume Next
-                        P = AgePb6U8(Q)
-                            If Err.Number <> 0 Then
-                                P = "n.a."
-                            End If
-                    On Error GoTo 0
-                End If
-
-            'Age 68 1 std
-            Set P = .Range(StdCorr_Column68AgeMa1std & C)
-            Set Q = .Range(StdCorr_Column681Std & C)
-            Set P2 = .Range(StdCorr_Column68 & C)
-
-                If Q = "n.a." Then
-                    P = "n.a."
-                Else
-                    On Error Resume Next
-                        P = AgePb6U8(P2 + Q) - AgePb6U8(P2)
-                            If Err.Number <> 0 Then
-                                P = "n.a."
-                            End If
-                    On Error GoTo 0
-                End If
-
-
-            'Age 75
-            Set P = .Range(StdCorr_Column75AgeMa & C)
-            Set Q = .Range(StdCorr_Column75 & C)
-
-                If Q = "n.a." Then
-                    P = "n.a."
-                Else
-                    On Error Resume Next
-                        P = AgePb7U5(Q)
-                            If Err.Number <> 0 Then
-                                P = "n.a."
-                            End If
-                    On Error GoTo 0
-                End If
-
-            'Age 75 1 std
-            Set P = .Range(StdCorr_Column75AgeMa1std & C)
-            Set Q = .Range(StdCorr_Column751Std & C)
-            Set P2 = .Range(StdCorr_Column75 & C)
-
-                If Q = "n.a." Then
-                    P = "n.a."
-                Else
-                    On Error Resume Next
-                        P = AgePb7U5(P2 + Q) - AgePb7U5(P2)
-                            If Err.Number <> 0 Then
-                                P = "n.a."
-                            End If
-                    On Error GoTo 0
-                End If
-
-            'Age 76
-            Set P = .Range(StdCorr_Column76AgeMa & C)
-            Set Q = .Range(StdCorr_Column76 & C)
-
-                If Q = "n.a." Then
-                    P = "n.a."
-                Else
-                    On Error Resume Next
-                        P = agepb76(Q)
-                            If Err.Number <> 0 Then
-                                P = "n.a."
-                            End If
-                    On Error GoTo 0
-                End If
-
-            'Age 76 1 std
-            Set P = .Range(StdCorr_Column76AgeMa1std & C)
-            Set Q = .Range(StdCorr_Column761Std & C)
-            Set P2 = .Range(StdCorr_Column76 & C)
-
-                If Q = "n.a." Then
-                    P = "n.a."
-                Else
-                    On Error Resume Next
-                        P = agepb76(P2 + Q) - agepb76(P2)
-                            If Err.Number <> 0 Then
-                                P = "n.a."
-                            End If
-                    On Error GoTo 0
-                End If
-                
-            '68 and 76 age concordance
-            On Error Resume Next
-                
-                .Range(StdCorr_Column6876Conc & C) = _
-                    100 * _
-                    (1 - (.Range(StdCorr_Column68AgeMa & C) / _
-                    .Range(StdCorr_Column76AgeMa & C)))
-                            
-                If Err.Number <> 0 Then
-                    .Range(StdCorr_Column6876Conc & C) = "n.a."
-                End If
-                
-                .Range(StdCorr_Column6875Conc & C) = _
-                    100 * _
-                    (1 - (.Range(StdCorr_Column68AgeMa & C) / _
-                    .Range(StdCorr_Column75AgeMa & C)))
-                            
-                If Err.Number <> 0 Then
-                    .Range(StdCorr_Column6875Conc & C) = "n.a."
-                End If
-                
-            On Error GoTo 0
-
-        End If
+            .Range(StdCorr_Column6875Conc & C) = _
+                100 * _
+                (1 - (.Range(StdCorr_Column68AgeMa & C) / _
+                .Range(StdCorr_Column75AgeMa & C)))
+                        
+            If Err.Number <> 0 Then
+                .Range(StdCorr_Column6875Conc & C) = "n.a."
+            End If
             
+        On Error GoTo 0
+           
     End With
     
 End Sub
