@@ -374,26 +374,31 @@ Private Sub CommandButton1_Ok_Click()
 '    End If
 
     Box4_Addresses.Hide
-    Box1_Start.Show
+'    Box1_Start.Show
             
 End Sub
 
 Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+
+'    Dim Response As Integer
+'
+'    If CloseMode = vbFormControlMenu Then
+'
+'        Response = MsgBox("Do you really want to end the program execution?", vbYesNo)
+'            If Response = vbNo Then
+'                Cancel = True
+'            ElseIf Response = vbYes Then
+'                Call UnloadAll
+'                    End
+'            End If
+'
+'    End If
     
-    Dim Response As Integer
-    
-    If CloseMode = vbFormControlMenu Then
-                
-        Response = MsgBox("Do you really want to end the program execution?", vbYesNo)
-            If Response = vbNo Then
-                Cancel = True
-            ElseIf Response = vbYes Then
-                Call UnloadAll
-                    End
-            End If
-            
+    If CloseMode = 0 Then
+        Cancel = True
+        MsgBox "The X is disabled, please use a button on the form.", vbCritical
     End If
-    
+
 End Sub
 
 Function ArrayFilledAddresses()
