@@ -23,7 +23,7 @@ Private Sub Workbook_Open()
             
     Call CheckAccessVBPM
     
-    Call CheckIsoplotReference
+'    Call CheckIsoplotReference
         
 '    If Application.Version <> "14.0" Then 'Chronus was developed in this version
 '
