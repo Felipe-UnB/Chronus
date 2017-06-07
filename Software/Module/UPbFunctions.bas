@@ -1,7 +1,6 @@
 Attribute VB_Name = "UPbFunctions"
 Option Explicit
 
-
 Function IsUDTvariableInitialized(AnyVariable As Variant) As Boolean
     
     Dim counter As Integer
@@ -406,7 +405,7 @@ End Function
 
 Public Function update_numcycles(sample_workbook As Workbook)
     
-    Dim numcycles As Integer
+    Dim NumCycles As Integer
 
     If EachSampleNumberCycles_UPb = True Then 'If True, the number of cycles of each sample will be stored in SamList sheet
         update_numcycles = sample_workbook.Worksheets(1).Range(RawNumCyclesRange).Value
@@ -996,7 +995,7 @@ Function InstalledIsoplot() As Boolean
 
 End Function
 
-Function Ratio68Concordant(age As Double, Decay238 As Double)
+Function Ratio68Concordant(Age As Double, Decay238 As Double)
     
     'Calculates the ratio 68 for the indicated age. Decay constant must be in the same
     'unit as the age (years, millions of years, etc). Age must be 0 or any other positive
@@ -1004,15 +1003,15 @@ Function Ratio68Concordant(age As Double, Decay238 As Double)
     
     On Error GoTo BadEntry
     
-    If age = 0 Then
+    If Age = 0 Then
         Ratio68Concordant = 0
     End If
     
-    If age < 0 Then
+    If Age < 0 Then
         GoTo BadEntry
     End If
     
-    Ratio68Concordant = Exp(Decay238 * age) - 1
+    Ratio68Concordant = Exp(Decay238 * Age) - 1
     
     Exit Function
     
@@ -1024,22 +1023,22 @@ BadEntry:
         
 End Function
 
-Function Ratio75Concordant(age As Double, Decay235 As Double)
+Function Ratio75Concordant(Age As Double, Decay235 As Double)
     'Calculates the ratio 75 for the indicated age. Decay constant must be in the same
     'unit as the age (years, millions of years, etc). Age must be 0 or any other positive
     'number.
     
     On Error GoTo BadEntry
     
-    If age = 0 Then
+    If Age = 0 Then
         Ratio75Concordant = 0
     End If
     
-    If age < 0 Then
+    If Age < 0 Then
         GoTo BadEntry
     End If
     
-    Ratio75Concordant = Exp(Decay235 * age) - 1
+    Ratio75Concordant = Exp(Decay235 * Age) - 1
     
     Exit Function
     
@@ -1235,7 +1234,8 @@ Function Chronus_AgePb76( _
         Chronus_AgePb76 = CVErr(xlErrNum)
         Exit Function
     ElseIf Ratio76 = 0 Then
-        Chronus_AgePb76 = 0
+        Chronus_AgePb76 = "#NUM!"
+        Exit Function
     End If
 
     Delta = 0.000000001
@@ -1252,8 +1252,6 @@ Function Chronus_AgePb76( _
                         - Exp(Guess * Lambda238) * Lambda238 * RatioU * (Exp(Guess * Lambda235) - 1) * 1 / _
                          (Exp(Guess * Lambda238) - 1) ^ 2
             
-            
-            
             EstimatedAge = Guess - (Equation / Equation_Dt)
                 
         If Err.Number <> 0 Then
@@ -1267,17 +1265,17 @@ Function Chronus_AgePb76( _
             If Abs(Equation < Delta) Then
                 Chronus_AgePb76 = EstimatedAge
                 
-                Debug.Print
-                Debug.Print "Ratio76 = " & Ratio76
-                Debug.Print "Interations = " & Interation
-                Debug.Print "Estimated age Chronus = " & EstimatedAge
-                Debug.Print "Estimaged age isoplot = " & agepb76(Ratio76)
+'                Debug.Print
+'                Debug.Print "Ratio76 = " & Ratio76
+'                Debug.Print "Interations = " & Interation
+'                Debug.Print "Estimated age Chronus = " & EstimatedAge
+'                Debug.Print "Estimaged age isoplot = " & agepb76(Ratio76)
                 
-                IsoplotEstimated = agepb76(Ratio76)
-                
-                If EstimatedAge <> IsoplotEstimated Then
-                    MsgBox "Different estimated age for the ratio " & Ratio76, vbOKOnly
-                End If
+'                IsoplotEstimated = agepb76(Ratio76)
+'
+'                If EstimatedAge <> IsoplotEstimated Then
+'                    MsgBox "Different estimated age for the ratio " & Ratio76, vbOKOnly
+'                End If
                 
                 Exit Function
                 
@@ -1289,11 +1287,81 @@ Function Chronus_AgePb76( _
         
         On Error GoTo 0
         
-        Debug.Print EstimatedAge
+'        Debug.Print EstimatedAge
 
     Next
     
 
+End Function
+
+Function Chronus_SingleStagePbR(Age As Double, WhichRatio As Integer)
+
+    Dim primordial_lead_206_204_SK75_second_stage As Double
+    Dim primordial_lead_207_204_SK75_second_stage As Double
+    Dim primordial_uranium_lead_238_204_SK75_second_stage As Double
+    Dim primordial_uranium_lead_235_204_SK75_second_stage As Double
+    
+    Dim decay_constant_238_J71 As Double
+    Dim decay_constant_235_J71 As Double
+    
+    Dim earth_age_SK75_second_stage As Double
+    
+    Dim ratio64 As Double
+    Dim ratio74 As Double
+    
+    If Age < 0 Or WhichRatio < 0 Or WhichRatio > 1 Then
+        MsgBox "WhichRatio must be 0 (206Pb/204Pb) or 1 (207Pb/204Pb)", vbOKOnly
+        Chronus_SingleStagePbR = "Error"
+    End If
+    
+    primordial_lead_206_204_SK75_second_stage = 11.152  ' Stacey and Kramers, 1975
+    primordial_lead_207_204_SK75_second_stage = 12.998  ' Stacey and Kramers, 1975
+       
+    primordial_uranium_lead_238_204_SK75_second_stage = 9.74  ' Stacey and Kramers, 1975
+    primordial_uranium_lead_235_204_SK75_second_stage = primordial_uranium_lead_238_204_SK75_second_stage / 137.88
+    
+    decay_constant_238_J71 = Decay238U_yrs * 10 ^ 6  ' Jaffey et al 1971
+    decay_constant_235_J71 = Decay235U_yrs * 10 ^ 6  ' Jaffey et al 1971
+    
+    earth_age_SK75_second_stage = 3700  ' Stacey and Kramers, 1975
+    
+    ratio64 = SingleStagePbR_calculation(primordial_lead_206_204_SK75_second_stage, _
+                                        primordial_uranium_lead_238_204_SK75_second_stage, _
+                                        decay_constant_238_J71, _
+                                        earth_age_SK75_second_stage, _
+                                        Age, _
+                                        0)
+
+    ratio74 = SingleStagePbR_calculation(primordial_lead_207_204_SK75_second_stage, _
+                                        primordial_uranium_lead_235_204_SK75_second_stage, _
+                                        decay_constant_235_J71, _
+                                        earth_age_SK75_second_stage, _
+                                        Age, _
+                                        1)
+                                        
+    Select Case WhichRatio
+        
+        Case 0
+            Chronus_SingleStagePbR = ratio64
+        Case 1
+            Chronus_SingleStagePbR = ratio74
+    
+    End Select
+    
+End Function
+
+Private Function SingleStagePbR_calculation(primordial_lead As Double, _
+                                            primordial_uranium_lead As Double, _
+                                            decay_constant As Double, _
+                                            single_stage_start As Double, _
+                                            single_stage_end As Double, _
+                                            WhichRatio As Integer)
+    
+        SingleStagePbR_calculation = primordial_lead + _
+                                    primordial_uranium_lead * _
+                                    (Exp(decay_constant * single_stage_start) - _
+                                    Exp(decay_constant * single_stage_end))
+    
 End Function
 
 Sub test76agecalcilator()
@@ -1389,7 +1457,7 @@ Sub TestAgePb6U8()
         For Each Cell In RatiosRange
         
             Cell.Offset(, 1) = Chronus_AgePb6U8(Cell.Value)
-            Cell.Offset(, 2) = AgePb6U8(Cell.Value)
+'            Cell.Offset(, 2) = AgePb6U8(Cell.Value) 'Needs a reference to the isoplot
              
             If TypeName(Cell.Offset(, 1).Value) <> TypeName(Cell.Offset(, 2).Value) Then
                 
@@ -1424,7 +1492,7 @@ Sub TestAgePb6U8()
         For Each Cell In RatiosRange
         
             Cell.Offset(, 1) = Chronus_AgePb7U5(Cell.Value)
-            Cell.Offset(, 2) = AgePb7U5(Cell.Value)
+'            Cell.Offset(, 2) = AgePb7U5(Cell.Value)
              
             If TypeName(Cell.Offset(, 1).Value) <> TypeName(Cell.Offset(, 2).Value) Then
                 
