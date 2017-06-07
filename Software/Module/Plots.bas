@@ -35,7 +35,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
     Dim a As Variant
     Dim H As Double
     Dim FindIDObj As Object
-    Dim B As Range 'used to loop through all cells in Plot_Column75 cells
+    Dim b As Range 'used to loop through all cells in Plot_Column75 cells
     Dim d As Double
     Dim SheetsNamesArr() As String
     Dim SheetNameNum As Integer
@@ -43,6 +43,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
     Dim ShName As String
     Dim LastID As Long
     Dim EnaEvent As Boolean 'Variable used to store application.enableevents state
+    Dim NumCycles As Integer
     
     If TypeName(ID) <> "Integer" Then
         MsgBox "The type of the choosen ID (" & ID & ") is " & TypeName(ID) & ", but it must be an integer!"
@@ -56,7 +57,7 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
     End If
     
     On Error Resume Next
-        If AnalysesList(0).sample = "" Then
+        If AnalysesList(0).Sample = "" Then
             Call LoadSamListMap
             Call LoadStdListMap
         End If
@@ -147,18 +148,17 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
                             ShName & " (" & ID & ")" & "." & vbNewLine & _
                             "Would you like to reopen this analysis?", vbYesNo) = vbYes Then
                             
-                                Application.DisplayAlerts = False
-                                    Plot_Sh.Delete: Plot_ShHidden.Delete
-                                Application.DisplayAlerts = True
+'                                Application.DisplayAlerts = False
+'                                    Plot_Sh.Delete: Plot_ShHidden.Delete
+'                                Application.DisplayAlerts = True
                             
-                                    Set Plot_Sh = mwbk.Worksheets(ShName & " (" & ID & ")_Plot")
-                                        Set Plot_ShHidden = mwbk.Worksheets(ShName & " (" & ID & ")_PlotHidden")
+'                                    Set Plot_Sh = mwbk.Worksheets(ShName & " (" & ID & ")_Plot")
+'                                        Set Plot_ShHidden = mwbk.Worksheets(ShName & " (" & ID & ")_PlotHidden")
                                             EnaEvent = Application.EnableEvents
                                                 Application.EnableEvents = False 'This will avoid the worksheet_change event from the plot sheet to be triggered
                                                     Plot_Sh.Cells.Clear
                                                 Application.EnableEvents = EnaEvent
-                                                
-                                                Plot_ShHidden.Cells.Clear
+                                                    Plot_ShHidden.Cells.Clear
                             Else
                                 
                                 Application.DisplayAlerts = False
@@ -253,8 +253,10 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
 
         'Blank data is copied to the Plot_sh
             Call ClearCycles(WBSlp, PathsNamesIDsTimesCycles(Cycles, ID))
-            
-                Call CyclesTime(WBSlp.Worksheets(1).Range(RawCyclesTimeRange))
+                
+                NumCycles = update_numcycles(WBSlp)
+                
+                Call CyclesTime(WBSlp.Worksheets(1).Range(RawCyclesTimeRange), NumCycles)
             
                     Call Plot_CopyData(WBSlp.Worksheets(1), Plot_Sh)
                     
@@ -275,27 +277,27 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
                         'It's necessary to multiply 208Pb, 232Th, 238U e 206Pb (if analysed in faraday cup) by VtoCPS constant.
                         'In opposite to what happens with samples and standards, blank analysis does not have a specific program
                         'to deal with just the calculations below.
-                        For Each B In .Range(Plot_Column8 & Plot_HeaderRow + 1, Plot_Column8 & Plot_HeaderRow + RawNumberCycles_UPb)
-                            If Not IsEmpty(B) Then
-                                B = B * mVtoCPS_UPb
+                        For Each b In .Range(Plot_Column8 & Plot_HeaderRow + 1, Plot_Column8 & Plot_HeaderRow + RawNumberCycles_UPb)
+                            If Not IsEmpty(b) Then
+                                b = b * mVtoCPS_UPb
                             End If
                         Next
                         
-                        For Each B In .Range(Plot_Column32 & Plot_HeaderRow + 1, Plot_Column32 & Plot_HeaderRow + RawNumberCycles_UPb)
-                            If Not IsEmpty(B) Then
-                                B = B * mVtoCPS_UPb
+                        For Each b In .Range(Plot_Column32 & Plot_HeaderRow + 1, Plot_Column32 & Plot_HeaderRow + RawNumberCycles_UPb)
+                            If Not IsEmpty(b) Then
+                                b = b * mVtoCPS_UPb
                             End If
                         Next
             
-                        For Each B In .Range(Plot_Column38 & Plot_HeaderRow + 1, Plot_Column38 & Plot_HeaderRow + RawNumberCycles_UPb)
-                            If Not IsEmpty(B) Then
-                                B = B * mVtoCPS_UPb
+                        For Each b In .Range(Plot_Column38 & Plot_HeaderRow + 1, Plot_Column38 & Plot_HeaderRow + RawNumberCycles_UPb)
+                            If Not IsEmpty(b) Then
+                                b = b * mVtoCPS_UPb
                             End If
                         Next
                         
-                        For Each B In .Range(Plot_Column6 & Plot_HeaderRow + 1, Plot_Column6 & Plot_HeaderRow + RawNumberCycles_UPb)
-                            If Not IsEmpty(B) Then
-                                B = B * H
+                        For Each b In .Range(Plot_Column6 & Plot_HeaderRow + 1, Plot_Column6 & Plot_HeaderRow + RawNumberCycles_UPb)
+                            If Not IsEmpty(b) Then
+                                b = b * H
                             End If
                         Next
                         
@@ -478,7 +480,7 @@ Optional Plot76 As Boolean = True, Optional PlotRawSignal As Boolean = True)
         End If
             
         'Ratio 28
-        If Isotope232analyzed = True And Plot28 = True Then
+        If Isotope232Analyzed_UPb = True And Plot28 = True Then
             Set ChartDataY_28 = .Range(Plot_Column28 & Plot_HeaderRow + 1, Plot_Column28 & Plot_HeaderRow + RawNumberCycles_UPb)
                 Set ChartShape_28 = .Shapes.AddChart
                     Set NewChart_28 = ChartShape_28.Chart
@@ -530,13 +532,13 @@ Optional Plot76 As Boolean = True, Optional PlotRawSignal As Boolean = True)
             .SeriesCollection(4).Values = ChartDataY_RawSignal7
                 .SeriesCollection(4).Name = "Pb 207 (cps)"
             
-            If Isotope208analyzed = True Then
+            If Isotope208Analyzed_UPb = True Then
                 .SeriesCollection(5).Values = ChartDataY_RawSignal8
             End If
                 
                 .SeriesCollection(5).Name = "Pb 208 (cps)"
              
-             If Isotope232analyzed = True Then
+             If Isotope232Analyzed_UPb = True Then
                 .SeriesCollection(6).Values = ChartDataY_RawSignal32
             End If
                 
@@ -581,7 +583,7 @@ Optional Plot76 As Boolean = True, Optional PlotRawSignal As Boolean = True)
             .SeriesCollection.NewSeries
                 .SeriesCollection(1).XValues = ChartDataX
                 
-                    If Isotope232analyzed = True Then
+                    If Isotope232Analyzed_UPb = True Then
                         .SeriesCollection(1).Values = ChartDataY_28
                     End If
                         .SeriesCollection(1).Name = "Ratio 28"
@@ -823,7 +825,7 @@ Sub LineUpMyCharts(Sh As Worksheet, Optional MainChart As Integer)
     Dim NumWide As Long
     Dim iChtIx As Long, iChtCt As Long
     Dim a As Integer
-    Dim B As Integer
+    Dim b As Integer
 
     If mwbk Is Nothing Then
         Call PublicVariables
@@ -846,7 +848,7 @@ Sub LineUpMyCharts(Sh As Worksheet, Optional MainChart As Integer)
     NumWide = 2
     
         a = 1
-        B = 0
+        b = 0
 
     iChtCt = Sh.ChartObjects.count
     For iChtIx = 1 To iChtCt
@@ -862,7 +864,7 @@ Sub LineUpMyCharts(Sh As Worksheet, Optional MainChart As Integer)
             End With
             
             a = 0
-            B = 1
+            b = 1
         Else
             With Sh.ChartObjects(iChtIx)
                 .Width = MyWidth
@@ -870,7 +872,7 @@ Sub LineUpMyCharts(Sh As Worksheet, Optional MainChart As Integer)
                 
                     .Left = ((iChtIx - a) Mod NumWide) * MyWidth + Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow).Offset(, 1).Left * 2
                     '.Left = ((iChtIx - a) Mod NumWide) * MyWidth + MyWidthMainChart + Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow).Offset(, 1).Left
-                    .Top = Int(((iChtIx - a) / NumWide - B)) * MyHeight + Sh.Range(Plot_LastColumn & Plot_HeaderRow + 1).Top * 2 ' The second part of this formula is the top of the second cell
+                    .Top = Int(((iChtIx - a) / NumWide - b)) * MyHeight + Sh.Range(Plot_LastColumn & Plot_HeaderRow + 1).Top * 2 ' The second part of this formula is the top of the second cell
                     
             End With
         End If
@@ -897,24 +899,39 @@ Sub Plot_CopyData(Source_Sh As Worksheet, Destination_Sh As Worksheet)
     'This procedure copies isotopes signal from the Source_Sh (analyses data files) to the Destination_Sh (Plot_sh and
     'Plot_ShHidden.
     
+    Dim NumCycles As Integer
+    
+    If EachSampleNumberCycles_UPb = False Then
+        NumCycles = RawNumberCycles_UPb.Value
+    Else
+        NumCycles = Source_Sh.Range(RawNumCyclesRange).Value
+    End If
+    
     Application.GoTo Source_Sh.Range("A1")
 
     With Source_Sh
-            .Range(RawCyclesTimeRange).Copy Destination_Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1)
-            .Range(RawHg202Range).Copy Destination_Sh.Range(Plot_Column2 & Plot_HeaderRow + 1)
-            .Range(RawPb204Range).Copy Destination_Sh.Range(Plot_Column4 & Plot_HeaderRow + 1)
-            .Range(RawPb206Range).Copy Destination_Sh.Range(Plot_Column6 & Plot_HeaderRow + 1)
-            .Range(RawPb207Range).Copy Destination_Sh.Range(Plot_Column7 & Plot_HeaderRow + 1)
+            .Range(RawCyclesTimeRange_function(NumCycles)).Copy Destination_Sh.Range(Plot_ColumnCyclesTime & Plot_HeaderRow + 1)
             
-            If Isotope208analyzed = True Then
-                .Range(RawPb208Range).Copy Destination_Sh.Range(Plot_Column8 & Plot_HeaderRow + 1)
+            If Isotope202Analyzed_UPb = True Then
+                .Range(Raw202Range(NumCycles)).Copy Destination_Sh.Range(Plot_Column2 & Plot_HeaderRow + 1)
             End If
             
-            If Isotope232analyzed = True Then
-                .Range(RawTh232Range).Copy Destination_Sh.Range(Plot_Column32 & Plot_HeaderRow + 1)
+            If Isotope204Analyzed_UPb = True Then
+                .Range(Raw204Range(NumCycles)).Copy Destination_Sh.Range(Plot_Column4 & Plot_HeaderRow + 1)
             End If
             
-            .Range(RawU238Range).Copy Destination_Sh.Range(Plot_Column38 & Plot_HeaderRow + 1)
+            .Range(Raw206Range(NumCycles)).Copy Destination_Sh.Range(Plot_Column6 & Plot_HeaderRow + 1)
+            .Range(Raw207Range(NumCycles)).Copy Destination_Sh.Range(Plot_Column7 & Plot_HeaderRow + 1)
+            
+            If Isotope208Analyzed_UPb = True Then
+                .Range(Raw208Range(NumCycles)).Copy Destination_Sh.Range(Plot_Column8 & Plot_HeaderRow + 1)
+            End If
+            
+            If Isotope232Analyzed_UPb = True Then
+                .Range(Raw232Range(NumCycles)).Copy Destination_Sh.Range(Plot_Column32 & Plot_HeaderRow + 1)
+            End If
+            
+            .Range(Raw238Range(NumCycles)).Copy Destination_Sh.Range(Plot_Column38 & Plot_HeaderRow + 1)
     End With
     
 End Sub
@@ -925,55 +942,64 @@ Sub Plot_OrdinaryCalculations(Sh As Worksheet)
     
     Dim FindCells As Object
     Dim FirstAddress As String
-    Dim B As Range 'used to loop through all cells in Plot_Column75 cells
+    Dim b As Range 'used to loop through all cells in Plot_Column75 cells
+    Dim NumCycles As Integer
+    
+    If EachSampleNumberCycles_UPb = False Then
+        NumCycles = RawNumberCycles_UPb.Value
+    Else
+        NumCycles = Sh.Range(RawNumCyclesRange).Value
+    End If
 
     'Application.Goto Sh.Range("A1")
 
     With Sh
         
-        '64 ratio
-        .Range(Plot_Column6 & Plot_HeaderRow + 1, Plot_Column6 & Plot_HeaderRow + Val(RawNumberCycles_UPb)).Copy _
-            Destination:=.Range(Plot_Column64 & Plot_HeaderRow + 1)
-        
-        .Range(Plot_Column4 & Plot_HeaderRow + 1, Plot_Column4 & Plot_HeaderRow + Val(RawNumberCycles_UPb)).Copy
-            .Range(Plot_Column64 & Plot_HeaderRow + 1).PasteSpecial Paste:=xlPasteValues, Operation:=xlDivide
-                    
-        '74 ratio
-        .Range(Plot_Column7 & Plot_HeaderRow + 1, Plot_Column7 & Plot_HeaderRow + Val(RawNumberCycles_UPb)).Copy _
-            Destination:=.Range(Plot_Column74 & Plot_HeaderRow + 1)
-        
-        .Range(Plot_Column4 & Plot_HeaderRow + 1, Plot_Column4 & Plot_HeaderRow + Val(RawNumberCycles_UPb)).Copy
-            .Range(Plot_Column74 & Plot_HeaderRow + 1).PasteSpecial Paste:=xlPasteValues, Operation:=xlDivide
+        If Isotope204Analyzed_UPb = True Then
+            '64 ratio
+            .Range(Plot_Column6 & Plot_HeaderRow + 1, Plot_Column6 & Plot_HeaderRow + Val(NumCycles)).Copy _
+                Destination:=.Range(Plot_Column64 & Plot_HeaderRow + 1)
+            .Range(Plot_Column4 & Plot_HeaderRow + 1, Plot_Column4 & Plot_HeaderRow + Val(NumCycles)).Copy
+                .Range(Plot_Column64 & Plot_HeaderRow + 1).PasteSpecial Paste:=xlPasteValues, Operation:=xlDivide
+                        
+            '74 ratio
+            .Range(Plot_Column7 & Plot_HeaderRow + 1, Plot_Column7 & Plot_HeaderRow + Val(NumCycles)).Copy _
+                Destination:=.Range(Plot_Column74 & Plot_HeaderRow + 1)
+            
+            .Range(Plot_Column4 & Plot_HeaderRow + 1, Plot_Column4 & Plot_HeaderRow + Val(NumCycles)).Copy
+                .Range(Plot_Column74 & Plot_HeaderRow + 1).PasteSpecial Paste:=xlPasteValues, Operation:=xlDivide
+        End If
         
         '28 ratio
-        If Isotope232analyzed = True Then
-            .Range(Plot_Column32 & Plot_HeaderRow + 1, Plot_Column32 & Plot_HeaderRow + Val(RawNumberCycles_UPb)).Copy _
+        If Isotope232Analyzed_UPb = True Then
+            .Range(Plot_Column32 & Plot_HeaderRow + 1, Plot_Column32 & Plot_HeaderRow + Val(NumCycles)).Copy _
                 Destination:=.Range(Plot_Column28 & Plot_HeaderRow + 1)
             
-            .Range(Plot_Column38 & Plot_HeaderRow + 1, Plot_Column38 & Plot_HeaderRow + Val(RawNumberCycles_UPb)).Copy
+            .Range(Plot_Column38 & Plot_HeaderRow + 1, Plot_Column38 & Plot_HeaderRow + Val(NumCycles)).Copy
                 .Range(Plot_Column28 & Plot_HeaderRow + 1).PasteSpecial Paste:=xlPasteValues, Operation:=xlDivide
         End If
         
         '76 ratio
-        .Range(Plot_Column7 & Plot_HeaderRow + 1, Plot_Column7 & Plot_HeaderRow + Val(RawNumberCycles_UPb)).Copy _
+        .Range(Plot_Column7 & Plot_HeaderRow + 1, Plot_Column7 & Plot_HeaderRow + Val(NumCycles)).Copy _
             Destination:=.Range(Plot_Column76 & Plot_HeaderRow + 1)
         
-        .Range(Plot_Column6 & Plot_HeaderRow + 1, Plot_Column6 & Plot_HeaderRow + Val(RawNumberCycles_UPb)).Copy
+        .Range(Plot_Column6 & Plot_HeaderRow + 1, Plot_Column6 & Plot_HeaderRow + Val(NumCycles)).Copy
             .Range(Plot_Column76 & Plot_HeaderRow + 1).PasteSpecial Paste:=xlPasteValues, Operation:=xlDivide
         
         '68 ratio
-        .Range(Plot_Column6 & Plot_HeaderRow + 1, Plot_Column6 & Plot_HeaderRow + Val(RawNumberCycles_UPb)).Copy _
+        .Range(Plot_Column6 & Plot_HeaderRow + 1, Plot_Column6 & Plot_HeaderRow + Val(NumCycles)).Copy _
             Destination:=.Range(Plot_Column68 & Plot_HeaderRow + 1)
         
-        .Range(Plot_Column38 & Plot_HeaderRow + 1, Plot_Column38 & Plot_HeaderRow + Val(RawNumberCycles_UPb)).Copy
+        .Range(Plot_Column38 & Plot_HeaderRow + 1, Plot_Column38 & Plot_HeaderRow + Val(NumCycles)).Copy
             .Range(Plot_Column68 & Plot_HeaderRow + 1).PasteSpecial Paste:=xlPasteValues, Operation:=xlDivide
             
         'Below, 75 ratios will be calculated based on 76 and 68 ratios
-        For Each B In .Range(Plot_Column75 & Plot_HeaderRow + 1, Plot_Column75 & Plot_HeaderRow + Val(RawNumberCycles_UPb))
+        For Each b In .Range(Plot_Column75 & Plot_HeaderRow + 1, Plot_Column75 & Plot_HeaderRow + Val(NumCycles))
             
-            If Not IsEmpty(.Range(Plot_Column68 & B.Row)) = True Or Not IsEmpty(.Range(Plot_Column76 & B.Row)) = True Then
+            If WorksheetFunction.IsNumber(.Range(Plot_Column68 & b.Row)) = True Or _
+                WorksheetFunction.IsNumber(.Range(Plot_Column76 & b.Row)) = True Then
                 
-                B = .Range(Plot_Column68 & B.Row) * .Range(Plot_Column76 & B.Row) * RatioUranium_UPb
+                b = .Range(Plot_Column68 & b.Row) * .Range(Plot_Column76 & b.Row) * RatioUranium_UPb
             
             End If
         
