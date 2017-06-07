@@ -207,6 +207,15 @@ Option Explicit
     Public RawCyclesTimeRange As Range
     Public RawAnalysisDateRange As Range
     Public RawNumCyclesRange As Range
+    
+    Public RawPb206Range_updated As String
+    Public RawPb208Range_updated As String
+    Public RawTh232Range_updated As String
+    Public RawU238Range_updated As String
+    Public RawHg202Range_updated As String
+    Public RawPb204Range_updated As String
+    Public RawPb207Range_updated As String
+    Public RawCyclesTimeRange_updated As String
     '---------------------------------------------
     
     'Some collections to check if there is all the necessary information in Start-AND-Option sheet
@@ -607,9 +616,9 @@ Option Explicit
     Public Extra202 As Double 'Correction of 204 from gas using 202 both 202 from blank and from sample
     
     'Declaring decay constants
-    Public Const Decay235U_yrs As Double = 0.00000000098485
-    Public Const Decay238U_yrs As Double = 0.000000000155125
-    Public Const Decay232Th_yrs As Double = 0.000000000049475
+    Public Const Decay235U_yrs As Double = 0.00000000098485 'Jaffey et al (1971)
+    Public Const Decay238U_yrs As Double = 0.000000000155125 'Jaffey et al (1971)
+    Public Const Decay232Th_yrs As Double = 0.000000000049475 'LeRoux and Glendenin (1963)
     
     Public Const ConfLevel As Double = 0.32
     Public Const CutOffRatio As Double = 10
@@ -1270,7 +1279,7 @@ End Sub
 
 Sub tempppp()
 
-    Dim numcycles As Integer
+    Dim NumCycles As Integer
     
     Set RawHg202Range = ActiveSheet.Range("B45")
     Set RawPb204Range = ActiveSheet.Range("B46")
@@ -1280,84 +1289,84 @@ Sub tempppp()
     Set RawTh232Range = ActiveSheet.Range("B50")
     Set RawU238Range = ActiveSheet.Range("B51")
     
-    numcycles = 10
+    NumCycles = 10
     
     Debug.Print
-    Debug.Print Raw202Range(numcycles)
-    Debug.Print Raw204Range(numcycles)
-    Debug.Print Raw206Range(numcycles)
-    Debug.Print Raw207Range(numcycles)
-    Debug.Print Raw208Range(numcycles)
-    Debug.Print Raw232Range(numcycles)
-    Debug.Print Raw238Range(numcycles)
+    Debug.Print Raw202Range(NumCycles)
+    Debug.Print Raw204Range(NumCycles)
+    Debug.Print Raw206Range(NumCycles)
+    Debug.Print Raw207Range(NumCycles)
+    Debug.Print Raw208Range(NumCycles)
+    Debug.Print Raw232Range(NumCycles)
+    Debug.Print Raw238Range(NumCycles)
     
 End Sub
 
 'REPLICATE TO OTHER MASSES
-Function Raw202Range(numcycles As Integer)
+Function Raw202Range(NumCycles As Integer)
 
-    ValidateNumCycles (numcycles)
+    ValidateNumCycles (NumCycles)
 
-    Raw202Range = RawRanges(202, numcycles)
+    Raw202Range = RawRanges(202, NumCycles)
     
 End Function
 
-Function Raw204Range(numcycles As Integer)
+Function Raw204Range(NumCycles As Integer)
 
-    ValidateNumCycles (numcycles)
+    ValidateNumCycles (NumCycles)
 
-    Raw204Range = RawRanges(204, numcycles)
+    Raw204Range = RawRanges(204, NumCycles)
     
 End Function
 
-Function Raw206Range(numcycles As Integer)
+Function Raw206Range(NumCycles As Integer)
 
-    ValidateNumCycles (numcycles)
+    ValidateNumCycles (NumCycles)
 
-    Raw206Range = RawRanges(206, numcycles)
+    Raw206Range = RawRanges(206, NumCycles)
     
 End Function
 
-Function Raw207Range(numcycles As Integer)
+Function Raw207Range(NumCycles As Integer)
 
-    ValidateNumCycles (numcycles)
+    ValidateNumCycles (NumCycles)
 
-    Raw207Range = RawRanges(207, numcycles)
+    Raw207Range = RawRanges(207, NumCycles)
     
 End Function
 
-Function Raw208Range(numcycles As Integer)
+Function Raw208Range(NumCycles As Integer)
 
-    ValidateNumCycles (numcycles)
+    ValidateNumCycles (NumCycles)
 
-    Raw208Range = RawRanges(208, numcycles)
+    Raw208Range = RawRanges(208, NumCycles)
     
 End Function
 
-Function Raw232Range(numcycles As Integer)
+Function Raw232Range(NumCycles As Integer)
 
-    ValidateNumCycles (numcycles)
+    ValidateNumCycles (NumCycles)
 
-    Raw232Range = RawRanges(232, numcycles)
+    Raw232Range = RawRanges(232, NumCycles)
     
 End Function
 
-Function Raw238Range(numcycles As Integer)
+Function Raw238Range(NumCycles As Integer)
 
-    ValidateNumCycles (numcycles)
+    ValidateNumCycles (NumCycles)
 
-    Raw238Range = RawRanges(238, numcycles)
+    Raw238Range = RawRanges(238, NumCycles)
     
 End Function
 
-Function RawCyclesTimeRange_function(numcycles As Integer)
+Function RawCyclesTimeRange_function(NumCycles As Integer)
 
-    ValidateNumCycles (numcycles)
+    ValidateNumCycles (NumCycles)
     
-    RawCyclesTimeRange_function = RawRanges(1, numcycles)
+    RawCyclesTimeRange_function = RawRanges(1, NumCycles)
 
 End Function
-Function RawRanges(Mass As Integer, numcycles As Integer)
+Function RawRanges(Mass As Integer, NumCycles As Integer)
     'Ranges of isotopes signal in raw data file will be updated using the number of cycles indicated in each sample file
     'or the standard number of all samples. This eliminates the necessity of selecting the whole range of data while
     'setting the addresses
@@ -1389,28 +1398,28 @@ Function RawRanges(Mass As Integer, numcycles As Integer)
     
     Select Case Mass
         Case 1
-            RawRanges = UpdateRawRanges(RawCyclesTimeRange, numcycles)
+            RawRanges = UpdateRawRanges(RawCyclesTimeRange, NumCycles)
         
         Case 202
-            RawRanges = UpdateRawRanges(RawHg202Range, numcycles)
+            RawRanges = UpdateRawRanges(RawHg202Range, NumCycles)
             
         Case 204
-            RawRanges = UpdateRawRanges(RawPb204Range, numcycles)
+            RawRanges = UpdateRawRanges(RawPb204Range, NumCycles)
     
         Case 206
-            RawRanges = UpdateRawRanges(RawPb206Range, numcycles)
+            RawRanges = UpdateRawRanges(RawPb206Range, NumCycles)
 
         Case 207
-            RawRanges = UpdateRawRanges(RawPb207Range, numcycles)
+            RawRanges = UpdateRawRanges(RawPb207Range, NumCycles)
 
         Case 208
-            RawRanges = UpdateRawRanges(RawPb208Range, numcycles)
+            RawRanges = UpdateRawRanges(RawPb208Range, NumCycles)
 
         Case 232
-            RawRanges = UpdateRawRanges(RawTh232Range, numcycles)
+            RawRanges = UpdateRawRanges(RawTh232Range, NumCycles)
 
         Case 238
-            RawRanges = UpdateRawRanges(RawU238Range, numcycles)
+            RawRanges = UpdateRawRanges(RawU238Range, NumCycles)
             
     End Select
     
@@ -1418,18 +1427,18 @@ End Function
 
 Sub testuprawranges()
     Dim test_range As Range
-    Dim numcycles As Integer
+    Dim NumCycles As Integer
     
     Set test_range = ActiveWorkbook.Worksheets("start-and-options").Range("B45")
     test_range.Value = "$B$15:$B$20"
-    numcycles = 200
+    NumCycles = 200
     Debug.Print
     Debug.Print test_range
-    Debug.Print UpdateRawRanges(test_range, numcycles)
+    Debug.Print UpdateRawRanges(test_range, NumCycles)
     
 End Sub
 
-Function UpdateRawRanges(RawRange As Range, numcycles As Integer)
+Function UpdateRawRanges(RawRange As Range, NumCycles As Integer)
 
     'This procedure takes the address of the first cell in the range of mass intensities or cycles time
     '(which the user must select manually) and updates it to cover the whole range of data
@@ -1453,11 +1462,11 @@ Function UpdateRawRanges(RawRange As Range, numcycles As Integer)
     If colon = 0 Then
         first_part = RawRange.Value & ":"
         first_row = Int(Right(RawRange.Value, Len(RawRange.Value) - second_Cipher))
-        UpdateRawRanges = first_part & Left(RawRange.Value, second_Cipher) & first_row + numcycles - 1
+        UpdateRawRanges = first_part & Left(RawRange.Value, second_Cipher) & first_row + NumCycles - 1
     Else
         first_part = Left(RawRange.Value, colon - 1)
         first_row = Int(Mid(RawRange.Value, second_Cipher + 1, colon - second_Cipher - 1))
-        UpdateRawRanges = first_part & ":" & Left(RawRange.Value, second_Cipher) & first_row + numcycles - 1
+        UpdateRawRanges = first_part & ":" & Left(RawRange.Value, second_Cipher) & first_row + NumCycles - 1
     End If
        
     'last_row = numcycles + RawRange.Item(1).Row - 1
@@ -1468,9 +1477,9 @@ Function UpdateRawRanges(RawRange As Range, numcycles As Integer)
 
 End Function
 
-Function ValidateNumCycles(numcycles As Integer)
+Function ValidateNumCycles(NumCycles As Integer)
 
-    If numcycles < 10 Then
+    If NumCycles < 10 Then
         MsgBox "The number of cycles of all sample must be at least equal to 10. Please, check the number of cycles of all your samples."
         End
     End If
@@ -1938,59 +1947,26 @@ Sub CheckRawData()
             MsgBox "There is no samples in SamList sheet, at least not in cell " & SamList_FilePath & SamList_FirstLine & ".", vbOKOnly
                 End
     End If
-
-'    AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, RawPb208Range, RawTh232Range, RawU238Range)
-'    AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, RawPb207HeaderRange, RawPb208HeaderRange, RawTh232HeaderRange, RawU238HeaderRange)
-'    Headers = Array(202, 204, 206, 207, 208, 232, 238)
-
-    'The conditional clauses below are necessary because not all isotopes must have been analyzed
-'        If Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = True Then
-'            AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, RawPb207Range, _
-'            RawPb208Range, RawTh232Range, RawU238Range)
-'        ElseIf Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = False Then
-'            AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, _
-'            RawPb207Range, RawPb208Range, RawU238Range)
-'        ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = True Then
-'            AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, _
-'            RawPb207Range, RawTh232Range, RawU238Range)
-'        ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = False Then
-'            AddressRawDataFile = Array(RawHg202Range, RawPb204Range, RawPb206Range, _
-'            RawPb207Range, RawU238Range)
+        
+'        AddressRawDataFile = Array( _
+'            RawPb206Range, _
+'            RawPb207Range, _
+'            RawU238Range)
+'
+'        If Isotope202Analyzed_UPb = True Then
+'            temp = ConcatenateArrays(AddressRawDataFile, RawHg202Range)
 '        End If
-        
-        AddressRawDataFile = Array( _
-            RawPb206Range, _
-            RawPb207Range, _
-            RawU238Range)
-            
-        If Isotope202Analyzed_UPb = True Then
-            temp = ConcatenateArrays(AddressRawDataFile, RawHg202Range)
-        End If
-        
-        If Isotope204Analyzed_UPb = True Then
-            temp = ConcatenateArrays(AddressRawDataFile, RawPb204Range)
-        End If
-        
-        If Isotope208Analyzed_UPb = True Then
-            temp = ConcatenateArrays(AddressRawDataFile, RawPb208Range)
-        End If
-        
-        If Isotope232Analyzed_UPb = True Then
-            temp = ConcatenateArrays(AddressRawDataFile, RawTh232Range)
-        End If
-        
-'        If Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = True Then
-'            AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, _
-'            RawPb207HeaderRange, RawPb208HeaderRange, RawTh232HeaderRange, RawU238HeaderRange)
-'        ElseIf Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = False Then
-'            AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, _
-'            RawPb207HeaderRange, RawPb208HeaderRange, RawU238HeaderRange)
-'        ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = True Then
-'            AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, _
-'            RawPb207HeaderRange, RawTh232HeaderRange, RawU238HeaderRange)
-'        ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = False Then
-'            AddressRawDataFileHeader = Array(RawHg202HeaderRange, RawPb204HeaderRange, RawPb206HeaderRange, _
-'            RawPb207HeaderRange, RawU238HeaderRange)
+'
+'        If Isotope204Analyzed_UPb = True Then
+'            temp = ConcatenateArrays(AddressRawDataFile, RawPb204Range)
+'        End If
+'
+'        If Isotope208Analyzed_UPb = True Then
+'            temp = ConcatenateArrays(AddressRawDataFile, RawPb208Range)
+'        End If
+'
+'        If Isotope232Analyzed_UPb = True Then
+'            temp = ConcatenateArrays(AddressRawDataFile, RawTh232Range)
 '        End If
 
         AddressRawDataFileHeader = Array( _
@@ -2013,16 +1989,6 @@ Sub CheckRawData()
         If Isotope232Analyzed_UPb = True Then
             temp = ConcatenateArrays(AddressRawDataFileHeader, Array(RawTh232HeaderRange))
         End If
-
-'        If Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = True Then
-'            Headers = Array(202, 204, 206, 207, 208, 232, 238)
-'        ElseIf Isotope208Analyzed_UPb = True And Isotope232Analyzed_UPb = False Then
-'            Headers = Array(202, 204, 206, 207, 208, 238)
-'        ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = True Then
-'            Headers = Array(202, 204, 206, 207, 232, 238)
-'        ElseIf Isotope208Analyzed_UPb = False And Isotope232Analyzed_UPb = False Then
-'            Headers = Array(202, 204, 206, 207, 238)
-'        End If
         
         Headers = Array( _
             206, _
@@ -2045,14 +2011,36 @@ Sub CheckRawData()
             temp = ConcatenateArrays(Headers, Array(232))
         End If
     
-    
-    If EachSampleNumberCycles_UPb = False Then
-        CyclesNumber = RawNumberCycles_UPb
-    End If
-    
     If CheckData_UPb = True Then
         
         For Each d In AllSamplesPath
+        
+            If EachSampleNumberCycles_UPb = False Then
+                CyclesNumber = RawNumberCycles_UPb
+            Else
+                CyclesNumber = OpenedWorkbook.Worksheets(1).Range(RawNumCyclesRange)
+            End If
+        
+            AddressRawDataFile = Array( _
+                Raw206Range(CyclesNumber), _
+                Raw207Range(CyclesNumber), _
+                Raw238Range(CyclesNumber))
+                
+            If Isotope202Analyzed_UPb = True Then
+                temp = ConcatenateArrays(AddressRawDataFile, Raw202Range(CyclesNumber))
+            End If
+            
+            If Isotope204Analyzed_UPb = True Then
+                temp = ConcatenateArrays(AddressRawDataFile, Raw204Range(CyclesNumber))
+            End If
+            
+            If Isotope208Analyzed_UPb = True Then
+                temp = ConcatenateArrays(AddressRawDataFile, Raw208Range(CyclesNumber))
+            End If
+            
+            If Isotope232Analyzed_UPb = True Then
+                temp = ConcatenateArrays(AddressRawDataFile, Raw232Range(CyclesNumber))
+            End If
             
             On Error Resume Next
                 Set OpenedWorkbook = Workbooks.Open(d)
@@ -2246,6 +2234,8 @@ Sub SetAddressess()
     mwbk.Windows(1).Visible = True
     
     Application.ScreenUpdating = ScreenUpd
+    
+    Box1_Start.Show
     
 End Sub
 
@@ -2819,7 +2809,7 @@ Sub FirstCycleTime()
 
     Dim WorkbookOpened As Workbook
     Dim Cell As Range
-    Dim numcycles As Integer
+    Dim NumCycles As Integer
 
     If FolderPath_UPb Is Nothing Then 'We need some public variables, so we must be shure that they were set
         Call PublicVariables
@@ -2851,15 +2841,15 @@ Sub FirstCycleTime()
                  
                 If EachSampleNumberCycles_UPb = True Then 'If True, the number of cycles of each sample will be stored in SamList sheet
                     SamList_Sh.Range(SamList_NumCycles & Cell.Row) = WorkbookOpened.Worksheets(1).Range(RawNumCyclesRange).Value
-                    numcycles = update_numcycles(WorkbookOpened)
+                    NumCycles = update_numcycles(WorkbookOpened)
                 Else
                     SamList_Sh.Range(SamList_NumCycles & Cell.Row) = RawNumberCycles_UPb.Value
-                    numcycles = RawNumberCycles_UPb.Value
+                    NumCycles = RawNumberCycles_UPb.Value
                 End If
                 
 '                 Debug.Print Worksheets(1).Range(RawCyclesTimeRange).Item(1).Range(BlanksRecordedSamples_UPb)
                                 
-                    Call WriteCycles(WorkbookOpened.Sheets(1).Range(RawCyclesTimeRange_function(numcycles)), Cell.Row)
+                    Call WriteCycles(WorkbookOpened.Sheets(1).Range(RawCyclesTimeRange_function(NumCycles)), Cell.Row)
 
                     WorkbookOpened.Close (False)
     Next
@@ -3847,7 +3837,7 @@ Sub ClearCycles(Wb As Workbook, ChoosenCycles As Variant)
         
 End Sub
 
-Sub CyclesTime(CyclesTimeRange As Range, numcycles As Integer)
+Sub CyclesTime(CyclesTimeRange As Range, NumCycles As Integer)
     'This function takes the range of time of analyses of each cycle and,
     'based on cycle duration, changes the values of CyclesTimeRange by
     'multiplying CyclesDuration 1 by the index of the cycle. So we expect
@@ -3856,7 +3846,7 @@ Sub CyclesTime(CyclesTimeRange As Range, numcycles As Integer)
     
     Dim a As Integer
             
-    For a = 1 To numcycles
+    For a = 1 To NumCycles
         If Not CyclesTimeRange.Item(a) = "" Then
             CyclesTimeRange.Item(a) = CycleDuration_UPb * a
         End If
