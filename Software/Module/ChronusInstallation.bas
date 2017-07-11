@@ -1,8 +1,6 @@
 Attribute VB_Name = "ChronusInstallation"
 Option Explicit
 
-
-
 Sub CheckAccessVBPM()
 
     'Created 21122015
@@ -30,27 +28,27 @@ Sub CheckIsoplotReference()
 
     'Check if Isoplot is installed and loaded.
 
-    Dim i As Long
-    Dim IsoplotFound As Boolean
-    
-    IsoplotFound = False
-    
-    For i = 1 To Application.VBE.ActiveVBProject.References.count
-        'Debug.Print Application.VBE.ActiveVBProject.References(i).Name
-        If Application.VBE.ActiveVBProject.References(i).Name = "Isoplot4" Then
-            IsoplotFound = True
-                
-                i = Application.VBE.ActiveVBProject.References.count
-        End If
-        
-    Next i
-        
-    If IsoplotFound = False Then
-        MsgBox "Chronus - U-Pb data reduction. " & _
-        "Please, install isoplot before Chronus.", vbOKOnly
-            Call UnloadAll
-                End
-    End If
+'    Dim i As Long
+'    Dim IsoplotFound As Boolean
+'
+'    IsoplotFound = False
+'
+'    For i = 1 To Application.VBE.ActiveVBProject.References.count
+'        'Debug.Print Application.VBE.ActiveVBProject.References(i).Name
+'        If Application.VBE.ActiveVBProject.References(i).Name = "Isoplot4" Then
+'            IsoplotFound = True
+'
+'                i = Application.VBE.ActiveVBProject.References.count
+'        End If
+'
+'    Next i
+'
+'    If IsoplotFound = False Then
+'        MsgBox "Chronus - U-Pb data reduction. " & _
+'        "Please, install isoplot before Chronus.", vbOKOnly
+'            Call UnloadAll
+'                End
+'    End If
     
 End Sub
 
@@ -64,7 +62,7 @@ Sub AddReference()
     
     Dim strGUID(1 To 8, 1 To 3) As Variant
     Dim theRef As Reference
-    Dim Counter As Long
+    Dim counter As Long
     
     'Update the GUID you need below.
     strGUID(1, 1) = "{000204EF-0000-0000-C000-000000000046}" 'VBA- V4.1
@@ -103,21 +101,21 @@ Sub AddReference()
     On Error Resume Next
     
         'Remove any missing references
-        For Counter = ThisWorkbook.VBProject.References.count To 1 Step -1
-            Set theRef = ThisWorkbook.VBProject.References.Item(Counter)
+        For counter = ThisWorkbook.VBProject.References.count To 1 Step -1
+            Set theRef = ThisWorkbook.VBProject.References.Item(counter)
                 If theRef.IsBroken = True Then
                     ThisWorkbook.VBProject.References.Remove theRef
                 End If
-        Next Counter
+        Next counter
         
         'Clear any errors so that error trapping for GUID additions can be evaluated
         Err.Clear
         
         'Add the references
-        For Counter = 1 To UBound(strGUID)
+        For counter = 1 To UBound(strGUID)
             ThisWorkbook.VBProject.References.AddFromGuid _
-            GUID:=strGUID(Counter, 1), Major:=strGUID(Counter, 2), Minor:=strGUID(Counter, 3)
-        Next Counter
+            GUID:=strGUID(counter, 1), Major:=strGUID(counter, 2), Minor:=strGUID(counter, 3)
+        Next counter
         
         'If an error was encountered, inform the user
         Select Case Err.Number
