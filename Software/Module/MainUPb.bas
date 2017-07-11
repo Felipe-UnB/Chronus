@@ -15,7 +15,7 @@ Option Explicit
     
     Public Const ProgramName = "CHRONUS"
     Public Const ChronusVersion = "1.4.3" 'Version
-    Public Const ChronusNameVersion = "Chronus_1.4.3.xlam" 'Name of the file
+    Public Const ChronusNameVersion = "Chronus_2.0.0-alpha.2.xlam" 'Name of the file
     
     Public ShowPresentation As Range 'Range where the user option to show or not the Chronus presentation
     
@@ -2015,6 +2015,17 @@ Sub CheckRawData()
         
         For Each d In AllSamplesPath
         
+            On Error Resume Next
+                Set OpenedWorkbook = Workbooks.Open(d)
+                    If Err.Number <> 0 Then
+                        '''debug.print D
+                        MsgBox MissingFile1 & d & MissingFile2
+                            Call UpdateFilesAddresses
+                                Call UnloadAll
+                                    End
+                    End If
+            On Error GoTo 0
+        
             If EachSampleNumberCycles_UPb = False Then
                 CyclesNumber = RawNumberCycles_UPb
             Else
@@ -2041,17 +2052,6 @@ Sub CheckRawData()
             If Isotope232Analyzed_UPb = True Then
                 temp = ConcatenateArrays(AddressRawDataFile, Raw232Range(CyclesNumber))
             End If
-            
-            On Error Resume Next
-                Set OpenedWorkbook = Workbooks.Open(d)
-                    If Err.Number <> 0 Then
-                        '''debug.print D
-                        MsgBox MissingFile1 & d & MissingFile2
-                            Call UpdateFilesAddresses
-                                Call UnloadAll
-                                    End
-                    End If
-            On Error GoTo 0
             
             SearchStr = InStr(BlankName_UPb, OpenedWorkbook.Name) 'This will be used below to check if the opened data is from a blank.
                                                                                   'In this case, there´s no reason to check the signal of 206, 238, etc
@@ -2189,14 +2189,20 @@ Sub SetAddressess()
     End If
             
     If Len(SamList_Sh.Range(SamList_FilePath & SamList_FirstLine).Value) <> 0 Or Len(SamList_Sh.Range(SamList_FilePath & SamList_FirstLine).End(xlDown).Value) <> 0 Then
+        
         Set AllSamplesPath = SamList_Sh.Range(SamList_FilePath & SamList_FirstLine, SamList_Sh.Range(SamList_FilePath & SamList_FirstLine).End(xlDown))
+        
         Else
-            MsgBox "No sample file's addresses found. Restart the data reduction!", vbOKOnly
-                UnloadAll
-                    End
-'
-'            Call MacroFolderOffice2010
-'                Set AllSamplesPath = SamList_Sh.Range(SamList_FilePath & SamList_FirstLine, SamList_Sh.Range(SamList_FilePath & SamList_FirstLine).End(xlDown))
+            Call MacroFolderOffice2010
+            
+                If Len(SamList_Sh.Range(SamList_FilePath & SamList_FirstLine).Value) <> 0 Or Len(SamList_Sh.Range(SamList_FilePath & SamList_FirstLine).End(xlDown).Value) <> 0 Then
+                    Set AllSamplesPath = SamList_Sh.Range(SamList_FilePath & SamList_FirstLine, SamList_Sh.Range(SamList_FilePath & SamList_FirstLine).End(xlDown))
+                Else
+                    MsgBox "No sample file's addresses found. Restart the data reduction!", vbOKOnly
+                        UnloadAll
+                            End
+                End If
+                
     End If
     
     Set FirstSamplePath = AllSamplesPath.Item(1)
