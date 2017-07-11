@@ -229,10 +229,10 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
         Call Plot_CopyData(WBSlp.Worksheets(1), Plot_Sh)
             Call Plot_CopyData(WBSlp.Worksheets(1), Plot_ShHidden)
         
-        WBSlp.Close savechanges:=False
-        
         Call Plot_OrdinaryCalculations(Plot_Sh)
             Call Plot_OrdinaryCalculations(Plot_ShHidden)
+            
+        WBSlp.Close savechanges:=False
                                     
                                     
     'BLANK ------------------------------------------------------------
@@ -261,8 +261,6 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
                     Call Plot_CopyData(WBSlp.Worksheets(1), Plot_Sh)
                     
                         Call Plot_CopyData(WBSlp.Worksheets(1), Plot_ShHidden)
-            
-            WBSlp.Close savechanges:=False
             
             ReDim SheetsNamesArr(1 To 2) As String
                 SheetsNamesArr(1) = Plot_Sh.Name
@@ -305,6 +303,8 @@ Sub OpenAnalysisToPlot_ByIDs(ID As Integer, Optional ReopeningInPlot As Boolean 
             
                     End With
             Next
+            
+            WBSlp.Close savechanges:=False
     
     Else 'Case when analysis associated with the ID being evaluated was not considered sample, neither standard (it was processed).
         
@@ -369,8 +369,14 @@ Sub AddCodePlotSh(Plot_Sh As Worksheet)
     Code = Code & "End If" & vbCrLf
     Code = Code & "Application.EnableEvents = EnableEventsState" & vbCrLf
     Code = Code & "application.ScreenUpdating = AppScrUpdtState" & vbCrLf
-    Code = Code & "Application.Run " & Chr(34) & ChronusNameVersion & "!resultsPreviewCalculation" & Chr(34) & vbCrLf
+    Code = Code & "Application.Run " & Chr(34) & Chr(39) & ChronusNameVersion & Chr(39) & "!resultsPreviewCalculation" & Chr(34) & vbCrLf
     Code = Code & "End Sub"
+    
+    
+    'Try:
+    'Application.Run "'" & activetemplate & "'!Sheet1.cmdCalculate_Click"
+    'The filename needs to be surrounded with single quotes if it includes spaces or dashes.
+    'https://www.mrexcel.com/forum/excel-questions/106373-application-run-not-working-all-cases.html
     
     For Each vbcomp In Plot_Sh.Parent.VBProject.VBComponents
         If vbcomp.Name = Plot_Sh.CodeName Then 'I must know how my sheet is named, that's why I use the for loop structure
@@ -948,7 +954,7 @@ Sub Plot_OrdinaryCalculations(Sh As Worksheet)
     If EachSampleNumberCycles_UPb = False Then
         NumCycles = RawNumberCycles_UPb.Value
     Else
-        NumCycles = Sh.Range(RawNumCyclesRange).Value
+        NumCycles = WBSlp.Worksheets(1).Range(RawNumCyclesRange).Value
     End If
 
     'Application.Goto Sh.Range("A1")
