@@ -2635,7 +2635,7 @@ Sub CalcSlp_StdCorr(ByVal a As Integer, ByVal C As Integer, ByVal Teta As Double
                 P = "n.a."
             Else
                 On Error Resume Next
-                    P = 100 * (Chronus_SingleStagePbR(AgePb6U8(.Range(StdCorr_Column68 & C)), 1) / Q)
+                    P = 100 * (Chronus_SingleStagePbR(Chronus_AgePb6U8(.Range(StdCorr_Column68 & C)), 1) / Q)
                         If Err.Number <> 0 Then
                             P = "n.a."
                         End If
