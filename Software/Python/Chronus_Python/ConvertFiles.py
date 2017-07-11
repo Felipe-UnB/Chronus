@@ -9,17 +9,19 @@ class configuration:
     '''
 
     def __init__(self):
+        # 206F and 206MIC describes the differents methods employed at Brasília when the 206 mass is analyzed using
+        # a faraday cup or a ion counter
         self.MassSpectometersSuported = [
-            'Thermo Finnigan Neptune', 'Spec2'
+            'Thermo Finnigan Neptune_206F', 'Thermo Finnigan Neptune_206MIC', 'Spec2'
         ]
 
-        self.__Constants_Neptune = {
-            'Standard_NumberCycles': 85,
+        self.__Constants_Neptune_206F = {
+            'Standard_NumberCycles': 60,
             'Line_IsotopeHeaders': 14,
-            'Line_Cups': 101,
+            'Line_Cups': 76,
             'Line_AnalysisDate': 8,
             'Line_FirstCycle': 15,
-            'Line_LastCycle': 100,
+            'Line_LastCycle': 74,
             'Line_new_num_cycles': 1,
             # This line sets the line where the new number of cyles (after separating blanks and samples) should be recorded
             'Column_AnalysisDate': 0,
@@ -30,6 +32,34 @@ class configuration:
             'Column_238': 5,  # ¨False¨ if the isotope is not analyzed
             'Column_202': 6,  # ¨False¨ if the isotope is not analyzed
             'Column_204': 7,  # ¨False¨ if the isotope is not analyzed
+            'Column_207': 8,  # ¨False¨ if the isotope is not analyzed
+            'Columns_num': 13,
+            'Column_new_num_cycles_header': 2,
+            'Column_new_num_cycles': 3,
+            'Column_split_points': 4,
+            'FirstCycle_datetime_fmt': '%H:%M:%S:%f',
+            # This line sets the columns where the new number of cyles (after separating blanks and samples) should be recorded
+            'AnalysisDate_datetime_fmt': '%d/%m/%Y'  # Format of the date in the cell where the analysis date
+            # was recorded. Some equipment may presente the date and the time (corresponding to the time of the first cycle?)
+        }
+
+        self.__Constants_Neptune_206MIC = {
+            'Standard_NumberCycles': 60,
+            'Line_IsotopeHeaders': 14,
+            'Line_Cups': 75,
+            'Line_AnalysisDate': 8,
+            'Line_FirstCycle': 15,
+            'Line_LastCycle': 75,
+            'Line_new_num_cycles': 1,
+            # This line sets the line where the new number of cyles (after separating blanks and samples) should be recorded
+            'Column_AnalysisDate': 0,
+            'Column_CycleTime': 1,
+            'Column_206': 7,  # ¨False¨ if the isotope is not analyzed
+            'Column_208': 2,  # ¨False¨ if the isotope is not analyzed
+            'Column_232': 3,  # ¨False¨ if the isotope is not analyzed
+            'Column_238': 4,  # ¨False¨ if the isotope is not analyzed
+            'Column_202': 5,  # ¨False¨ if the isotope is not analyzed
+            'Column_204': 6,  # ¨False¨ if the isotope is not analyzed
             'Column_207': 8,  # ¨False¨ if the isotope is not analyzed
             'Columns_num': 13,
             'Column_new_num_cycles_header': 2,
@@ -80,8 +110,10 @@ class configuration:
             print(str(key) + ' : ' + str(self.__Constants_Neptune[key]))
 
     def GetConfigurations(self, equipment):
-        if equipment == 'Thermo Finnigan Neptune':
-            return self.__Constants_Neptune
+        if equipment == 'Thermo Finnigan Neptune_206F':
+            return self.__Constants_Neptune_206F
+        if equipment == 'Thermo Finnigan Neptune_206MIC':
+            return self.__Constants_Neptune_206MIC
         if equipment == 'Spec2':
             return self.__Constants_Spec2
         else:
@@ -179,8 +211,21 @@ class SampleData(configuration):
             'AnalysisDate_datetime_fmt']  # Format of the date and time information in the cell
         #that records the date of analysis
 
-        AnalysisDate = File_as_List[__Line_AnalysisDate][__Column_AnalysisDate]
-        FirstCycleTime = File_as_List[__Line_FirstCycle][__Column_CycleTime]
+        try:
+            AnalysisDate = File_as_List[__Line_AnalysisDate][__Column_AnalysisDate]
+            FirstCycleTime = File_as_List[__Line_FirstCycle][__Column_CycleTime]
+
+        except:
+            print()
+            print('__Line_AnalysisDate =', __Line_AnalysisDate)
+            print('__Line_FirstCycle =', __Line_FirstCycle)
+            print('__Column_AnalysisDate =', __Column_AnalysisDate)
+            print('__Column_CycleTime =', __Column_CycleTime)
+            print('self.folderpath =', os.path.join(self.folderpath, self.Name))
+            print()
+            print('Printing raw data...')
+            self.print_RawData()
+            exit()
 
         # Below the date of analysis and the first time cycle will be combined in a single datetime objetc.
         Analysis_Date_FirstTime = CombineDateTime(
@@ -457,7 +502,11 @@ class SampleData(configuration):
     def split_blank_sample(self, print_separeted_files=False, new_split_points=[]):
         '''
         Using the given breaking points, this procedure will split the raw data file in two (blank and sample).
-        These files will be saved to a subfolder inside the self.folderpath
+        These files will be saved to a subfolder inside the self.folderpath 
+        
+        :param print_separeted_files: shoulde the program print the files split?
+        :param new_split_points: list with four itens, the first and the second describe the start and the end of the 
+        blank, and the the third and the forth describe the beginning and the end of the sample
         :return: 
         '''
 
@@ -503,13 +552,17 @@ class SampleData(configuration):
         BothFile_Header = []
 
         for line in range(Line_IsotopeHeaders + 1):
+            # print(self.__RawData[line])
             BothFile_Header.append(self.__RawData[line])
-
+        # print()
         for line in range(Line_FirstCycle + split_points[0] - 1, Line_FirstCycle + split_points[1]):
+            # print(self.__RawData[line])
             Blank.append(self.__RawData[line])
-
+        # print()
         for line in range(Line_FirstCycle + split_points[2] - 1, Line_FirstCycle + split_points[3]):
+            # print(self.__RawData[line])
             Sample.append(self.__RawData[line])
+        # print()
 
         blank_with_header = deepcopy(BothFile_Header)  # Deepcopy was necessary because my list is multidimensional and
         # simply slicing do not solve my problem. Changes made in the higher dimensions, i.e. the lists within the
@@ -558,11 +611,11 @@ class SampleData(configuration):
 
         WriteTXT(blank_with_header,
                  os.path.join(self.folderpath, 'files_split',
-                              'blank_' + str(self.ID) + self.FileExtension + '.' + self.standard_output_extension),
+                              'blank_' + str(self.ID) + '.' + self.standard_output_extension),
                  self.equipment)
 
         WriteTXT(sample_with_header,
-                 os.path.join(self.folderpath, 'files_split', self.Name + '.' + self.standard_output_extension),
+                 os.path.join(self.folderpath, 'files_split', self.Name),
                  self.equipment)
 
 
@@ -578,7 +631,9 @@ def WriteTXT(List, FileAddress,equipment):
     # print(FileAddress)
     file = open(FileAddress, 'w', newline='')
 
-    if equipment == 'Thermo Finnigan Neptune':
+    if equipment == 'Thermo Finnigan Neptune_206F':
+        writer = csv.writer(file, delimiter='\t')
+    if equipment == 'Thermo Finnigan Neptune_206MIC':
         writer = csv.writer(file, delimiter='\t')
     elif equipment == 'Spec2':
         writer = csv.writer(file, delimiter='\t')
@@ -659,7 +714,9 @@ def Convert_Files_to_Lists(FilesList,Equipment):
 
     for file in FilesList:
 
-        if Equipment == 'Thermo Finnigan Neptune':
+        if Equipment == 'Thermo Finnigan Neptune_206F':
+            file_read = csv.reader(open(file[1], 'r'), delimiter='\t')  # delimiter='\t' is the tab delimiter
+        if Equipment == 'Thermo Finnigan Neptune_206MIC':
             file_read = csv.reader(open(file[1], 'r'), delimiter='\t')  # delimiter='\t' is the tab delimiter
         elif Equipment == 'Spec2':
             file_read = csv.reader(open(file[1], 'r'))
@@ -679,7 +736,7 @@ def Convert_Files_to_Lists(FilesList,Equipment):
     return LoadedFile
 
 
-def LoadFiles(FolderPath, extension, delimiter='\t', equipment='Thermo Finnigan Neptune'):
+def LoadFiles(FolderPath, extension, delimiter='\t', equipment='Thermo Finnigan Neptune_206F'):
     '''
     
     :param FolderPath: Folder where all the raw data files are stored
@@ -719,7 +776,7 @@ def CombineDateTime(date_str, time_str, date_fmt, time_fmt, equipment, sample_na
         remove_start = date_str.find(':') + 2
         remove_end = date_str.find('using') - 1
         date_str = date_str[remove_start:remove_end]
-    elif equipment == 'Thermo Finnigan Neptune':
+    elif equipment == 'Thermo Finnigan Neptune_206F' or equipment == 'Thermo Finnigan Neptune_206MIC':
         # print(equipment)
         remove_start = date_str.find(':') + 2
         # print(date_str)
@@ -752,22 +809,3 @@ def CombineDateTime(date_str, time_str, date_fmt, time_fmt, equipment, sample_na
         print(e)
         return 'Error'
 
-# date_fmt = '%b %d %Y  %I:%M %p' #https://docs.python.org/3.6/library/datetime.html#strftime-strptime-behavior
-# time_fmt = '%S.%f'
-# date_str = 'Acquired      : Oct 01 2013  02:01 PM using Batch 20131001.b'
-# time_str = '0.240'
-# Spec = 'Spec2'
-#
-# date_fmt = '%d/%m/%Y' #https://docs.python.org/3.6/library/datetime.html#strftime-strptime-behavior
-# time_fmt = '%H:%M:%S:%f'
-# date_str = 'Analysis date: 23/04/2017	'
-# time_str = '12:25:08:579'
-# Spec = 'Thermo Finnigan Neptune'
-#
-# a = CombineDateTime(date_str, time_str, date_fmt, time_fmt, Spec)
-#
-# print(a)
-# print(a.date())
-# a = [[1,2,3],[1,2,3],[1,2,3]]
-# folderpt = r'D:\UnB\Projetos-Software\Chronus\Software\Blank_Test\teste91500_10042017\91500_TESTE\testestest.txt'
-# WriteTXT(a,folderpt)
