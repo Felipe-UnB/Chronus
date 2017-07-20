@@ -14,23 +14,23 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
-
-
+                                     
 Private m_blnKeepOnTopOfAll As Boolean
 Private m_blnKeepOnTopOfApplication As Boolean
 'API functions
-Private Declare Function SetWindowPos Lib "user32" _
-                                      (ByVal hwnd As Long, _
-                                       ByVal hWndInsertAfter As Long, _
-                                       ByVal x As Long, _
-                                       ByVal y As Long, _
-                                       ByVal cx As Long, _
-                                       ByVal cy As Long, _
-                                       ByVal wFlags As Long) As Long
-Private Declare Function FindWindow Lib "user32" _
+Private Declare PtrSafe Function SetWindowPos Lib "user32" _
+                                      (ByVal hwnd As LongPtr, _
+                                       ByVal hWndInsertAfter As LongPtr, _
+                                       ByVal x As LongPtr, _
+                                       ByVal y As LongPtr, _
+                                       ByVal cx As LongPtr, _
+                                       ByVal cy As LongPtr, _
+                                       ByVal wFlags As LongPtr) As Long
+Private Declare PtrSafe Function FindWindow Lib "user32" _
                                     Alias "FindWindowA" _
                                     (ByVal lpClassName As String, _
                                      ByVal lpWindowName As String) As Long
+
 'Constants
 Private Const SWP_NOMOVE = &H2
 Private Const SWP_NOSIZE = &H1
