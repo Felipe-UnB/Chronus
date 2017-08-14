@@ -2,7 +2,7 @@ Attribute VB_Name = "Toolbar"
 Option Explicit
 
     Private Declare PtrSafe Function ShellExecute Lib "shell32.dll" _
-    Alias "ShellExecuteA" (ByVal hWnd As Long, _
+    Alias "ShellExecuteA" (ByVal hwnd As Long, _
     ByVal lpOperation As String, ByVal lpFile As String, _
     ByVal lpParameters As String, ByVal lpDirectory As String, _
     ByVal nShowCmd As Long) As Long
@@ -39,7 +39,9 @@ Option Explicit
     Public RestoreData As CommandBarButton
     Public CreateaFinalReport As CommandBarButton
     Public ChartTitleAsSampleName As CommandBarButton
+    Public CompileAnalysesProcedure As CommandBarButton
     Public QuestionHelp As CommandBarButton
+    Public AboutChronus As CommandBarButton
     
     Const MyToolbar As String = "UPb Data Reduction" ' Give the toolbar a name
 
@@ -64,8 +66,6 @@ Sub AddToolbar()
     ' Now add a button to the new toolbar
     Set StartOptions = oToolbar.Controls.Add(Type:=msoControlButton)
     Set StartButton = oToolbar.Controls.Add(Type:=msoControlButton)
-'    Set SlpStdBlkCorr_Calc = oToolbar.Controls.Add(Type:=msoControlButton)
-'    Set SlpStdCorr_Calc = oToolbar.Controls.Add(Type:=msoControlButton)
     Set ConvertToPercent = oToolbar.Controls.Add(Type:=msoControlButton)
     Set ConvertToAbsolute = oToolbar.Controls.Add(Type:=msoControlButton)
     Set FormatSheets = oToolbar.Controls.Add(Type:=msoControlButton)
@@ -79,8 +79,10 @@ Sub AddToolbar()
     Set FilterData = oToolbar.Controls.Add(Type:=msoControlButton)
     Set CreateaFinalReport = oToolbar.Controls.Add(Type:=msoControlButton)
     Set ChartTitleAsSampleName = oToolbar.Controls.Add(Type:=msoControlButton)
+    Set CompileAnalysesProcedure = oToolbar.Controls.Add(Type:=msoControlButton)
     Set QuestionHelp = oToolbar.Controls.Add(Type:=msoControlButton)
-
+    Set AboutChronus = oToolbar.Controls.Add(Type:=msoControlButton)
+    
     ' And set some of the button's properties
         With StartButton
 
@@ -110,26 +112,6 @@ Sub AddToolbar()
             .FaceId = 733
 
         End With
-
-'        With SlpStdBlkCorr_Calc
-'
-'            .DescriptionText = "Calculates samples and standards (internal and external) blank corrected ratios and errors."
-'            .Caption = "Correct data for blank"
-'            .OnAction = "Button3_CalcAllSlpStd_BlkCorr" 'Procedure that will be executed when this button is clicked
-'            .Style = msoButtonIcon
-'            .FaceId = 1771
-'
-'        End With
-'
-'        With SlpStdCorr_Calc
-'
-'            .DescriptionText = "Correct all samples and internal standards by external standard."
-'            .Caption = "Correct all sample by standard"
-'            .OnAction = "Button4_CalcAllSlp_StdCorr"
-'            .Style = msoButtonIcon
-'            .FaceId = 2112
-'
-'        End With
 
         With ConvertToPercent
 
@@ -262,6 +244,16 @@ Sub AddToolbar()
                     
         End With
         
+        With CompileAnalysesProcedure
+        
+            .DescriptionText = "Allows you to compile multiple analyses in a single file."
+            .Caption = "Compile analyses"
+            .OnAction = "Button_CompileAnalysesProcedure"
+            .Style = msoButtonIcon
+            .FaceId = 3484
+        
+        End With
+        
         With QuestionHelp
             
             .DescriptionText = "Opens the support website."
@@ -269,6 +261,16 @@ Sub AddToolbar()
             .OnAction = "Button_QuestionHelp"
             .Style = msoButtonIcon
             .FaceId = 926
+                    
+        End With
+        
+        With AboutChronus
+            
+            .DescriptionText = "About"
+            .Caption = "About"
+            .OnAction = "Button_AboutChronus"
+            .Style = msoButtonIcon
+            .FaceId = 1954
                     
         End With
 
@@ -585,6 +587,14 @@ Sub Button_FinalReport()
 
 End Sub
 
+Sub Button_CompileAnalysesProcedure()
+
+    Box9_CompileResults.Show
+
+    Call UnloadAll: End
+
+End Sub
+
 Sub Button_ChartTitleAsSampleName()
 
     Call ChangeChartTitleToSampleName
@@ -593,7 +603,15 @@ Sub Button_ChartTitleAsSampleName()
     
 End Sub
 
-Sub Button_QuestionHelp()
+Sub Button_AboutChronus()
+
+    Box10_Presentation.Show
+
+    Call UnloadAll: End
+
+End Sub
+
+Sub Button_QuestionHelp(Optional WebAddress As String = "https://github.com/Felipe-UnB/Chronus/issues/new")
 
     'Created 21122015
     'Based on Walkenbach (2010) OpenURL function, at page 681, and https://support.microsoft.com/en-us/kb/170918
@@ -602,12 +620,12 @@ Sub Button_QuestionHelp()
     
     'This program will try to open the Chronus support website on GitHub.
     
-    Dim WebAddress As String
+'    Dim WebAddress As String
     Dim URL As String
     Dim Result As Long
     Dim ErrMsg As String
 
-    WebAddress = "https://github.com/Felipe-UnB/Chronus/issues/new"
+'    WebAddress = "https://github.com/Felipe-UnB/Chronus/issues/new"
 
     Result = ShellExecute(0&, vbNullString, WebAddress, _
     vbNullString, vbNullString, vbNormalFocus)
