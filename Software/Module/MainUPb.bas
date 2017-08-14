@@ -14,8 +14,8 @@ Option Explicit
     '.Getfolder does not list all the files in the indicated folder
     
     Public Const ProgramName = "CHRONUS"
-    Public Const ChronusVersion = "1.4.3" 'Version
-    Public Const ChronusNameVersion = "Chronus_2.0.0-alpha.2.xlam" 'Name of the file
+    Public Const ChronusVersion = "2.0.0-alpha.3" 'Version
+    Public Const ChronusNameVersion = "Chronus_2.0.0-alpha.3.xlam" 'Name of the file
     
     Public ShowPresentation As Range 'Range where the user option to show or not the Chronus presentation
     
