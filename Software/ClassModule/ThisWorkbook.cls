@@ -47,7 +47,7 @@ Private Sub Workbook_Open()
 
     On Error Resume Next
         If ShowPresentation = True Then
-            Presentation.Show
+            Box10_Presentation.Show
         End If
     On Error GoTo 0
     
