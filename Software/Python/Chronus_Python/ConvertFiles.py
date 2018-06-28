@@ -1,6 +1,6 @@
 from __future__ import division, print_function
-
 from Chronus_Python import detect_cusum
+import pprint
 
 
 class configuration:
@@ -10,10 +10,7 @@ class configuration:
 
     def __init__(self):
         # 206F and 206MIC describes the differents methods employed at Brasília when the 206 mass is analyzed using
-        # a faraday cup or a ion counter
-        self.MassSpectometersSuported = [
-            'Thermo Finnigan Neptune_206F', 'Thermo Finnigan Neptune_206MIC', 'Spec2'
-        ]
+        # a faraday cup or an ion counter
 
         self.__Constants_Neptune_206F = {
             'Standard_NumberCycles': 60,
@@ -49,7 +46,7 @@ class configuration:
             'Line_Cups': 75,
             'Line_AnalysisDate': 8,
             'Line_FirstCycle': 15,
-            'Line_LastCycle': 75,
+            'Line_LastCycle': 74,
             'Line_new_num_cycles': 1,
             # This line sets the line where the new number of cyles (after separating blanks and samples) should be recorded
             'Column_AnalysisDate': 0,
@@ -100,24 +97,33 @@ class configuration:
             #was recorded. Some equipment may presente the date and the time (corresponding to the time of the first cycle?)
         }
 
+        self.MassSpectometersSuported = {
+            'Thermo Finnigan Neptune_206F': self.__Constants_Neptune_206F,
+            'Thermo Finnigan Neptune_206MIC': self.__Constants_Neptune_206MIC,
+            'Spec2': self.__Constants_Spec2
+        }
+
     def PrintSuportedEquipment(self):
         for equip in self.MassSpectometersSuported:
             print(equip)
 
-    def Print_Constants_Neptune(self):
+    def Print_Constants(self, Equipment_name):
         '''Prints all constants in the dictionary'''
-        for key in self.__Constants_Neptune:
-            print(str(key) + ' : ' + str(self.__Constants_Neptune[key]))
+        if Equipment_name in self.MassSpectometersSuported:
+            pprint.pprint(self.MassSpectometersSuported[Equipment_name])
 
-    def GetConfigurations(self, equipment):
-        if equipment == 'Thermo Finnigan Neptune_206F':
-            return self.__Constants_Neptune_206F
-        if equipment == 'Thermo Finnigan Neptune_206MIC':
-            return self.__Constants_Neptune_206MIC
-        if equipment == 'Spec2':
-            return self.__Constants_Spec2
+    def GetConfigurations(self, Equipment_name):
+
+        if Equipment_name in self.MassSpectometersSuported:
+            return self.MassSpectometersSuported[Equipment_name]
+        # if Equipment_name == 'Thermo Finnigan Neptune_206F':
+        #     return self.__Constants_Neptune_206F
+        # if Equipment_name == 'Thermo Finnigan Neptune_206MIC':
+        #     return self.__Constants_Neptune_206MIC
+        # if Equipment_name == 'Spec2':
+        #     return self.__Constants_Spec2
         else:
-            print(equipment, ' is not currently supported.')
+            print(Equipment_name, ' is not currently supported.')
             exit()
 
 
@@ -190,6 +196,7 @@ class SampleData(configuration):
         # come self.property, the variable
         __Line_new_num_cycles = self.__Constants['Line_new_num_cycles']
         __Line_FirstCycle = self.__Constants['Line_FirstCycle']
+        __Line_LastCycle = self.__Constants['Line_LastCycle']
         __Line_AnalysisDate = self.__Constants['Line_AnalysisDate']
 
         __Column_split_points = self.__Constants['Column_split_points']
@@ -279,8 +286,7 @@ class SampleData(configuration):
         if len(self.__RawData[__Line_new_num_cycles][__Column_split_points]) > 0:
             self.split_points = self.__RawData[__Line_new_num_cycles][__Column_split_points]
 
-        Line_FirstIntensity = __Line_FirstCycle
-        Line_LastIntensity = int(Line_FirstIntensity) + int(self.__Constants['Standard_NumberCycles'])
+        __Line_LastCycle = int(__Line_FirstCycle) + int(self.__Constants['Standard_NumberCycles'])
 
         self.__CyclesDateTime = []
         self.Signal_206 = []
@@ -291,7 +297,7 @@ class SampleData(configuration):
         self.Signal_204 = []
         self.Signal_207 = []
 
-        for line in range(Line_FirstIntensity, Line_LastIntensity):
+        for line in range(__Line_FirstCycle, __Line_LastCycle):
 
             CyclesDateTime = CombineDateTime(
                 AnalysisDate,
@@ -367,10 +373,10 @@ class SampleData(configuration):
                       File_as_List[line][__Column_207])
                 exit()
 
-
-    def GetCyclesDateTime(self):
-
-        return self.__CyclesDateTime
+    def Print_CyclesDateTime(self):
+        datetime = []
+        [datetime.append(str(x)) for x in self.__CyclesDateTime]
+        return datetime
 
     def plot_save_All(self,
                       SameFigure=True,
@@ -520,14 +526,15 @@ class SampleData(configuration):
         Column_split_points = self.__Constants['Column_split_points']
         Line_IsotopeHeaders = self.__Constants['Line_IsotopeHeaders']
         Line_FirstCycle = self.__Constants['Line_FirstCycle']
+        Line_LastCycle = self.__Constants['Line_LastCycle']
 
         # The conditinal clause below check if there is a file in the files_split folder with the name of the file that
-        # would be created (A little confuse this explanation, is not? GOSH!)
+        # would be created (A little confuse this explanation, is not it? GOSH!)
         if os.path.exists(
                 os.path.join(
                     self.folderpath,
                     'files_split',
-                                    self.Name + '.' + self.standard_output_extension
+                    self.Name
                 )
         ):
 
@@ -545,6 +552,14 @@ class SampleData(configuration):
             print(self.Name)
             print(
                 'You must provide 4 breaking points corresponding to the "start of the blank", "end of the blank", "start of the sample" and "end of the sample".')
+            exit()
+
+        # print('new_split_points[3]',new_split_points[3])
+        # print('Line_LastCycle',Line_LastCycle)
+        if new_split_points[3] - 1 > Line_LastCycle:
+            print(self.Name)
+            print(
+                'The indicated breaking point related to the "end of the sample" is bigger than the number of cycles.')
             exit()
 
         Blank = []
@@ -667,9 +682,7 @@ def ListFiles(FolderPath, Extension):
     if type(Extension) is not str:
         print('Extension must be a string.')
         exit()
-
     # print(FolderPath)
-
 
     if os.path.exists(FolderPath) == False:
         print('The folder does not exist.')
