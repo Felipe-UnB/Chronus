@@ -35,9 +35,10 @@ class Chronus_GUI():
         self.show.add_command(label='Show list of samples', command=lambda: print('Show list of samples'))
         self.help_.add_command(label='About', command=lambda: print('Chronus'))
 
-        self.file.entryconfig('New sample', accelerator='Ctrl+N')
+        # self.file.entryconfig('New sample', accelerator='ctrl+n')
 
     def NewSample(self, master):
+        import ConvertFiles as CF
         NewSample_Window = Toplevel(master)
         NewSample_Window.config(width=350, height=400)
 
@@ -59,6 +60,7 @@ class Chronus_GUI():
             Directory = fDialog.askdirectory()
 
         button_SelectFolder = Button(NewSample_Window, text='Select folder', command=SelectFolder)
+        button_Ok = Button(NewSample_Window, text='Ok', command=lambda: CF.LoadFiles(())
 
         files_extension = StringVar()
         delimmiter = StringVar()
@@ -82,6 +84,12 @@ class Chronus_GUI():
         label1.grid(row=1, column=1)
         label2.grid(row=2, column=1)
         label3.grid(row=3, column=1)
+
+        int_padding = 5
+        ext_padding = 10
+
+        for child in NewSample_Window.winfo_children():
+            child.grid_configure(padx=ext_padding, pady=ext_padding, ipadx=int_padding, ipady=int_padding)
 
 
 def main():

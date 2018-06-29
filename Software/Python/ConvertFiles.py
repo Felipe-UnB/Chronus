@@ -1,5 +1,4 @@
 from __future__ import division, print_function
-from Chronus_Python import detect_cusum
 import pprint
 
 
