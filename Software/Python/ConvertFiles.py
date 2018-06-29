@@ -19,7 +19,8 @@ class configuration:
             'Line_FirstCycle': 15,
             'Line_LastCycle': 74,
             'Line_new_num_cycles': 1,
-            # This line sets the line where the new number of cyles (after separating blanks and samples) should be recorded
+            # This line sets the line where the new number of cyles (after separating blanks and samples)
+            # should be recorded
             'Column_AnalysisDate': 0,
             'Column_CycleTime': 1,
             'Column_206': 2,  # ¨False¨ if the isotope is not analyzed
@@ -34,9 +35,11 @@ class configuration:
             'Column_new_num_cycles': 3,
             'Column_split_points': 4,
             'FirstCycle_datetime_fmt': '%H:%M:%S:%f',
-            # This line sets the columns where the new number of cyles (after separating blanks and samples) should be recorded
+            # This line sets the columns where the new number of cyles (after separating blanks and samples)
+            # should be recorded
             'AnalysisDate_datetime_fmt': '%d/%m/%Y'  # Format of the date in the cell where the analysis date
-            # was recorded. Some equipment may presente the date and the time (corresponding to the time of the first cycle?)
+            # was recorded. Some equipment may presente the date and the time (corresponding to the time of the
+            # first cycle?)
         }
 
         self.__Constants_Neptune_206MIC = {
@@ -47,7 +50,8 @@ class configuration:
             'Line_FirstCycle': 15,
             'Line_LastCycle': 74,
             'Line_new_num_cycles': 1,
-            # This line sets the line where the new number of cyles (after separating blanks and samples) should be recorded
+            # This line sets the line where the new number of cyles (after separating blanks and samples) should
+            # be recorded
             'Column_AnalysisDate': 0,
             'Column_CycleTime': 1,
             'Column_206': 7,  # ¨False¨ if the isotope is not analyzed
@@ -62,9 +66,11 @@ class configuration:
             'Column_new_num_cycles': 3,
             'Column_split_points': 4,
             'FirstCycle_datetime_fmt': '%H:%M:%S:%f',
-            # This line sets the columns where the new number of cyles (after separating blanks and samples) should be recorded
+            # This line sets the columns where the new number of cyles (after separating blanks and samples) should
+            # be recorded
             'AnalysisDate_datetime_fmt': '%d/%m/%Y'  # Format of the date in the cell where the analysis date
-            # was recorded. Some equipment may presente the date and the time (corresponding to the time of the first cycle?)
+            # was recorded. Some equipment may presente the date and the time (corresponding to the time of the first
+            # cycle?)
         }
 
         self.__Constants_Spec2 = {
@@ -74,7 +80,8 @@ class configuration:
             'Line_FirstCycle': 4,
             'Line_LastCycle': 220,
             'Line_new_num_cycles': 1,
-            # This line sets the line where the new number of cyles (after separating blanks and samples) should be recorded
+            # This line sets the line where the new number of cyles (after separating blanks and samples) should be
+            # recorded
             'Column_AnalysisDate': 0,
             'Column_CycleTime': 0,
             'Column_206': 3,  # ¨False¨ if the isotope is not analyzed
@@ -84,16 +91,18 @@ class configuration:
             'Column_238': 8,  # ¨False¨ if the isotope is not analyzed
             'Column_202': False,  # ¨False¨ if the isotope is not analyzed
             'Column_204': False,  # ¨False¨ if the isotope is not analyzed
-            'Column_207': 4,  #¨False¨ if the isotope is not analyzed
+            'Column_207': 4,  # ¨False¨ if the isotope is not analyzed
             'Columns_num': 9,  # Number of columns in each file
             'Column_new_num_cycles_header': 2,
             'Column_new_num_cycles': 3,
             'Column_split_points': 4,
-        # This line sets the columns where the new number of cyles (after separating blanks and samples) should be recorded
+            # This line sets the columns where the new number of cyles (after separating blanks and samples) should be
+            # recorded
             'FirstCycle_datetime_fmt': '%S.%f',
             # https://docs.python.org/3.6/library/datetime.html#strftime-strptime-behavior
             'AnalysisDate_datetime_fmt': '%b %d %Y  %I:%M %p'  # Format of the date in the cell where the analysis date
-            #was recorded. Some equipment may presente the date and the time (corresponding to the time of the first cycle?)
+            # was recorded. Some equipment may presente the date and the time (corresponding to the time of the first
+            # cycle?)
         }
 
         self.MassSpectometersSuported = {
@@ -172,7 +181,7 @@ class SampleData(configuration):
         super(SampleData, self).__init__()
 
         self.ID = SampleData.__LastID
-        SampleData.__LastID += 1  #Used to count the number of samples
+        SampleData.__LastID += 1  # Used to count the number of samples
 
         self.__Constants = self.GetConfigurations(Equipment)
         self.Name = Name
@@ -215,7 +224,7 @@ class SampleData(configuration):
         # that records the date of analysis
         __AnalysisDate_datetime_fmt = self.__Constants[
             'AnalysisDate_datetime_fmt']  # Format of the date and time information in the cell
-        #that records the date of analysis
+        # that records the date of analysis
 
         try:
             AnalysisDate = File_as_List[__Line_AnalysisDate][__Column_AnalysisDate]
@@ -317,28 +326,29 @@ class SampleData(configuration):
             self.__CyclesDateTime.append(CyclesDateTime)
             File_as_List[line][__Column_CycleTime] = CyclesDateTime.strftime('%H:%M:%S:%f')[
                                                      :-3]  # Updates the cycle time to the
-            # standard format used by Chronus (e.g. 13:54:24:852). A little help from http://stackoverflow.com/a/18406412/2449724
+            # standard format used by Chronus (e.g. 13:54:24:852). A little help from
+            # http://stackoverflow.com/a/18406412/2449724
 
             try:
-                if __Column_206 != False:
+                if __Column_206:
                     self.Signal_206.append(float(File_as_List[line][__Column_206]))
 
-                if __Column_208 != False:
+                if __Column_208:
                     self.Signal_208.append(float(File_as_List[line][__Column_208]))
 
-                if __Column_232 != False:
+                if __Column_232:
                     self.Signal_232.append(float(File_as_List[line][__Column_232]))
 
-                if __Column_238 != False:
+                if __Column_238:
                     self.Signal_238.append(float(File_as_List[line][__Column_238]))
 
-                if __Column_202 != False:
+                if __Column_202:
                     self.Signal_202.append(float(File_as_List[line][__Column_202]))
 
-                if __Column_204 != False:
+                if __Column_204:
                     self.Signal_204.append(float(File_as_List[line][__Column_204]))
 
-                if __Column_207 != False:
+                if __Column_207:
                     self.Signal_207.append(float(File_as_List[line][__Column_207]))
 
             except:
@@ -356,13 +366,13 @@ class SampleData(configuration):
                 print('File_as_Array[line][__Column_238] = ', 'File_as_Array[', line, '][', __Column_238, '] = ',
                       File_as_List[line][__Column_238])
 
-                if __Column_202 != False:
+                if __Column_202:
                     print('File_as_Array[line][__Column_202] = ', 'File_as_Array[', line, '][', __Column_202, '] = ',
                           File_as_List[line][__Column_202])
                 else:
                     print('__Column_202 = ', __Column_202)
 
-                if __Column_204 != False:
+                if __Column_204:
                     print('File_as_Array[line][__Column_204] = ', 'File_as_Array[', line, '][', __Column_204, '] = ',
                           File_as_List[line][__Column_204])
                 else:
@@ -390,6 +400,8 @@ class SampleData(configuration):
                       saveplots=True):
         '''
         
+        :param showplot:
+        :param saveplots:
         :param SameFigure: Should all mass intensities be plotted in the same figure?
         :param plot202: Should the 202 mass intensities be plotted?
         :param plot204: Should the 204 mass intensities be plotted?
@@ -419,7 +431,7 @@ class SampleData(configuration):
 
         NumPlots = 0
         for plot in Should_Plot:
-            if plot[2] == True:
+            if plot[2]:
                 NumPlots += 1
                 Plots.append(plot)
             else:
@@ -427,13 +439,14 @@ class SampleData(configuration):
 
         Xs = self.__CyclesDateTime
 
-        if SameFigure == False:
+        if not SameFigure:
             for intensity in Plots_final:
                 fig, ax1 = plt.subplots()
                 ax1.plot(Xs, intensity[1], color='r', marker='8')
                 ax1.set_xlabel('Time', color='b', fontsize=12)
                 # ax1.set_title(intensity[0], fontsize=10)
-                fig.autofmt_xdate()  # I dont't know if this have another effect, but the one I wanted was it automatically rotates the x axis labels
+                fig.autofmt_xdate()  # I dont't know if this have another effect, but the one I wanted was it
+                # automatically rotates the x axis labels
                 plt.ylabel('Intensity', color='b', fontsize=12)
 
                 ax2 = ax1.twiny()
@@ -442,7 +455,7 @@ class SampleData(configuration):
                 ax2.set_xlabel('Cycles', color='b', fontsize=12)
                 ax2.tick_params('y', colors='r')
 
-                if saveplots == True:
+                if saveplots:
                     import os
 
                     try:
@@ -453,11 +466,11 @@ class SampleData(configuration):
                         print('Could not save', self.Name, 'plots to',
                               str(os.path.join(self.folderpath, str(self.Name + intensity[0] + '.pdf'))))
 
-                if showplot == True:
+                if showplot:
                     plt.show()  # This must be done after saving the figure because it creates a new figure
                     # https://stackoverflow.com/questions/9012487/matplotlib-pyplot-savefig-outputs-blank-image
 
-        elif SameFigure == True:
+        elif SameFigure:
             num_subplots = len(Plots_final)
             num_rows = int(num_subplots / 2) + 1
             num_columns = 2
@@ -477,7 +490,7 @@ class SampleData(configuration):
 
             fig.autofmt_xdate()
 
-            if saveplots == True:
+            if saveplots:
 
                 import os
                 try:
@@ -487,7 +500,7 @@ class SampleData(configuration):
                     print('Could not save', self.Name, 'plots to',
                           str(os.path.join(self.folderpath, str(self.Name + '.pdf'))))
 
-            if showplot == True:
+            if showplot:
                 plt.show()  # This must be done after saving the figure because it creates a new figure
                 # https://stackoverflow.com/questions/9012487/matplotlib-pyplot-savefig-outputs-blank-image
 
@@ -536,11 +549,10 @@ class SampleData(configuration):
                     self.Name
                 )
         ):
-
             print(self.Name, 'was already split using the split points',
                   self.__RawData[Line_new_num_cycles][Column_split_points])
             print('You must delete the files created previously by splitting the original files.')
-            print('Check the folder', os.path.join(self.folderpath,'files_split'))
+            print('Check the folder', os.path.join(self.folderpath, 'files_split'))
             exit()
 
         if self.split_points != new_split_points:
@@ -550,7 +562,8 @@ class SampleData(configuration):
         if len(split_points) != 4:
             print(self.Name)
             print(
-                'You must provide 4 breaking points corresponding to the "start of the blank", "end of the blank", "start of the sample" and "end of the sample".')
+                'You must provide 4 breaking points corresponding to the "start of the blank", "end of the blank", '
+                '"start of the sample" and "end of the sample".')
             exit()
 
         # print('new_split_points[3]',new_split_points[3])
@@ -598,7 +611,7 @@ class SampleData(configuration):
         sample_with_header[Line_new_num_cycles][Column_new_num_cycles_header] = 'Number of cycles'
         sample_with_header[Line_new_num_cycles][Column_split_points] = self.split_points
 
-        if print_separeted_files == True:
+        if print_separeted_files:
 
             print()
             print('BothFile_Header')
@@ -615,7 +628,7 @@ class SampleData(configuration):
             for line in sample_with_header:
                 print(line)
 
-        if os._exists(os.path.join(self.folderpath, 'files_split')) == False:
+        if not os._exists(os.path.join(self.folderpath, 'files_split')):
 
             try:
                 os.makedirs(os.path.join(self.folderpath, 'files_split'))
@@ -633,10 +646,11 @@ class SampleData(configuration):
                  self.equipment)
 
 
-def WriteTXT(List, FileAddress,equipment):
+def WriteTXT(List, FileAddress, equipment):
     '''
     
-    :param List: List to be to converted to a tab delimited file 
+    :param equipment:
+    :param List: List to be to converted to a tab delimited file
     :param FileAddress: Full path (including the name of the file with its extension) of the file to be created
     :return: nothing
     '''
@@ -675,15 +689,15 @@ def ListFiles(FolderPath, Extension):
     else:
         FolderPath = os.path.normcase(
             FolderPath)  # Normalize the case of a pathname. On Unix and Mac OS X, this returns the path unchanged;
-        # on case-insensitive filesystems, it converts the path to lowercase. On Windows, it also converts forward slashes to backward
-        # slashes.
+        # on case-insensitive filesystems, it converts the path to lowercase. On Windows, it also converts forward
+        # slashes to backward slashes.
 
     if type(Extension) is not str:
         print('Extension must be a string.')
         exit()
     # print(FolderPath)
 
-    if os.path.exists(FolderPath) == False:
+    if not os.path.exists(FolderPath):
         print('The folder does not exist.')
         exit()
 
@@ -706,11 +720,12 @@ def ListFiles(FolderPath, Extension):
     return FilesList
 
 
-def Convert_Files_to_Lists(FilesList,Equipment):
+def Convert_Files_to_Lists(FilesList, Equipment):
     '''
     Transforms each file in a list and append it to LoadedFiles as [SampleName,DataArray]
     Each item of the list is another list and represents a row of the original file.
 
+    :param Equipment:
     :param FilesList: List with the paths of the files to be opened
     :return: LoadedFiles, a list of the files as [SampleName,DataArray]
     '''
@@ -751,15 +766,16 @@ def Convert_Files_to_Lists(FilesList,Equipment):
 def LoadFiles(FolderPath, extension, delimiter='\t', equipment='Thermo Finnigan Neptune_206F'):
     '''
     
+    :param delimiter:
+    :param equipment:
     :param FolderPath: Folder where all the raw data files are stored
     :param extension: Extension of the desired files (.exp for exported neptune files)
-    :param delimter: Delimiter which will be used to split text into columns ('\t' for tab, ',' for comma)
     :return: A list with all files described by the SampleData class
     '''
 
     list_of_files = ListFiles(FolderPath, extension)
 
-    list_of_files_converted_to_List = Convert_Files_to_Lists(list_of_files,equipment)
+    list_of_files_converted_to_List = Convert_Files_to_Lists(list_of_files, equipment)
 
     loaded_files = []
 
@@ -773,13 +789,16 @@ def CombineDateTime(date_str, time_str, date_fmt, time_fmt, equipment, sample_na
     '''
     Mixes the date of analysis and the start of a cycle into a datetime object.
     
+    :param time_str:
+    :param date_fmt:
+    :param time_fmt:
+    :param sample_name:
     :param date_str: a string with a data and/or time recorded
-    :param fmt: format of datetime_str according to https://docs.python.org/3.6/library/datetime.html#strftime-strptime-behavior
     :param equipment: depending on the equipment, the datetime_str must be sliced to be handled by the strpformat
     :return: datetime object
     '''
 
-    #Updated based on the question at http://stackoverflow.com/q/44014424/2449724
+    # Updated based on the question at http://stackoverflow.com/q/44014424/2449724
 
     import datetime
     # print()
@@ -820,4 +839,3 @@ def CombineDateTime(date_str, time_str, date_fmt, time_fmt, equipment, sample_na
         print('Printing excepetion...')
         print(e)
         return 'Error'
-

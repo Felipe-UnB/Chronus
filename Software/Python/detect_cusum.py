@@ -84,18 +84,18 @@ def detect_cusum(x, threshold=1, drift=0, ending=False, show=True, ax=None):
     amp = np.array([])
     # Find changes (online form)
     for i in range(1, x.size):
-        s = x[i] - x[i-1]
-        gp[i] = gp[i-1] + s - drift  # cumulative sum for + change
-        gn[i] = gn[i-1] - s - drift  # cumulative sum for - change
+        s = x[i] - x[i - 1]
+        gp[i] = gp[i - 1] + s - drift  # cumulative sum for + change
+        gn[i] = gn[i - 1] - s - drift  # cumulative sum for - change
 
         if gp[i] < 0:
             gp[i], tap = 0, i
         if gn[i] < 0:
             gn[i], tan = 0, i
         if gp[i] > threshold or gn[i] > threshold:  # change detected!
-            ta = np.append(ta, i)    # alarm index
+            ta = np.append(ta, i)  # alarm index
             tai = np.append(tai, tap if gp[i] > threshold else tan)  # start
-            gp[i], gn[i] = 0, 0      # reset alarm
+            gp[i], gn[i] = 0, 0  # reset alarm
     # THE CLASSICAL CUSUM ALGORITHM ENDS HERE
 
     # Estimation of when the change ends (offline form)
@@ -110,7 +110,7 @@ def detect_cusum(x, threshold=1, drift=0, ending=False, show=True, ax=None):
             if tai.size < taf.size:
                 taf = taf[[np.argmax(taf >= i) for i in ta]]
             else:
-                ind = [np.argmax(i >= ta[::-1])-1 for i in taf]
+                ind = [np.argmax(i >= ta[::-1]) - 1 for i in taf]
                 ta = ta[ind]
                 tai = tai[ind]
         # Delete intercalated changes (the ending of the change is after
@@ -152,20 +152,20 @@ def _plot(x, threshold, drift, ending, ax, ta, tai, taf, gp, gn):
             ax1.plot(ta, x[ta], 'o', mfc='r', mec='r', mew=1, ms=5,
                      label='Alarm')
             ax1.legend(loc='best', framealpha=.5, numpoints=1)
-        ax1.set_xlim(-.01*x.size, x.size*1.01-1)
+        ax1.set_xlim(-.01 * x.size, x.size * 1.01 - 1)
         ax1.set_xlabel('Data #', fontsize=14)
         ax1.set_ylabel('Amplitude', fontsize=14)
         ymin, ymax = x[np.isfinite(x)].min(), x[np.isfinite(x)].max()
         yrange = ymax - ymin if ymax > ymin else 1
-        ax1.set_ylim(ymin - 0.1*yrange, ymax + 0.1*yrange)
+        ax1.set_ylim(ymin - 0.1 * yrange, ymax + 0.1 * yrange)
         ax1.set_title('Time series and detected changes ' +
                       '(threshold= %.3g, drift= %.3g): N changes = %d'
                       % (threshold, drift, len(tai)))
         ax2.plot(t, gp, 'y-', label='+')
         ax2.plot(t, gn, 'm-', label='-')
-        ax2.set_xlim(-.01*x.size, x.size*1.01-1)
+        ax2.set_xlim(-.01 * x.size, x.size * 1.01 - 1)
         ax2.set_xlabel('Data #', fontsize=14)
-        ax2.set_ylim(-0.01*threshold, 1.1*threshold)
+        ax2.set_ylim(-0.01 * threshold, 1.1 * threshold)
         ax2.axhline(threshold, color='r')
         ax1.set_ylabel('Amplitude', fontsize=14)
         ax2.set_title('Time series of the cumulative sums of ' +

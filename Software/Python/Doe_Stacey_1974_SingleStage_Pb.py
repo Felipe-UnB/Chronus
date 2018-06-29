@@ -25,6 +25,7 @@ earth_age_SK75_first_stage = 4570  # Stacey and Kramers, 1975
 earth_age_SK75_second_stage = 3700  # Stacey and Kramers, 1975
 earth_age_DS74 = 4430  # Doe and Stacey, 1974
 
+
 def OpenIsoplot():
     import win32com.client
 
@@ -33,7 +34,10 @@ def OpenIsoplot():
         xl.Visible = False
 
         xl.Workbooks.open(
-            'D:\\UnB\\Programas\\TEMP\\Isoplot4.15.xlam')  # https://stackoverflow.com/questions/345920/need-skeleton-code-to-call-excel-vba-from-pythonwin
+            'D:\\UnB\\Programas\\TEMP\\Isoplot4.15.xlam')
+
+        # https://stackoverflow.com/questions/345920/need-skeleton-code-to-call-excel-vba-from-pythonwin
+
         # print(xl.Application.Run('AgePb76',0.5))
         # print(xl.Application.Run('AgePb76',0.6))
         # print(xl.Application.Run('AgePb76',0.7))
@@ -71,12 +75,11 @@ def single_stage_lead_DK74(primordial_lead, primordial_uranium_lead, decay_const
 
     return primordial_lead + \
            primordial_uranium_lead * \
-           (np.exp(decay_constant * single_stage_start) - \
+           (np.exp(decay_constant * single_stage_start) -
             np.exp(decay_constant * single_stage_end))
 
 
-def SingleStagePbR_Isoplot(Age,WhichRatio):
-
+def SingleStagePbR_Isoplot(Age, WhichRatio):
     '''
     
     :param Age: For each Age the ratios must be calculate?
@@ -91,61 +94,63 @@ def SingleStagePbR_Isoplot(Age,WhichRatio):
 
     return Isoplot.Application.Run('SingleStagePbR', float(Age), WhichRatio)
 
+
 def appendix_C_DS_1974(MaxAge):
-    #ratios_64_single_stage and ratios_74_single_stage use the same parameters used to create the
-    #Appendix C of Doe and Stacey (1974)
+    # ratios_64_single_stage and ratios_74_single_stage use the same parameters used to create the
+    # Appendix C of Doe and Stacey (1974)
 
     Xs = np.arange(0, MaxAge + 1, 10)
 
     ratios_64_single_stage_DS74 = [single_stage_lead_DK74(
-                            primordial_lead_206_204_TAT73,
-                            primordial_uranium_lead_238_204_DS74,
-                            decay_constant_238_DS74,
-                            earth_age_DS74,
-                            age
-                            )
-                                for age in Xs]
+        primordial_lead_206_204_TAT73,
+        primordial_uranium_lead_238_204_DS74,
+        decay_constant_238_DS74,
+        earth_age_DS74,
+        age
+    )
+        for age in Xs]
 
     ratios_74_single_stage_DS74 = [single_stage_lead_DK74(
-                            primordial_lead_207_204_TAT73,
-                            primordial_uranium_lead_235_204_DS74,
-                            decay_constant_235_DS74,
-                            earth_age_DS74,
-                            age
-                            )
-                                for age in Xs]
+        primordial_lead_207_204_TAT73,
+        primordial_uranium_lead_235_204_DS74,
+        decay_constant_235_DS74,
+        earth_age_DS74,
+        age
+    )
+        for age in Xs]
 
-    for a,b,c in zip(ratios_64_single_stage_DS74,ratios_74_single_stage_DS74,Xs):
-        print('ratios_64_single_stage =', round(a,4), 'ratios_74_single_stage =', round(b,4), 'for age', c, 'Ma')
+    for a, b, c in zip(ratios_64_single_stage_DS74, ratios_74_single_stage_DS74, Xs):
+        print('ratios_64_single_stage =', round(a, 4), 'ratios_74_single_stage =', round(b, 4), 'for age', c, 'Ma')
 
-    plt.plot(ratios_64_single_stage_DS74,ratios_74_single_stage_DS74,label='ratios 64 and 74 from single stage')
+    plt.plot(ratios_64_single_stage_DS74, ratios_74_single_stage_DS74, label='ratios 64 and 74 from single stage')
     plt.legend()
     plt.show()
 
-    return (ratios_64_single_stage_DS74,ratios_74_single_stage_DS74)
+    return (ratios_64_single_stage_DS74, ratios_74_single_stage_DS74)
+
 
 def SingleStagePbR(MaxAge):
-    #ratios_64_single_stage_SK75 and ratios_74_single_stage_SK75 use the same parameters used by Isoplot 4.15.
-    #This should return the exact same values as the SingleStagePbR function of Isoplot for the 206Pb/204Pb and
+    # ratios_64_single_stage_SK75 and ratios_74_single_stage_SK75 use the same parameters used by Isoplot 4.15.
+    # This should return the exact same values as the SingleStagePbR function of Isoplot for the 206Pb/204Pb and
     # 207Pb/204Pb
 
     Xs = np.arange(0, MaxAge + 1, 10)
 
     ratios_64_single_stage_SK75 = [single_stage_lead_DK74(
-                                    primordial_lead_206_204_SK75_second_stage,
-                                    primordial_uranium_lead_238_204_SK75_second_stage,
-                                    decay_constant_238_JA71,
-                                    earth_age_SK75_second_stage,
-                                    age) for age in Xs]
+        primordial_lead_206_204_SK75_second_stage,
+        primordial_uranium_lead_238_204_SK75_second_stage,
+        decay_constant_238_JA71,
+        earth_age_SK75_second_stage,
+        age) for age in Xs]
 
     ratios_74_single_stage_SK75 = [single_stage_lead_DK74(
-                                    primordial_lead_207_204_SK75_second_stage,
-                                    primordial_uranium_lead_235_204_SK75_second_stage,
-                                    decay_constant_235_J71,
-                                    earth_age_SK75_second_stage,
-                                    age) for age in Xs]
+        primordial_lead_207_204_SK75_second_stage,
+        primordial_uranium_lead_235_204_SK75_second_stage,
+        decay_constant_235_J71,
+        earth_age_SK75_second_stage,
+        age) for age in Xs]
 
-    #The lines below are use to compare the results of this function to those calculated by Isoplot in Excel
+    # The lines below are use to compare the results of this function to those calculated by Isoplot in Excel
     # for a, b, c in zip(ratios_64_single_stage_SK75, ratios_74_single_stage_SK75, Xs):
     #     try:
     #         ratio_64_isoplot = SingleStagePbR_Isoplot(c, 0)
@@ -162,11 +167,12 @@ def SingleStagePbR(MaxAge):
     #         print(e)
     #         exit()
 
-    plt.plot(ratios_64_single_stage_SK75,ratios_74_single_stage_SK75,label='ratios 64 and 74 from single stage')
+    plt.plot(ratios_64_single_stage_SK75, ratios_74_single_stage_SK75, label='ratios 64 and 74 from single stage')
     plt.legend()
     plt.show()
 
     return (ratios_64_single_stage_SK75, ratios_74_single_stage_SK75)
+
 
 SingleStagePbR(3700)
 

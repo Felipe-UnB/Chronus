@@ -60,7 +60,13 @@ class Chronus_GUI():
             Directory = fDialog.askdirectory()
 
         button_SelectFolder = Button(NewSample_Window, text='Select folder', command=SelectFolder)
-        button_Ok = Button(NewSample_Window, text='Ok', command=lambda: CF.LoadFiles(())
+
+        button_Ok = Button(NewSample_Window, text='Ok', command=lambda: CF.LoadFiles(()))
+
+
+
+
+
 
         files_extension = StringVar()
         delimmiter = StringVar()
