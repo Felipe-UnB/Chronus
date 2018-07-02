@@ -6,16 +6,19 @@ import pprint
 
 folder_address1 = r'D:\UnB\Projetos-Software\Chronus\Software\Blank_Test\DATA2\20131001.b'
 folder_address2 = r'D:\UnB\Geocronologia\Cálculo U-Pb\Certificação do método\91500_BB9_PLESOVICE'
+extension = '.exp'
+delimiter = ','
+equipment = 'Thermo Finnigan Neptune_206MIC'
 
-loaded_files = LoadFiles(
+loaded_files = SampleData(
     folder_address2,
-    '.exp',
-    ',',
-    'Thermo Finnigan Neptune_206MIC')
+    extension,
+    delimiter,
+    equipment)
 
 print()
 print('Printing cycles date and time')
-a = loaded_files[0]
+a = loaded_files.Samples[0]
 print(a.Name)
 print(a.folderpath)
 pprint.pprint(a.Print_CyclesDateTime())
