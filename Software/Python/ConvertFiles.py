@@ -37,9 +37,10 @@ class configuration:
             'FirstCycle_datetime_fmt': '%H:%M:%S:%f',
             # This line sets the columns where the new number of cyles (after separating blanks and samples)
             # should be recorded
-            'AnalysisDate_datetime_fmt': '%d/%m/%Y'  # Format of the date in the cell where the analysis date
+            'AnalysisDate_datetime_fmt': '%d/%m/%Y',  # Format of the date in the cell where the analysis date
             # was recorded. Some equipment may presente the date and the time (corresponding to the time of the
             # first cycle?)
+            'delimiter': '\t'  # Delimiter used to split the columns of the original files
         }
 
         self.__Constants_Neptune_206MIC = {
@@ -68,9 +69,10 @@ class configuration:
             'FirstCycle_datetime_fmt': '%H:%M:%S:%f',
             # This line sets the columns where the new number of cyles (after separating blanks and samples) should
             # be recorded
-            'AnalysisDate_datetime_fmt': '%d/%m/%Y'  # Format of the date in the cell where the analysis date
+            'AnalysisDate_datetime_fmt': '%d/%m/%Y',  # Format of the date in the cell where the analysis date
             # was recorded. Some equipment may presente the date and the time (corresponding to the time of the first
             # cycle?)
+            'delimiter': '\t'  # Delimiter used to split the columns of the original files
         }
 
         self.__Constants_Spec2 = {
@@ -100,9 +102,10 @@ class configuration:
             # recorded
             'FirstCycle_datetime_fmt': '%S.%f',
             # https://docs.python.org/3.6/library/datetime.html#strftime-strptime-behavior
-            'AnalysisDate_datetime_fmt': '%b %d %Y  %I:%M %p'  # Format of the date in the cell where the analysis date
+            'AnalysisDate_datetime_fmt': '%b %d %Y  %I:%M %p',  # Format of the date in the cell where the analysis date
             # was recorded. Some equipment may presente the date and the time (corresponding to the time of the first
             # cycle?)
+            'delimiter': ''  # Delimiter used to split the columns of the original files
         }
 
         self.MassSpectometersSuported = {
@@ -111,9 +114,13 @@ class configuration:
             'Spec2': self.__Constants_Spec2
         }
 
+    def SuportedEquipment(self):
+        return self.MassSpectometersSuported
+
     def PrintSuportedEquipment(self):
         for equip in self.MassSpectometersSuported:
             print(equip)
+
 
     def Print_Constants(self, Equipment_name):
         '''Prints all constants in the dictionary'''
@@ -135,7 +142,7 @@ class configuration:
             exit()
 
 
-class SampleData(configuration):
+class Single_SampleData(configuration):
     '''
     This object represents a single data file.
 
@@ -178,10 +185,10 @@ class SampleData(configuration):
 
         import os
 
-        super(SampleData, self).__init__()
+        super(Single_SampleData, self).__init__()
 
-        self.ID = SampleData.__LastID
-        SampleData.__LastID += 1  # Used to count the number of samples
+        self.ID = Single_SampleData.__LastID
+        Single_SampleData.__LastID += 1  # Used to count the number of samples
 
         self.__Constants = self.GetConfigurations(Equipment)
         self.Name = Name
@@ -241,6 +248,61 @@ class SampleData(configuration):
             print('Printing raw data...')
             self.print_RawData()
             exit()
+
+        def CombineDateTime(date_str, time_str, date_fmt, time_fmt, equipment, sample_name):
+            '''
+            Mixes the date of analysis and the start of a cycle into a datetime object.
+
+            :param time_str:
+            :param date_fmt:
+            :param time_fmt:
+            :param sample_name:
+            :param date_str: a string with a data and/or time recorded
+            :param equipment: depending on the equipment, the datetime_str must be sliced to be handled by the strpformat
+            :return: datetime object
+            '''
+
+            # Updated based on the question at http://stackoverflow.com/q/44014424/2449724
+
+            import datetime
+            # print()
+            if equipment == 'Spec2':
+                # print(equipment)
+                remove_start = date_str.find(':') + 2
+                remove_end = date_str.find('using') - 1
+                date_str = date_str[remove_start:remove_end]
+            elif equipment == 'Thermo Finnigan Neptune_206F' or equipment == 'Thermo Finnigan Neptune_206MIC':
+                # print(equipment)
+                remove_start = date_str.find(':') + 2
+                # print(date_str)
+                date_str = date_str[remove_start:len(date_str)]
+                # print('date_str', date_str)
+
+            try:
+                date_obj = datetime.datetime.strptime(date_str, date_fmt)
+                date_obj_time = date_obj.time()
+
+                time_obj = datetime.datetime.strptime(time_str, time_fmt)
+                time_obj += datetime.timedelta(hours=date_obj_time.hour, minutes=date_obj_time.minute,
+                                               seconds=date_obj_time.second,
+                                               microseconds=date_obj_time.microsecond)
+
+                # print()
+                # TEMP = datetime.datetime.combine(date_obj.date(), time_obj.time())
+                # print(TEMP.strftime('%H:%M:%S:%f'))
+
+                return datetime.datetime.combine(date_obj.date(), time_obj.time())
+
+            except Exception as e:
+                print('Failed to combine date and time of', sample_name)
+                print('time_str =', time_str)
+                print('time_fmt =', time_fmt)
+                print('date_str =', date_str)
+                print('date_fmt =', date_fmt)
+                print()
+                print('Printing excepetion...')
+                print(e)
+                return 'Error'
 
         # Below the date of analysis and the first time cycle will be combined in a single datetime objetc.
         Analysis_Date_FirstTime = CombineDateTime(
@@ -386,6 +448,28 @@ class SampleData(configuration):
         datetime = []
         [datetime.append(str(x)) for x in self.__CyclesDateTime]
         return datetime
+
+    def WriteTXT(List, FileAddress, equipment):
+        '''
+
+        :param equipment:
+        :param List: List to be to converted to a tab delimited file
+        :param FileAddress: Full path (including the name of the file with its extension) of the file to be created
+        :return: nothing
+        '''
+
+        import csv
+        # print(FileAddress)
+        file = open(FileAddress, 'w', newline='')
+
+        if equipment == 'Thermo Finnigan Neptune_206F':
+            writer = csv.writer(file, delimiter='\t')
+        if equipment == 'Thermo Finnigan Neptune_206MIC':
+            writer = csv.writer(file, delimiter='\t')
+        elif equipment == 'Spec2':
+            writer = csv.writer(file, delimiter='\t')
+
+        writer.writerows(List)
 
     def plot_save_All(self,
                       SameFigure=True,
@@ -636,206 +720,157 @@ class SampleData(configuration):
                 # print('exist')
                 pass
 
-        WriteTXT(blank_with_header,
-                 os.path.join(self.folderpath, 'files_split',
+        Single_SampleData.WriteTXT(blank_with_header,
+                                   os.path.join(self.folderpath, 'files_split',
                               'blank_' + str(self.ID) + '.' + self.standard_output_extension),
-                 self.equipment)
+                                   self.equipment)
 
-        WriteTXT(sample_with_header,
-                 os.path.join(self.folderpath, 'files_split', self.Name),
-                 self.equipment)
-
-
-def WriteTXT(List, FileAddress, equipment):
-    '''
-    
-    :param equipment:
-    :param List: List to be to converted to a tab delimited file
-    :param FileAddress: Full path (including the name of the file with its extension) of the file to be created
-    :return: nothing
-    '''
-
-    import csv
-    # print(FileAddress)
-    file = open(FileAddress, 'w', newline='')
-
-    if equipment == 'Thermo Finnigan Neptune_206F':
-        writer = csv.writer(file, delimiter='\t')
-    if equipment == 'Thermo Finnigan Neptune_206MIC':
-        writer = csv.writer(file, delimiter='\t')
-    elif equipment == 'Spec2':
-        writer = csv.writer(file, delimiter='\t')
-
-    writer.writerows(List)
+        Single_SampleData.WriteTXT(sample_with_header,
+                                   os.path.join(self.folderpath, 'files_split', self.Name),
+                                   self.equipment)
 
 
-def ListFiles(FolderPath, Extension):
-    '''
-    Returns a list of lists in the following format
-        [name, os.path.join(root, name)]
-        
-    item[0] - files with the desired extension in the indicated folder
-    item[0][0] - file name
-    item[0][1] - file path
-    '''
+class SampleData():
+    def __init__(self, folderpath, extension, delimiter, equipment):
+        def validate_directory(directory):
+            'Checks the folder indicated by the user and if it does not exist, terminates the program.'
+            '''
+            :param directory: string with the folder address to be checked
+            :return: a string with a validated path
+            '''
+            import os
+            import sys
 
-    import os
+            if sys.version_info[0] < 3:
+                from Tkinter import messagebox
+            else:
+                from tkinter import messagebox
 
-    # print(FolderPath)
+            if os.path.exists(directory) == False:
+                messagebox.showwarning('Warning', '{} is not a valid folder!'.format(directory))
+                exit()
+            else:
+                return folderpath
 
-    if type(FolderPath) is not str:
-        print('Folder is not a string.')
-        exit()
-    else:
-        FolderPath = os.path.normcase(
-            FolderPath)  # Normalize the case of a pathname. On Unix and Mac OS X, this returns the path unchanged;
-        # on case-insensitive filesystems, it converts the path to lowercase. On Windows, it also converts forward
-        # slashes to backward slashes.
+        self.folderpath = validate_directory(folderpath)
+        self.extension = extension
+        self.delimiter = delimiter
+        self.equipment = equipment
 
-    if type(Extension) is not str:
-        print('Extension must be a string.')
-        exit()
-    # print(FolderPath)
+        def Convert_Files_to_Lists(FilesList, Equipment):
+            '''
+            Transforms each file in a list and append it to LoadedFiles as [SampleName,DataArray]
+            Each item of the list is another list and represents a row of the original file.
 
-    if not os.path.exists(FolderPath):
-        print('The folder does not exist.')
-        exit()
+            :param Equipment:
+            :param FilesList: List with the paths of the files to be opened
+            :return: LoadedFiles, a list of the files as [SampleName,DataArray]
+            '''
+            import csv
 
-    FilesList = []
+            if len(FilesList) == 0:
+                print("FileList is empty!")
+                exit()
 
-    for root, dirs, files in os.walk(FolderPath, topdown=False):
-        # print(root)
-        for name in files:
+            LoadedFile = []
 
-            if os.path.splitext(os.path.join(root, name))[1] == Extension:
-                FilesList.append([name, os.path.join(root, name)])
+            # print(Equipment)
 
-                # for name in dirs:
-                #     print(os.path.join(root, name))
+            for file in FilesList:
 
-    if len(FilesList) == 0:
-        print('No files with the desired extension (' + Extension + ') were found.')
+                if Equipment == 'Thermo Finnigan Neptune_206F':
+                    file_read = csv.reader(open(file[1], 'r'), delimiter='\t')  # delimiter='\t' is the tab delimiter
+                if Equipment == 'Thermo Finnigan Neptune_206MIC':
+                    file_read = csv.reader(open(file[1], 'r'), delimiter='\t')  # delimiter='\t' is the tab delimiter
+                elif Equipment == 'Spec2':
+                    file_read = csv.reader(open(file[1], 'r'))
+                else:
+                    print('Failed to read csv file. Equipment not in Chronus equipment list.')
 
-    # print(len(FilesList))
-    return FilesList
+                temp = []
 
+                for line in file_read:  # I could not find an easy way to import an tab delimited with text and values file
+                    # into an array in python. But this must exist, I just could not find it!
+                    # print(line)
 
-def Convert_Files_to_Lists(FilesList, Equipment):
-    '''
-    Transforms each file in a list and append it to LoadedFiles as [SampleName,DataArray]
-    Each item of the list is another list and represents a row of the original file.
+                    temp.append(line)
 
-    :param Equipment:
-    :param FilesList: List with the paths of the files to be opened
-    :return: LoadedFiles, a list of the files as [SampleName,DataArray]
-    '''
-    import csv
+                LoadedFile.append([file[0], temp])
 
-    if len(FilesList) == 0:
-        print("FileList is empty!")
-        exit()
+            return LoadedFile
 
-    LoadedFile = []
+        def ListFiles(FolderPath, Extension):
+            '''
+            Returns a list of lists in the following format
+                [name, os.path.join(root, name)]
 
-    # print(Equipment)
+            item[0] - files with the desired extension in the indicated folder
+            item[0][0] - file name
+            item[0][1] - file path
+            '''
 
-    for file in FilesList:
+            import os
 
-        if Equipment == 'Thermo Finnigan Neptune_206F':
-            file_read = csv.reader(open(file[1], 'r'), delimiter='\t')  # delimiter='\t' is the tab delimiter
-        if Equipment == 'Thermo Finnigan Neptune_206MIC':
-            file_read = csv.reader(open(file[1], 'r'), delimiter='\t')  # delimiter='\t' is the tab delimiter
-        elif Equipment == 'Spec2':
-            file_read = csv.reader(open(file[1], 'r'))
-        else:
-            print('Failed to read csv file. Equipment not in Chronus equipment list.')
+            # print(FolderPath)
 
-        temp = []
+            if type(FolderPath) is not str:
+                print('Folder is not a string.')
+                exit()
+            else:
+                FolderPath = os.path.normcase(
+                    FolderPath)  # Normalize the case of a pathname. On Unix and Mac OS X, this returns the path unchanged;
+                # on case-insensitive filesystems, it converts the path to lowercase. On Windows, it also converts forward
+                # slashes to backward slashes.
 
-        for line in file_read:  # I could not find an easy way to import an tab delimited with text and values file
-            # into an array in python. But this must exist, I just could not find it!
-            # print(line)
+            if type(Extension) is not str:
+                print('Extension must be a string.')
+                exit()
+            # print(FolderPath)
 
-            temp.append(line)
+            if not os.path.exists(FolderPath):
+                print('The folder does not exist.')
+                exit()
 
-        LoadedFile.append([file[0], temp])
+            FilesList = []
 
-    return LoadedFile
+            for root, dirs, files in os.walk(FolderPath, topdown=False):
+                # print(root)
+                for name in files:
 
+                    if os.path.splitext(os.path.join(root, name))[1] == Extension:
+                        FilesList.append([name, os.path.join(root, name)])
 
-def LoadFiles(FolderPath, extension, delimiter='\t', equipment='Thermo Finnigan Neptune_206F'):
-    '''
-    
-    :param delimiter:
-    :param equipment:
-    :param FolderPath: Folder where all the raw data files are stored
-    :param extension: Extension of the desired files (.exp for exported neptune files)
-    :return: A list with all files described by the SampleData class
-    '''
+                        # for name in dirs:
+                        #     print(os.path.join(root, name))
 
-    list_of_files = ListFiles(FolderPath, extension)
+            if len(FilesList) == 0:
+                print('No files with the desired extension (' + Extension + ') were found.')
 
-    list_of_files_converted_to_List = Convert_Files_to_Lists(list_of_files, equipment)
+            # print(len(FilesList))
+            return FilesList
 
-    loaded_files = []
+        def LoadFiles(FolderPath, extension, delimiter, equipment):
+            '''
+            Creates a list of files of type Single_SampleData
+            :param delimiter:
+            :param equipment:
+            :param FolderPath: Folder where all the raw data files are stored
+            :param extension: Extension of the desired files (.exp for exported neptune files)
+            :return: A list with all files described by the SampleData class
+            '''
 
-    for file in list_of_files_converted_to_List:
-        loaded_files.append(SampleData(file[0], FolderPath, file[1], equipment, extension, False))
+            list_of_files = ListFiles(FolderPath, extension)
 
-    return loaded_files
+            list_of_files_converted_to_List = Convert_Files_to_Lists(list_of_files, equipment)
 
+            loaded_files = []
 
-def CombineDateTime(date_str, time_str, date_fmt, time_fmt, equipment, sample_name):
-    '''
-    Mixes the date of analysis and the start of a cycle into a datetime object.
-    
-    :param time_str:
-    :param date_fmt:
-    :param time_fmt:
-    :param sample_name:
-    :param date_str: a string with a data and/or time recorded
-    :param equipment: depending on the equipment, the datetime_str must be sliced to be handled by the strpformat
-    :return: datetime object
-    '''
+            for file in list_of_files_converted_to_List:
+                loaded_files.append(Single_SampleData(file[0], FolderPath, file[1], equipment, extension, False))
 
-    # Updated based on the question at http://stackoverflow.com/q/44014424/2449724
+            return loaded_files
 
-    import datetime
-    # print()
-    if equipment == 'Spec2':
-        # print(equipment)
-        remove_start = date_str.find(':') + 2
-        remove_end = date_str.find('using') - 1
-        date_str = date_str[remove_start:remove_end]
-    elif equipment == 'Thermo Finnigan Neptune_206F' or equipment == 'Thermo Finnigan Neptune_206MIC':
-        # print(equipment)
-        remove_start = date_str.find(':') + 2
-        # print(date_str)
-        date_str = date_str[remove_start:len(date_str)]
-        # print('date_str', date_str)
-
-    try:
-        date_obj = datetime.datetime.strptime(date_str, date_fmt)
-        date_obj_time = date_obj.time()
-
-        time_obj = datetime.datetime.strptime(time_str, time_fmt)
-        time_obj += datetime.timedelta(hours=date_obj_time.hour, minutes=date_obj_time.minute,
-                                       seconds=date_obj_time.second,
-                                       microseconds=date_obj_time.microsecond)
-
-        # print()
-        # TEMP = datetime.datetime.combine(date_obj.date(), time_obj.time())
-        # print(TEMP.strftime('%H:%M:%S:%f'))
-
-        return datetime.datetime.combine(date_obj.date(), time_obj.time())
-
-    except Exception as e:
-        print('Failed to combine date and time of', sample_name)
-        print('time_str =', time_str)
-        print('time_fmt =', time_fmt)
-        print('date_str =', date_str)
-        print('date_fmt =', date_fmt)
-        print()
-        print('Printing excepetion...')
-        print(e)
-        return 'Error'
+        self.Samples = LoadFiles(self.folderpath,
+                                 self.extension,
+                                 self.delimiter,
+                                 self.equipment)
